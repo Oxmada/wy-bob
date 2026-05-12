@@ -24,15 +24,7 @@ export default function Home() {
 
       <div className="mainZone">
 
-        {/* GAUCHE */}
-        <div className="leftCol">
-          <ColorSwatches
-            selected={selectedColor}
-            onChange={handleColorChange}
-          />
-        </div>
-
-        {/* CENTRE */}
+        {/* LIGNE 1 : Chapeau + Bouton */}
         <div className="centerCol">
           <Image
             src="/images/Blanc.png"
@@ -44,18 +36,31 @@ export default function Home() {
           <button className="commanderBtn">COMMANDER</button>
         </div>
 
-        {/* DROITE */}
-        <div className="rightCol">
-          <div className="productCard">
-            <h2 className="productName">{product.name}</h2>
-            <p className="productRating">⭐⭐⭐⭐⭐ ({product.rating}/5 - {product.reviews} avis)</p>
-            <p className="productDesc">{product.description}</p>
-            <hr className="productDivider"/>
-            <p className="productFeature">Caractéristiques +</p>
-            <p className="productFeature">Entretien et lavage +</p>
-            <hr className="productDivider"/>
-            <p className="productPrice">{product.price}€</p>
+        {/* LIGNE 2 : Swatches + Carte produit */}
+        <div className="bottomRow">
+
+          {/* GAUCHE */}
+          <div className="leftCol">
+            <ColorSwatches
+              selected={selectedColor}
+              onChange={handleColorChange}
+            />
           </div>
+
+          {/* DROITE */}
+          <div className="rightCol">
+            <div className="productCard">
+              <h2 className="productName">{product.name}</h2>
+              <p className="productRating">⭐⭐⭐⭐⭐ ({product.rating}/5 - {product.reviews} avis)</p>
+              <p className="productDesc">{product.description}</p>
+              <hr className="productDivider"/>
+              <p className="productFeature">Caractéristiques +</p>
+              <p className="productFeature">Entretien et lavage +</p>
+              <hr className="productDivider"/>
+              <p className="productPrice">{product.price}€</p>
+            </div>
+          </div>
+
         </div>
 
       </div>

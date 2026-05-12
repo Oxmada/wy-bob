@@ -5,9 +5,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 40px;
+  padding: 0 45px;
   box-sizing: border-box;
-  gap: 10px;
+  gap: 0;
 }
 
 .galerieRangee {
@@ -17,39 +17,45 @@
   flex-direction: row;
   gap: 10px;
   justify-content: center;
+  margin-bottom: 10px;
 }
 
 .galeriePhoto {
-  width: 390px;
+  flex: 1;
   height: 203px;
   border-radius: 16px;
   overflow: hidden;
-  flex-shrink: 0;
   cursor: pointer;
   transition: transform 0.2s;
-}
-
-.galeriePhoto img {
-  width: 100%;
-  height: 203px;
-  object-fit: contain;
-  display: block;
 }
 
 .galeriePhoto:hover {
   transform: scale(1.02);
 }
 
+.galeriePhoto img {
+  width: 100%;
+  height: 203px;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+}
+
+/* Position spécifique par photo */
+.photo3 img { object-position: center 10%; }
+.photo4 img { object-position: center 75%;  }
 .galeriePagination {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 4px;
+  margin-top: 10px;
+  position: relative;
 }
-
 .galerieDots {
   display: flex;
+  flex-direction: row;
   gap: 8px;
   align-items: center;
 }
@@ -58,33 +64,48 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: rgba(30, 58, 95, 0.3);
+  background-color:  #1B1843;
+;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .galerieDot.active {
-  background-color: #1e3a5f;
+  background-color: #e6a817;
+}
+
+.galerieDot.active {
+  background-color: #e6a817;
+  width: 10px;
+  height: 10px;
 }
 
 .galerieNav {
   display: flex;
   gap: 8px;
+  position: absolute;
+  right: 4px;
 }
+
+
+
+
+
 
 .galerieNavBtn {
   background: none;
-  border: 1px solid rgba(30, 58, 95, 0.3);
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  border: none;
   cursor: pointer;
-  color: #1e3a5f;
+   width: 24px;
+  height: 24px;
+  color: #1B1843;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 30px;
+  font-weight: bold;
 }
+
 
 .galerieNavBtn:hover {
   background-color: rgba(255, 255, 255, 0.3);

@@ -1,15 +1,26 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import './Navbar.css'
 
+const links = [
+  { label: 'Home', href: '/' },
+  { label: 'Notre Histoire', href: '/histoire' },
+  { label: 'Le concept', href: '/concept' },
+  { label: 'Gallerie', href: '/galerie' },
+  { label: 'Contacts', href: '/contact' },
+]
+
 export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <nav className="navbar">
 
       {/* Logo */}
-      <Link href="/">
+      <Link href="/" className="navLogo">
         <Image
           src="/images/logo.png"
           alt="WYBOB Logo"
@@ -19,22 +30,16 @@ export default function Navbar() {
         />
       </Link>
 
-      {/* Liens */}
+      {/* Liens desktop */}
       <div className="links">
-        {[
-          { label: 'Home', href: '/' },
-          { label: 'Notre Histoire', href: '/histoire' },
-          { label: 'Le concept', href: '/concept' },
-          { label: 'Gallerie', href: '/galerie' },
-          { label: 'Contacts', href: '/contact' },
-        ].map((link) => (
+        {links.map((link) => (
           <Link key={link.href} href={link.href} className="link">
             {link.label}
           </Link>
         ))}
       </div>
 
-      {/* Icônes */}
+      {/* Icônes desktop */}
       <div className="icons">
         <button className="iconBtn">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: '#1B1843' }}>
@@ -47,6 +52,41 @@ export default function Navbar() {
           </svg>
         </button>
       </div>
+
+      {/* Bouton hamburger — visible uniquement en mobile */}
+      <button
+        className="hamburgerBtn"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Menu"
+      >
+        {menuOpen ? (
+          // X pour fermer
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#1B1843" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        ) : (
+          // Hamburger
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#1B1843" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        )}
+      </button>
+
+      {/* Menu mobile déroulant */}
+      {menuOpen && (
+        <div className="mobileMenu">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="mobileLink"
+              onClick={() => setMenuOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
 
     </nav>
   )

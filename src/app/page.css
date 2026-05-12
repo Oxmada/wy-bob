@@ -1,4 +1,7 @@
-/* Conteneur principal */
+/* ===========================
+   DESKTOP
+   =========================== */
+
 .container {
   width: 95vw;
   height: 95vh;
@@ -22,6 +25,14 @@
     0 4px 30px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
+
+/* bottomRow invisible en desktop :
+   leftCol et rightCol se comportent comme
+   enfants directs de mainZone */
+.bottomRow {
+  display: contents;
+}
+
 /* Zone 3 colonnes */
 .mainZone {
   width: 100%;
@@ -30,14 +41,14 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
- padding: 0 40px 0 80px;
-
+  padding: 0 40px 0 80px;
   box-sizing: border-box;
   margin-top: 0;
 }
 
 /* GAUCHE */
 .leftCol {
+  order: 1;
   width: 380px;
   height: 471px;
   display: flex;
@@ -45,6 +56,7 @@
   gap: 16px;
   justify-content: center;
 }
+
 .colorTitle {
   width: 284px;
   height: 40px;
@@ -59,7 +71,6 @@
   gap: 12px;
 }
 
-
 .swatch {
   width: 30px;
   height: 30px;
@@ -69,6 +80,7 @@
 
 /* CENTRE */
 .centerCol {
+  order: 2;
   width: 485px;
   height: 471px;
   display: flex;
@@ -100,6 +112,7 @@
 
 /* DROITE */
 .rightCol {
+  order: 3;
   width: 380px;
   height: 471px;
   display: flex;
@@ -126,7 +139,6 @@
   font-family: 'Quicksand', sans-serif;
   font-size: 24px;
   color: #1B1843;
-;
   margin: 0;
 }
 
@@ -141,7 +153,6 @@
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
   color: #1B1843;
-
   line-height: 1.6;
   margin: 0;
 }
@@ -163,88 +174,231 @@
 .productFeature:first-of-type {
   margin-top: 20px;
 }
+
 .productPrice {
   font-family: 'DM Sans', sans-serif;
   font-size: 24px;
   font-weight: 700;
   color: #1B1843;
   margin-top: 20px;
- 
 }
-@media (max-width: 1024px) {
-  .desktopOnly { display: none !important; }
-  .tabletOnly  { display: flex !important; flex-direction: column; }
+
+
+/* ===========================
+   TABLETTE (768px - 1024px)
+   =========================== */
+@media (max-width: 1024px) and (min-width: 768px) {
 
   .container {
-    width: 90%;
-    height: 90vh;
-    border-radius: 25px;
-    padding: 20px;
+    width: 95vw;
+    height: auto;
+    min-height: 95vh;
+    padding: 16px;
+    border-radius: 20px;
+    overflow: visible;
     justify-content: flex-start;
-    gap: 20px;
+    gap: 16px;
   }
 
-  .mainZone.tabletOnly {
-    width: 100%;
-    flex: 1;
-    flex-direction: column !important;
-    align-items: center;
+  .mainZone {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0;
     gap: 30px;
+    flex: unset;
+    width: 100%;
+  }
+
+  /* LIGNE 1 : chapeau gauche + bouton commander droite */
+  .centerCol {
+    order: unset;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0;
+    margin-right: 0;
+    gap: 0;
+  }
+
+  .centerCol img {
+    width: 50% !important;
+    height: auto !important;
+    max-height: 214px !important;
+    object-fit: contain !important;
+    flex-shrink: 0;
+  }
+
+  .commanderBtn {
+    width: 164px;
+    height: 53px;
+    padding: 0;
+    font-size: 13px;
+    white-space: nowrap;
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* LIGNE 2 : bottomRow = flex row */
+  .bottomRow {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: auto;
+  }
+
+  /* LIGNE 2 GAUCHE : swatches */
+  .leftCol {
+    order: unset;
+    width: 338px;
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
     padding: 0;
   }
 
-  .topZone {
-    width: 100%;
-    height: 214px;
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 10px;
+  .colorTitle {
+    width: auto;
+    height: auto;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 24px;
+    white-space: nowrap;
+    margin-bottom: 20px;
   }
 
-  .hatZone {
-    width: 50%;
-    height: 214px;
-    display: flex;
+  .swatches { gap: 15px; }
+  .swatch { width: 40px; height: 40px; }
+
+  /* LIGNE 2 DROITE : carte produit */
+  .rightCol {
+    order: unset;
+    width: 338px;
+    height: auto;
     align-items: center;
     justify-content: center;
   }
 
-  .commanderTablet {
-    width: 50% !important;
-    height: 214px !important;
-    border-radius: 25px !important;
-    padding: 0 !important;
+  .productCard {
+    width: 100% !important;
+    height: auto !important;
+    padding: 20px;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  .productName { font-size: 20px; color: #1B1843; }
+  .productDesc { font-size: 13px; }
+  .productFeature { font-size: 15px; }
+  .productFeature:first-of-type { margin-top: 10px; }
+  .productPrice { font-size: 22px; margin-top: 10px; }
+}
+
+
+/* ===========================
+   MOBILE (< 768px)
+   =========================== */
+@media (max-width: 767px) {
+
+  .container {
+    width: 95vw;
+    height: 95vh;
+    padding: 12px 12px 8px;
+    border-radius: 18px;
+    overflow-y: auto;
+    justify-content: flex-start;
+  }
+
+  .mainZone {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    gap: 20px;
+    width: 100%;
+  }
+
+  /* bottomRow invisible : leftCol et rightCol
+     deviennent enfants directs de mainZone */
+  .bottomRow {
+    display: contents;
+  }
+
+  /* ORDRE : swatches → chapeau → carte */
+  .leftCol  { order: 1; }
+  .centerCol { order: 2; }
+  .rightCol  { order: 3; }
+
+  /* Swatches 310x75 */
+  .leftCol {
+    width: 310px;
+    height: 75px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0;
+  }
+
+  .colorTitle {
+    width: auto;
+    height: auto;
     font-size: 16px;
   }
 
-  .bottomZone {
-    width: 100%;
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 30px;
-    align-items: flex-start;
-  }
+  .swatches { gap: 10px; }
+  .swatch { width: 26px; height: 26px; }
 
-  .leftColTablet {
-    width: 50%;
-    height: 101px;
-    border-radius: 25px;
-    backdrop-filter: blur(16px);
-    background-color: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    padding: 16px;
-    display: flex !important;
+  /* Chapeau + bouton 310x214 */
+  .centerCol {
+    width: 310px;
+    height: 214px;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
-    box-sizing: border-box;
+    padding: 0;
+    margin-right: 0;
+    gap: 20px;
   }
 
-  .productCardTablet {
-    width: 50% !important;
-    height: 301px !important;
-    border-radius: 24px !important;
-    padding: 15px !important;
-    gap: 15px !important;
-    box-sizing: border-box;
+  .centerCol img {
+    width: 310px !important;
+    height: 214px !important;
+    object-fit: contain !important;
   }
+
+  .commanderBtn {
+    width: 139px;
+    height: 48px;
+    padding: 0;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+
+  /* Carte produit 310x281 */
+  .rightCol {
+    width: 310px;
+    height: 281px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .productCard {
+    width: 310px;
+    height: 281px;
+    padding: 16px;
+    gap: 8px;
+    border-radius: 16px;
+  }
+
+  .productName { font-size: 20px; }
+  .productRating { font-size: 11px; }
+  .productDesc { font-size: 12px; line-height: 1.5; }
+  .productFeature { font-size: 14px; }
+  .productFeature:first-of-type { margin-top: 10px; }
+  .productPrice { font-size: 20px; margin-top: 10px; }
 }
