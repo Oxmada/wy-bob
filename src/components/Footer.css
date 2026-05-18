@@ -61,16 +61,17 @@
   gap: 12px;
 }
 }
-@media (max-width: 480px) {
+@media (max-width: 767px) {  /* ✅ était 480px */
   .footer {
-    width: 310px;
-    height: 70px;
+    width: 100%;             /* ✅ était 310px fixe */
+    height: auto;            /* ✅ était 70px fixe */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 0;
+    padding: 12px 0;         /* ✅ un peu d'air */
+    margin-bottom: 0;
   }
 
   .footerLeft {

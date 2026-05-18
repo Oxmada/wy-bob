@@ -48,7 +48,6 @@
   color: #1B1843;
 }
 
-/* Hamburger et mobileMenu cachés par défaut */
 .hamburgerBtn {
   display: none;
   background: none;
@@ -89,35 +88,33 @@
    MOBILE (< 768px)
    =========================== */
 @media (max-width: 767px) {
-  .navbar {
-    width: 310;
+  .container {
+    width: 95vw;
     height: auto;
-    padding-left: 5px;
-    padding-right: 5px;
-    position: relative;
-    flex-wrap: wrap;
-    margin-left: 20px;
-    margin-right: 20px;
+    min-height: 95dvh;
+    padding: 0 20px;      /* ✅ 20px de chaque côté */
+    border-radius: 18px;
+    overflow-y: auto;
+    justify-content: flex-start;
+    box-sizing: border-box;
   }
+
   .hamburgerBtn {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
   .navLogo img {
-  width: 60px !important;
-  height: 60px !important;
-}
+    width: 60px !important;
+    height: 60px !important;
+  }
 
-  /* Cache liens et icônes */
   .links { display: none; }
   .icons { display: none; }
 
-  
-  /* Menu déroulant */
   .mobileMenu {
     display: flex;
     flex-direction: column;

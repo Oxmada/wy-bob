@@ -189,14 +189,14 @@
    =========================== */
 @media (max-width: 1024px) and (min-width: 768px) {
 
-  .container {
+ .container {
     width: 95vw;
     height: auto;
-    min-height: 95vh;
+    min-height: 95dvh;    /* ✅ dvh pour tablette */
     padding: 16px;
     border-radius: 20px;
     overflow: visible;
-    justify-content: flex-start;
+    justify-content: space-between;  /* ✅ footer en bas */
     gap: 16px;
   }
 
@@ -305,13 +305,15 @@
 @media (max-width: 767px) {
 
   .container {
-    width: 95vw;
-    height: 95vh;
+   width: calc(100% - 40px);
+    height: auto;           /* ✅ était 95vh */
+    min-height: 95dvh;      /* ✅ pour iOS Safari */
     padding: 12px 12px 8px;
     border-radius: 18px;
     overflow-y: auto;
     justify-content: flex-start;
   }
+
   .mainZone {
     flex-direction: column;
     align-items: center;
@@ -321,21 +323,17 @@
     width: 100%;
   }
 
-  /* bottomRow invisible : leftCol et rightCol
-     deviennent enfants directs de mainZone */
   .bottomRow {
     display: contents;
   }
 
-  /* ORDRE : swatches → chapeau → carte */
   .leftCol  { order: 1; }
   .centerCol { order: 2; }
   .rightCol  { order: 3; }
 
-  /* Swatches 310x75 */
   .leftCol {
     width: 310px;
-    height: 75px;
+    height: auto;           /* ✅ était 75px */
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -352,10 +350,9 @@
   .swatches { gap: 10px; }
   .swatch { width: 26px; height: 26px; }
 
-  /* Chapeau + bouton 310x214 */
   .centerCol {
     width: 310px;
-    height: 214px;
+    height: auto;           /* ✅ était 214px */
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -365,8 +362,9 @@
   }
 
   .centerCol img {
-    width: 310px !important;
-    height: 214px !important;
+    width: 100% !important;
+    height: auto !important; /* ✅ était 214px fixe */
+    max-width: 310px !important;
     object-fit: contain !important;
   }
 
@@ -378,17 +376,17 @@
     letter-spacing: 1.5px;
   }
 
-  /* Carte produit 310x281 */
   .rightCol {
     width: 310px;
-    height: 281px;
+    height: auto;           /* ✅ était 281px */
     justify-content: center;
     align-items: center;
+     margin-bottom: 16px;
   }
 
   .productCard {
     width: 310px;
-    height: 281px;
+    height: auto;           /* ✅ était 281px */
     padding: 16px;
     gap: 8px;
     border-radius: 16px;

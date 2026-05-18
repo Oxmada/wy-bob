@@ -31,15 +31,35 @@ p, span, a, button, li {
 }
 
 /* Mobile — scroll activé */
+
 @media (max-width: 767px) {
   html, body {
-    height: 100vh;
-    overflow: hidden;
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  body {
+    display: flex;           /* ✅ remet flex */
+    flex-direction: column;  /* ✅ colonne au lieu de row */
+    align-items: center;     /* ✅ garde le centrage */
+    justify-content: flex-start; /* ✅ commence en haut */
+    padding: 20px; /* haut/bas gauche/droite */   /* ✅ espace haut/bas */
+  }
+}
+@media (max-width: 1024px) and (min-width: 768px) {
+  html, body {
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   body {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
   }
 }
