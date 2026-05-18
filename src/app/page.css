@@ -312,7 +312,6 @@
     overflow-y: auto;
     justify-content: flex-start;
   }
-
   .mainZone {
     flex-direction: column;
     align-items: center;

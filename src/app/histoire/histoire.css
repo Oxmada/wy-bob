@@ -70,3 +70,121 @@
   overflow: hidden;
   flex-shrink: 0;
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+
+  .histoireZone {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 60px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .histoireBloc {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    box-sizing: border-box;
+    backdrop-filter: blur(16px);
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .histoireImage {
+    flex: 1;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .histoireImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .histoireTitre {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+
+  .histoireTexte p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+}
+@media (max-width: 480px) {
+
+  .container {
+    width: 350px;
+    height: 970px;
+    border-radius: 24px;
+    padding: 0;
+    justify-content: space-between;
+    overflow: visible;
+  }
+
+  .histoireZone {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .histoireBloc {
+    width: 310px;
+    height: 380px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    backdrop-filter: blur(16px);
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .histoireImage {
+    width: 310px;
+    height: 300px;
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .histoireImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .histoireTitre {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .histoireTexte {
+    gap: 8px;
+  }
+
+  .histoireTexte p {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+}
