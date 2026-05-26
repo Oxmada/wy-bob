@@ -11,49 +11,52 @@ export default function Galerie() {
 
       <div className="galerieZone">
 
-        {/* Rangée haut */}
-        <div className="galerieRangee">
+        {/* Rangée 1 — desktop: photo1,2,3 / tablette+mobile: photo1,2 */}
+        <div className="galerieRangee rangee1">
           <div className="galeriePhoto photo1">
             <img src="/images/galerie1.png" alt="Galerie 1" />
           </div>
           <div className="galeriePhoto photo2">
             <img src="/images/galerie2.png" alt="Galerie 2" />
           </div>
-          <div className="galeriePhoto photo3">
+          <div className="galeriePhoto photo3 desktop-only">
             <img src="/images/galerie3.png" alt="Galerie 3" />
           </div>
         </div>
 
-        {/* Rangée bas */}
-        <div className="galerieRangee">
+        {/* Rangée 2 — desktop: photo4,5,6 / tablette+mobile: photo3,4 */}
+        <div className="galerieRangee rangee2">
+          <div className="galeriePhoto photo3-bis tablet-only">
+            <img src="/images/galerie3.png" alt="Galerie 3" />
+          </div>
           <div className="galeriePhoto photo4">
             <img src="/images/galerie4.png" alt="Galerie 4" />
           </div>
-          <div className="galeriePhoto photo5">
+          <div className="galeriePhoto photo5 desktop-only">
             <img src="/images/galerie5.png" alt="Galerie 5" />
           </div>
-          <div className="galeriePhoto photo6">
+          <div className="galeriePhoto photo6 desktop-only">
             <img src="/images/galerie6.png" alt="Galerie 6" />
           </div>
         </div>
 
-       {/* Pagination */}
-{/* Pagination */}
-<div className="galeriePagination">
-  <div className="galerieDots">
-    <div className="galerieDot active"/>
-    <div className="galerieDot"/>
-    <div className="galerieDot"/>
-  </div>
-  <div className="galerieNav">
-    <button className="galerieNavBtn">
-      <img src="/images/chevron left.png" alt="gauche" width={24} height={24} />
-    </button>
-    <button className="galerieNavBtn">
-      <img src="/images/chevron right.png" alt="droite" width={24} height={24} />
-    </button>
-  </div>
-</div>
+        {/* Pagination */}
+        <div className="galeriePagination">
+          <div className="galerieDots">
+            <div className="galerieDot active"/>
+            <div className="galerieDot"/>
+            <div className="galerieDot"/>
+          </div>
+          <div className="galerieNav">
+            <button className="galerieNavBtn">
+              <img src="/images/chevron left.png" alt="gauche" width={24} height={24} />
+            </button>
+            <button className="galerieNavBtn">
+              <img src="/images/chevron right.png" alt="droite" width={24} height={24} />
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <Footer />

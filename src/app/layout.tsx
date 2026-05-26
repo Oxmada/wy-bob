@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { CartProvider } from '@/components/panier-context'
+import SessionWrapper from '@/components/SessionWrapper'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -14,7 +16,11 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body>
-        {children}
+        <SessionWrapper>
+          <CartProvider>
+            {children}
+          </CartProvider>
+        </SessionWrapper>
       </body>
     </html>
   )

@@ -7,14 +7,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-left: 40px;
-  padding-right: 40px;
+  padding: 0 40px;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .navLogo {
   margin-top: 20px;
+  transition: opacity 0.2s;
 }
+
+.navLogo:hover { opacity: 0.8; }
 
 .links {
   display: flex;
@@ -29,11 +32,22 @@
   font-weight: 500;
   font-family: 'DM Sans', sans-serif;
   transition: opacity 0.2s;
+  position: relative;
 }
 
-.link:hover {
-  opacity: 0.7;
+.link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #1B1843;
+  transition: width 0.2s;
 }
+
+.link:hover::after { width: 100%; }
+.link:hover { opacity: 0.7; }
 
 .icons {
   display: flex;
@@ -46,6 +60,80 @@
   border: none;
   cursor: pointer;
   color: #1B1843;
+  padding: 4px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.iconBtn:hover {
+  background: rgba(27, 24, 67, 0.08);
+}
+
+/* PANIER */
+.panierIcon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panierBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #F9C464;
+  color: #1B1843;
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* PROFIL */
+.profileWrapper {
+  position: relative;
+}
+
+.profileMenu {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 180px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.profileMenu a {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #1B1843;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.profileMenu a:hover {
+  background: rgba(27, 24, 67, 0.08);
 }
 
 .hamburgerBtn {
@@ -54,59 +142,40 @@
   border: none;
   cursor: pointer;
   padding: 0;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.hamburgerBtn:hover {
+  background: rgba(27, 24, 67, 0.08);
 }
 
 .mobileMenu {
   display: none;
 }
 
-/* ===========================
-   TABLETTE (768px - 1024px)
-   =========================== */
+/* TABLETTE */
 @media (max-width: 1024px) and (min-width: 768px) {
   .navbar {
-    width: 100%;
+    padding: 0 20px;
     height: auto;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
-  .navLogo {
-    margin-top: 0;
-  }
-
-  .links {
-    gap: 16px;
-  }
-
-  .link {
-    font-size: 14px;
-  }
+  .navLogo { margin-top: 0; }
+  .links { gap: 16px; }
+  .link { font-size: 14px; }
 }
 
-/* ===========================
-   MOBILE (< 768px)
-   =========================== */
+/* MOBILE */
 @media (max-width: 767px) {
-  .container {
-    width: 95vw;
-    height: auto;
-    min-height: 95dvh;
-    padding: 0 20px;      /* ✅ 20px de chaque côté */
-    border-radius: 18px;
-    overflow-y: auto;
-    justify-content: flex-start;
-    box-sizing: border-box;
+  .navbar {
+    padding: 0;
+    height: 60px;
   }
 
-  .hamburgerBtn {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
+  .navLogo { margin-top: 0; }
   .navLogo img {
     width: 60px !important;
     height: 60px !important;
@@ -114,6 +183,14 @@
 
   .links { display: none; }
   .icons { display: none; }
+
+  .hamburgerBtn {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
   .mobileMenu {
     display: flex;
@@ -124,11 +201,17 @@
     top: 60px;
     left: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(20px);
     padding: 32px 0;
     border-radius: 0 0 20px 20px;
     z-index: 100;
+    animation: slideDown 0.2s ease;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .mobileLink {
@@ -137,9 +220,8 @@
     font-size: 18px;
     font-weight: 500;
     font-family: 'DM Sans', sans-serif;
+    transition: opacity 0.2s;
   }
 
-  .mobileLink:hover {
-    opacity: 0.7;
-  }
+  .mobileLink:hover { opacity: 0.7; }
 }

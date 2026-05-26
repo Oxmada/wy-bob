@@ -50,16 +50,14 @@ p, span, a, button, li {
 }
 @media (max-width: 1024px) and (min-width: 768px) {
   html, body {
-    height: auto;
-    min-height: 100dvh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    height: 100vh;
+    overflow: hidden;
   }
 
   body {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
+    padding: 16px;  /* ✅ 16px partout */
   }
-}
+} 

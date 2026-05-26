@@ -1,0 +1,184 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
+import { useCart } from "@/components/panier-context";
+import "./checkout.css";
+
+export default function CheckoutForm({ total }: { total: number }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const router = useRouter();
+  const { cartItems, cartTotal } = useCart();
+
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [company, setCompany] = useState("");
+  const [address, setAddress] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("Madagascar");
+  const [shipping, setShipping] = useState("colissimo");
+  const [loading, setLoading] = useState(false);
+
+  const TVA_RATE = 0.20;
+  const tva = Math.round(cartTotal * TVA_RATE);
+  const livraison = 25;
+  const totalQty = cartItems.reduce((acc, i) => acc + i.quantity, 0);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firstname || !lastname || !email || !city || !address) {
+      alert("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
+    if (!cartItems || cartItems.length === 0) {
+      alert("Votre panier est vide");
+      return;
+    }
+    if (!stripe || !elements) return;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: total }),
+      });
+      const { clientSecret } = await res.json();
+      const { error: stripeError } = await stripe.confirmPayment({
+        elements,
+        clientSecret,
+        confirmParams: { return_url: `${window.location.origin}/checkout/success` },
+        redirect: "if_required",
+      });
+      if (stripeError) {
+        alert(stripeError.message);
+        return;
+      }
+      const orderRes = await fetch("/api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer: { firstname, lastname, email, phone, company, city, address, postalCode, country },
+          cartItems,
+          total: cartTotal,
+          payment: "card",
+          delivery: shipping,
+        }),
+      });
+      const orderData = await orderRes.json();
+      if (!orderRes.ok) {
+        alert(orderData.message || "Erreur lors de la commande");
+        return;
+      }
+      alert("✅ Commande confirmée !");
+      localStorage.removeItem("cart");
+      router.push("/");
+    } catch (error) {
+      console.error("CHECKOUT ERROR:", error);
+      alert("Erreur serveur");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <button className="checkout-back" onClick={() => router.back()}>
+        ← Retour
+      </button>
+
+      <div className="checkout-wrapper">
+
+        <div className="checkout-left">
+          <div className="checkout-section">
+            <h3 className="checkout-section-title">Contact</h3>
+            <input type="email" placeholder="Tom.exemple@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} className="checkout-input" required />
+            <input type="tel" placeholder="Téléphone (ex: 034 00 000 00)" value={phone} onChange={(e) => setPhone(e.target.value)} className="checkout-input" />
+          </div>
+
+          <div className="checkout-section">
+            <h3 className="checkout-section-title">Livraison</h3>
+            <input type="text" placeholder="Pays / région" value={country} onChange={(e) => setCountry(e.target.value)} className="checkout-input" />
+            <div className="checkout-row">
+              <input type="text" placeholder="Prénom" value={firstname} onChange={(e) => setFirstname(e.target.value)} className="checkout-input" required />
+              <input type="text" placeholder="Nom" value={lastname} onChange={(e) => setLastname(e.target.value)} className="checkout-input" required />
+            </div>
+            <input type="text" placeholder="Entreprise (optionnel)" value={company} onChange={(e) => setCompany(e.target.value)} className="checkout-input" />
+            <input type="text" placeholder="Adresse" value={address} onChange={(e) => setAddress(e.target.value)} className="checkout-input" required />
+            <div className="checkout-row">
+              <input type="text" placeholder="Code postal" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="checkout-input" />
+              <input type="text" placeholder="Ville" value={city} onChange={(e) => setCity(e.target.value)} className="checkout-input" required />
+            </div>
+          </div>
+
+          <div className="checkout-section">
+            <h3 className="checkout-section-title">Mode d'expédition</h3>
+            <label className="checkout-radio">
+              <input type="radio" name="shipping" value="colissimo" checked={shipping === "colissimo"} onChange={() => setShipping("colissimo")} />
+              <span>Colissimo - Signature International 2 à 8 jours</span>
+            </label>
+            <label className="checkout-radio">
+              <input type="radio" name="shipping" value="relais" checked={shipping === "relais"} onChange={() => setShipping("relais")} />
+              <span>Livraison en point relais Colissimo 2 à 4 jours</span>
+            </label>
+          </div>
+
+          <div className="checkout-section">
+            <h3 className="checkout-section-title">Paiement</h3>
+            <PaymentElement />
+          </div>
+
+          <button className="checkout-submit" onClick={handleSubmit} disabled={loading}>
+            {loading ? "Envoi..." : "Vérifier la commande"}
+          </button>
+        </div>
+
+        <div className="checkout-right">
+          <div className="checkout-items">
+            {cartItems.map((item: any) => (
+              <div key={item._id} className="checkout-item">
+                <div className="checkout-item-image">
+                  {item.image && <img src={item.image} alt={item.name} />}
+                </div>
+                <div className="checkout-item-info">
+                  <strong>{item.name}</strong>
+                  <p>{item.description}</p>
+                </div>
+                <span className="checkout-item-price">{item.promoPrice ?? item.price} Ar</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="checkout-summary">
+            <h3 className="checkout-summary-title">Résumé de la commande</h3>
+            <div className="checkout-summary-row">
+              <span>Sous-total ({totalQty})</span>
+              <span>{cartTotal} Ar</span>
+            </div>
+            <div className="checkout-summary-row">
+              <span>TVA (20%)</span>
+              <span>{tva} Ar</span>
+            </div>
+            <div className="checkout-summary-row">
+              <span>Livraison</span>
+              <span>{livraison} Ar</span>
+            </div>
+            <div className="checkout-summary-divider" />
+            <div className="checkout-summary-row checkout-summary-total">
+              <span>Total</span>
+              <span>{total} Ar</span>
+            </div>
+            <button className="checkout-pay-btn" onClick={handleSubmit} disabled={loading}>
+              {loading ? "Envoi..." : "Procéder au paiement"}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </>
+  );
+}
