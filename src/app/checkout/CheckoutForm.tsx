@@ -169,7 +169,7 @@ export default function CheckoutForm({ total }: { total: number }) {
                   <strong>{item.name}</strong>
                   <p>{item.description}</p>
                 </div>
-                <span className="checkout-item-price">{item.promoPrice ?? item.price} Ar</span>
+                <span className="checkout-item-price">{item.promoPrice ?? item.price} €</span>
               </div>
             ))}
           </div>

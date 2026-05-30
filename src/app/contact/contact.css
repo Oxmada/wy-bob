@@ -92,6 +92,22 @@
   color: rgba(30, 58, 95, 0.5);
 }
 
+.contactBtn {
+  background-color: #F9C464;
+  color: #1B1843;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 40px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Quicksand', sans-serif;
+  letter-spacing: 2px;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.contactBtn:hover { opacity: 0.9; }
+
 .contactImage {
   width: 456px;
   height: 431px;

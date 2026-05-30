@@ -102,7 +102,7 @@ export default async function OrdersPage() {
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <span style={{ fontSize: 14, fontWeight: 700, color: "#1B1843" }}>
-                        {Number(order.total).toLocaleString("fr-FR")} Ar
+                        {Number(order.total).toLocaleString("fr-FR")} €
                       </span>
                       <span className={STATUS_BADGE[order.status] ?? "db-badge db-badge-pending"}>
                         {STATUS_LABELS[order.status] ?? order.status}

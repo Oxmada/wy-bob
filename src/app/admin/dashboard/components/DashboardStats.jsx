@@ -112,12 +112,12 @@ export default function DashboardStats() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", background: N.bg, border: `1px solid ${N.border}`, borderRadius: N.radius, overflow: "hidden" }}>
         <KPICell border small label="Clients"    value={stats.customersCount ?? 0}   sub={`+${stats.newCustomers ?? 0} nouveaux`} />
         <KPICell border small label="Commandes"  value={stats.ordersCount ?? 0}       sub={`${stats.periodOrders ?? 0} / période`} />
-        <KPICell border small label="CA période" value={`${parseFloat(stats.periodRevenue || 0).toLocaleString("fr-FR")} Ar`}
+        <KPICell border small label="CA période" value={`${parseFloat(stats.periodRevenue || 0).toLocaleString("fr-FR")} €`}
           sub={growth !== null
             ? <TrendChip value={growth} />
-            : `Total : ${parseFloat(stats.totalRevenue || 0).toLocaleString("fr-FR")} Ar`}
+            : `Total : ${parseFloat(stats.totalRevenue || 0).toLocaleString("fr-FR")} €`}
         />
-        <KPICell small label="Panier moyen" value={`${parseFloat(stats.averageBasket || 0).toLocaleString("fr-FR")} Ar`} sub={`Aujourd'hui : ${stats.todayOrders ?? 0} cmd`} />
+        <KPICell small label="Panier moyen" value={`${parseFloat(stats.averageBasket || 0).toLocaleString("fr-FR")} €`} sub={`Aujourd'hui : ${stats.todayOrders ?? 0} cmd`} />
       </div>
 
       {/* ── KPI Row 2 — métriques secondaires ── */}
@@ -125,7 +125,7 @@ export default function DashboardStats() {
         <KPICell border small label="Taux d'annulation" value={`${stats.cancellationRate ?? 0}%`}    sub={`${stats.cancelledOrders ?? 0} cmd annulées`} />
         <KPICell border small label="Fidélisation"       value={`${stats.loyaltyRate ?? 0}%`}          sub={`${stats.returningCustomers ?? 0} clients récurrents`} />
         <KPICell border small label="Clients dormants"   value={stats.dormantCustomers ?? 0}            sub="sans achat depuis 30 j" />
-        <KPICell       small label="Valeur du stock"    value={`${(stats.stockValue ?? 0).toLocaleString("fr-FR")} Ar`} sub="stock × prix catalogue" />
+        <KPICell       small label="Valeur du stock"    value={`${(stats.stockValue ?? 0).toLocaleString("fr-FR")} €`} sub="stock × prix catalogue" />
       </div>
 
       {/* ── Alertes ── */}
@@ -157,7 +157,7 @@ export default function DashboardStats() {
               <XAxis dataKey="date" fontSize={10} tick={{ fill: N.muted, fontFamily: font }} tickLine={false} axisLine={false} />
               <YAxis fontSize={10} tick={{ fill: N.muted, fontFamily: font }} tickLine={false} axisLine={false} />
               <Tooltip contentStyle={{ background: N.bg, border: `1px solid ${N.border}`, borderRadius: "6px", fontSize: "11px", fontFamily: font, boxShadow: "none" }} />
-              <Line type="monotone" dataKey="revenue" stroke="#F9C464" strokeWidth={1.5} name="CA (Ar)"    dot={false} />
+              <Line type="monotone" dataKey="revenue" stroke="#F9C464" strokeWidth={1.5} name="CA (€)"    dot={false} />
               <Line type="monotone" dataKey="orders"  stroke="#1B1843"  strokeWidth={1.5} name="Commandes" dot={false} />
             </LineChart>
           </ResponsiveContainer>
@@ -219,7 +219,7 @@ export default function DashboardStats() {
               {recentOrders.map((order, i) => (
                 <tr key={order._id || i} style={{ borderTop: `1px solid ${N.borderLight}` }}>
                   <td style={tdStyle}>{order.customer.firstname} {order.customer.lastname}</td>
-                  <td style={{ ...tdStyle, fontWeight: "600", whiteSpace: "nowrap" }}>{parseFloat(order.total).toLocaleString("fr-FR")} Ar</td>
+                  <td style={{ ...tdStyle, fontWeight: "600", whiteSpace: "nowrap" }}>{parseFloat(order.total).toLocaleString("fr-FR")} €</td>
                   <td style={tdStyle}><StatusBadge status={order.status} /></td>
                   <td style={{ ...tdStyle, color: N.muted, fontSize: "11px", whiteSpace: "nowrap" }}>{new Date(order.createdAt).toLocaleDateString("fr-FR")}</td>
                 </tr>
@@ -240,7 +240,7 @@ export default function DashboardStats() {
                 <tr key={i} style={{ borderTop: `1px solid ${N.borderLight}` }}>
                   <td style={tdStyle}>{c.firstname} {c.lastname}</td>
                   <td style={{ ...tdStyle, color: N.muted, textAlign: "center" }}>{c.totalOrders}</td>
-                  <td style={{ ...tdStyle, fontWeight: "600", whiteSpace: "nowrap" }}>{parseFloat(c.totalSpent).toLocaleString("fr-FR")} Ar</td>
+                  <td style={{ ...tdStyle, fontWeight: "600", whiteSpace: "nowrap" }}>{parseFloat(c.totalSpent).toLocaleString("fr-FR")} €</td>
                 </tr>
               ))}
             </tbody>

@@ -1,0 +1,393 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import "./orders-admin.css";
+
+const PER_PAGE = 20;
+
+const STATUS_OPTIONS = [
+  { value: "pending",    label: "En attente"     },
+  { value: "confirmed",  label: "Confirmée"      },
+  { value: "processing", label: "En préparation" },
+  { value: "paid",       label: "Payée"          },
+  { value: "shipped",    label: "Expédiée"       },
+  { value: "delivered",  label: "Livrée"         },
+  { value: "cancelled",  label: "Annulée"        },
+];
+
+const PAYMENT_LABELS = {
+  cash:          "Espèces",
+  mobile_money:  "Mobile Money",
+  card:          "Carte",
+  bank_transfer: "Virement",
+};
+
+const STATUS_FILTERS = [
+  { label: "Toutes",      value: ""           },
+  { label: "En attente",  value: "pending"    },
+  { label: "Préparation", value: "processing" },
+  { label: "Expédiées",   value: "shipped"    },
+  { label: "Livrées",     value: "delivered"  },
+  { label: "Annulées",    value: "cancelled"  },
+];
+
+const SORT_OPTIONS = [
+  { label: "Date",  value: "createdAt" },
+  { label: "Total", value: "total"     },
+];
+
+export default function AdminOrdersPage() {
+  const [orders, setOrders]                   = useState([]);
+  const [loading, setLoading]                 = useState(true);
+  const [updatingId, setUpdatingId]           = useState(null);
+  const [search, setSearch]                   = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilter, setStatusFilter]       = useState("");
+  const [sort, setSort]                       = useState("createdAt");
+  const [sortDir, setSortDir]                 = useState("desc");
+  const [page, setPage]                       = useState(1);
+  const [pagination, setPagination]           = useState({ total: 0, totalPages: 1 });
+  const [stats, setStats]                     = useState(null);
+  const [exporting, setExporting]             = useState(false);
+  const [toast, setToast]                     = useState(null);
+  const [confirmModal, setConfirmModal]       = useState(null);
+  const [sortOpen, setSortOpen]               = useState(false);
+  const sortRef = useRef(null);
+
+  const showToast = (msg, type = "success") => {
+    setToast({ message: msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const askConfirm = (message, onConfirm, confirmLabel = "Confirmer") =>
+    setConfirmModal({ message, onConfirm, confirmLabel });
+
+  useEffect(() => {
+    const t = setTimeout(() => { setPage(1); setDebouncedSearch(search); }, 400);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  useEffect(() => { fetchOrders(); }, [debouncedSearch, statusFilter, sort, sortDir, page]);
+
+  useEffect(() => {
+    const close = (e) => {
+      if (sortRef.current && !sortRef.current.contains(e.target)) setSortOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ sort, order: sortDir, page, limit: PER_PAGE });
+      if (debouncedSearch) params.append("search", debouncedSearch);
+      if (statusFilter)    params.append("status", statusFilter);
+
+      const res  = await fetch(`/api/admin/orders?${params}`);
+      const data = await res.json();
+      if (data.orders) {
+        setOrders(data.orders);
+        setPagination(data.pagination);
+        setStats(data.stats);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (orderId, newStatus) => {
+    setUpdatingId(orderId);
+    try {
+      const res  = await fetch(`/api/admin/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.message || "Erreur lors du changement de statut", "error"); return; }
+      setOrders(prev => prev.map(o => o._id === data._id ? data : o));
+      showToast("Statut mis à jour");
+    } catch {
+      showToast("Erreur serveur", "error");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const deleteOrder = (id) => {
+    askConfirm(
+      "Supprimer cette commande définitivement ?",
+      async () => {
+        try {
+          const res  = await fetch(`/api/admin/orders/${id}`, { method: "DELETE" });
+          const data = await res.json();
+          if (res.ok) {
+            setOrders(prev => prev.filter(o => o._id !== id));
+            showToast("Commande supprimée");
+          } else {
+            showToast(data.message || "Impossible de supprimer", "error");
+          }
+        } catch {
+          showToast("Erreur serveur", "error");
+        }
+      },
+      "Supprimer"
+    );
+  };
+
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const params = new URLSearchParams({ sort, order: sortDir, limit: 9999 });
+      if (debouncedSearch) params.append("search", debouncedSearch);
+      if (statusFilter)    params.append("status", statusFilter);
+
+      const res  = await fetch(`/api/admin/orders?${params}`);
+      const data = await res.json();
+      if (!data.orders) return;
+
+      const headers = ["Prénom","Nom","Email","Téléphone","Adresse","Ville","Total (Ar)","Paiement","Statut","Date"];
+      const rows = data.orders.map(o => {
+        const c = o.customer || {};
+        return [
+          c.firstname || "", c.lastname || "", c.email || "",
+          c.phone || "", c.address || "", c.city || "",
+          o.total || 0,
+          PAYMENT_LABELS[o.payment] || o.payment || "",
+          STATUS_OPTIONS.find(s => s.value === o.status)?.label || o.status || "",
+          o.createdAt ? new Date(o.createdAt).toLocaleDateString("fr-FR") : "",
+        ].join(";");
+      });
+
+      const csv  = [headers.join(";"), ...rows].join("\n");
+      const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      a.href     = url;
+      a.download = `commandes_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  return (
+    <div className="ap-page">
+
+      {toast && (
+        <div className={`ap-toast ${toast.type === "error" ? "ap-toast-error" : "ap-toast-success"}`}>
+          {toast.message}
+        </div>
+      )}
+
+      {confirmModal && (
+        <div className="ap-confirm-overlay" onClick={() => setConfirmModal(null)}>
+          <div className="ap-confirm-dialog" onClick={e => e.stopPropagation()}>
+            <p className="ap-confirm-msg">{confirmModal.message}</p>
+            <div className="ap-confirm-actions">
+              <button className="ap-confirm-cancel" onClick={() => setConfirmModal(null)}>Annuler</button>
+              <button className="ap-confirm-ok" onClick={() => { confirmModal.onConfirm(); setConfirmModal(null); }}>
+                {confirmModal.confirmLabel}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Topbar */}
+      <div className="ap-topbar">
+        <Link href="/admin/dashboard" className="ap-back-btn">← Dashboard</Link>
+        <h1 className="ap-topbar-title">Commandes</h1>
+        <button className="ac-btn-export" onClick={exportCSV} disabled={exporting}>
+          {exporting ? "Export…" : "↓ Export CSV"}
+        </button>
+      </div>
+
+      {/* Toolbar */}
+      <div className="ap-toolbar">
+        <input
+          type="text"
+          placeholder="Rechercher par nom, email, ville…"
+          value={search}
+          onChange={e => { setSearch(e.target.value); if (page !== 1) setPage(1); }}
+          className="ap-search-input"
+        />
+
+        <div className="ap-divider" />
+
+        <div className="ap-filters">
+          {STATUS_FILTERS.map(f => (
+            <button
+              key={f.value}
+              onClick={() => { setStatusFilter(f.value); setPage(1); }}
+              className={`ap-filter-btn ${statusFilter === f.value ? "active" : ""}`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="ap-divider" />
+
+        <div className="ap-sort-wrap" ref={sortRef}>
+          <button className="ap-sort-trigger" onClick={() => setSortOpen(o => !o)}>
+            {SORT_OPTIONS.find(o => o.value === sort)?.label}
+            <span className={`ap-sort-trigger-arrow ${sortOpen ? "open" : ""}`}>▼</span>
+          </button>
+          {sortOpen && (
+            <ul className="ap-sort-dropdown">
+              {SORT_OPTIONS.map(o => (
+                <li
+                  key={o.value}
+                  className={`ap-sort-option ${sort === o.value ? "selected" : ""}`}
+                  onClick={() => { setSort(o.value); setPage(1); setSortOpen(false); }}
+                >
+                  {o.label}
+                  {sort === o.value && <span className="ap-sort-check">✓</span>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <button onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")} className="ap-sort-btn">
+          {sortDir === "asc" ? "↑" : "↓"}
+        </button>
+
+        {stats && (
+          <>
+            <div className="ap-divider" />
+            <div className="ap-stats-inline">
+              <div className="ap-stat-chip">
+                <span className="ap-stat-chip-value">{stats.total}</span>
+                <span className="ap-stat-chip-label">Total</span>
+              </div>
+              <div className="ap-stat-sep" />
+              <div className="ap-stat-chip warn">
+                <span className="ap-stat-chip-value">{stats.pending}</span>
+                <span className="ap-stat-chip-label">En attente</span>
+              </div>
+              <div className="ap-stat-sep" />
+              <div className="ap-stat-chip ok">
+                <span className="ap-stat-chip-value">{stats.delivered}</span>
+                <span className="ap-stat-chip-label">Livrées</span>
+              </div>
+              <div className="ap-stat-sep" />
+              <div className="ap-stat-chip danger">
+                <span className="ap-stat-chip-value">{stats.cancelled}</span>
+                <span className="ap-stat-chip-label">Annulées</span>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Table */}
+      <div className="ap-table-wrap">
+        {loading ? (
+          <div className="ap-state"><span className="ap-state-icon">⏳</span>Chargement…</div>
+        ) : orders.length === 0 ? (
+          <div className="ap-state"><span className="ap-state-icon">📭</span>Aucune commande trouvée</div>
+        ) : (
+          <table className="ap-table">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Contact</th>
+                <th>Localisation</th>
+                <th>Total</th>
+                <th>Paiement</th>
+                <th>Statut</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map(o => {
+                const c        = o.customer || {};
+                const fullName = [c.firstname, c.lastname].filter(Boolean).join(" ") || c.name || "—";
+                const initials = ((c.firstname?.[0] || "") + (c.lastname?.[0] || "")).toUpperCase() || "?";
+
+                return (
+                  <tr key={o._id}>
+                    <td>
+                      <div className="ao-client-cell">
+                        <div className="ao-avatar">{initials}</div>
+                        <span className="ao-client-name">{fullName}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="ao-contact">
+                        {c.email && <a href={`mailto:${c.email}`} className="ao-email">{c.email}</a>}
+                        {c.phone && <span className="ao-phone">{c.phone}</span>}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="ao-location">
+                        {c.city    && <span className="ao-city">{c.city}</span>}
+                        {c.address && <span className="ao-address">{c.address}</span>}
+                      </div>
+                    </td>
+                    <td>
+                      <span className="ao-total">{(o.total || 0).toLocaleString()} €</span>
+                    </td>
+                    <td>
+                      <span className={`ao-payment ao-payment-${o.payment}`}>
+                        {PAYMENT_LABELS[o.payment] || o.payment || "—"}
+                      </span>
+                    </td>
+                    <td>
+                      <select
+                        value={o.status}
+                        disabled={updatingId === o._id}
+                        onChange={e => updateStatus(o._id, e.target.value)}
+                        className={`ao-status-select ao-status-${o.status}`}
+                      >
+                        {STATUS_OPTIONS.map(s => (
+                          <option key={s.value} value={s.value}>{s.label}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <span className="ap-date">
+                        {o.createdAt ? new Date(o.createdAt).toLocaleDateString("fr-FR") : "—"}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="ap-actions">
+                        <Link href={`/admin/orders/${o._id}`} className="ap-btn-view" title="Voir le détail">↗</Link>
+                        <button className="ap-btn-delete" onClick={() => deleteOrder(o._id)}>
+                          Supprimer
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="ap-pagination">
+          <button className="ap-page-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
+            ← Préc.
+          </button>
+          <span className="ap-page-info">
+            Page {page} / {pagination.totalPages}
+            <span className="ap-page-total"> — {pagination.total} commandes</span>
+          </span>
+          <button className="ap-page-btn" disabled={page === pagination.totalPages} onClick={() => setPage(p => p + 1)}>
+            Suiv. →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -35,6 +35,7 @@ export default function Contact() {
               className="contactTextarea"
               placeholder="Message"
             />
+            <button className="contactBtn">ENVOYER</button>
           </div>
 
           {/* DROITE — Image */}

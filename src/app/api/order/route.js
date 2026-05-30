@@ -133,7 +133,7 @@ export async function POST(req) {
         <tr>
           <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${item.name || "Produit"}</td>
           <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-          <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;">${item.price ? Number(item.price).toLocaleString() + " Ar" : "-"}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;">${item.price ? Number(item.price).toLocaleString() + " €" : "-"}</td>
         </tr>
       `
       )

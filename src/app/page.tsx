@@ -49,55 +49,59 @@ export default function Home() {
     <div className="container">
       <Navbar />
 
-      <div className="mainZone desktopOnly">
+      <div className="mainZone">
 
-        {/* GAUCHE */}
-        <div className="leftCol">
-          <p className="colorTitle">Choisis ta couleur !</p>
-          <div className="swatches">
-            {product.colors.map((color) => (
-              <div
-                key={color.id}
-                className={`swatch ${selectedColor === color.id ? 'active' : ''}`}
-                style={{ backgroundColor: color.code }}
-                onClick={() => handleColorChange(color.id, color.image, color.name)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* CENTRE */}
+        {/* CENTRE — chapeau + bouton */}
         <div className="centerCol">
          <img
   src={hatImage}
   alt="Chapeau WYBOB"
-  style={{ 
-    objectFit: 'contain', 
-    width: '600px', 
-    height: '400px',
-    display: 'block',
-    marginTop: '-80px'
-  }}
+  className="hatImage"
 />
           <button className="commanderBtn" onClick={handleCommander}>
             COMMANDER
           </button>
         </div>
 
-        {/* DROITE */}
-        <div className="rightCol">
-          <div className="productCard">
-            <h2 className="productName">{product.name}</h2>
-            <p className="productRating">⭐⭐⭐⭐⭐ ({product.rating}/5 - {product.reviews} avis)</p>
-            <p className="productDesc">{product.description}</p>
-            <hr className="productDivider"/>
-            <p className="productFeature">Caractéristiques +</p>
-            <p className="productFeature">Entretien et lavage +</p>
-            <hr className="productDivider"/>
-            <p className="productPrice">{product.price}€</p>
-          </div>
-        </div>
+        {/* BOTTOM ROW — gauche + droite */}
+        <div className="bottomRow">
 
+          {/* GAUCHE */}
+          <div className="leftCol">
+            <p className="colorTitle">Choisis ta couleur !</p>
+            <div className="swatches">
+              {product.colors.map((color) => (
+                <div
+                  key={color.id}
+                  className={`swatch ${selectedColor === color.id ? 'active' : ''}`}
+                  style={{ backgroundColor: color.code }}
+                  onClick={() => handleColorChange(color.id, color.image, color.name)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* DROITE */}
+          <div className="rightCol">
+            <div className="productCard">
+              <h2 className="productName">{product.name}</h2>
+              <p className="productRating">⭐⭐⭐⭐⭐ ({product.rating}/5 - {product.reviews} avis)</p>
+              <p className="productDesc">{product.description}</p>
+              <hr className="productDivider"/>
+             <p className="productFeature">
+  Caractéristiques 
+  <span style={{ float: 'right' }}>+</span>
+</p>
+<p className="productFeature">
+  Entretien et lavage 
+  <span style={{ float: 'right' }}>+</span>
+</p>
+              <hr className="productDivider"/>
+              <p className="productPrice">{product.price}€</p>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       <Footer />

@@ -6,18 +6,32 @@ import Footer from '@/components/Footer'
 import '../page.css'
 import './galerie.css'
 
+const CDN = 'https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto'
+
 const pages = [
   {
-    rangee1: ['/images/galerie1.png', '/images/galerie2.png', '/images/galerie3.png'],
-    rangee2: ['/images/galerie4.png', '/images/galerie5.png', '/images/galerie6.png'],
+    rangee1: [
+      `${CDN}/v1780172698/galerie1_rteglh.png`,
+      `${CDN}/v1780172690/galerie2_j2flds.png`,
+      `${CDN}/v1780172698/galerie3_klz7l1.png`,
+    ],
+    rangee2: [
+      `${CDN}/v1780172701/galerie4_btnizk.png`,
+      `${CDN}/v1780172704/galerie5_gtu3ev.png`,
+      `${CDN}/v1780172702/galerie6_ifyxre.png`,
+    ],
   },
   {
-    rangee1: ['/images/galerie7.png', '/images/galerie8.png', '/images/galerie9.png'],
-    rangee2: ['/images/galerie10.png', '/images/galerie11.png', '/images/galerie12.png'],
-  },
-  {
-    rangee1: ['/images/galerie13.png', '/images/galerie14.png', '/images/galerie15.png'],
-    rangee2: ['/images/galerie16.png', '/images/galerie17.png', '/images/galerie18.png'],
+    rangee1: [
+      `${CDN}/v1780172702/galerie7_ykaezz.jpg`,
+      `${CDN}/v1780172702/galerie8_p1tkbd.jpg`,
+      `${CDN}/v1780172704/galerie9_i9yb2z.jpg`,
+    ],
+    rangee2: [
+      `${CDN}/v1780172706/galerie10_sz9jal.jpg`,
+      `${CDN}/v1780172707/galerie11_trkyb1.jpg`,
+      `${CDN}/v1780172688/galerie12_tmuf0c.jpg`,
+    ],
   },
 ]
 
@@ -78,10 +92,10 @@ export default function Galerie() {
           </div>
           <div className="galerieNav">
             <button className="galerieNavBtn" onClick={goPrev}>
-              <img src="/images/chevron left.png" alt="gauche" width={24} height={24} />
+              <img src={`${CDN}/v1780172685/chevron_left_qr2oga.png`} alt="gauche" width={24} height={24} />
             </button>
             <button className="galerieNavBtn" onClick={goNext}>
-              <img src="/images/chevron right.png" alt="droite" width={24} height={24} />
+              <img src={`${CDN}/v1780172686/chevron_right_vlhter.png`} alt="droite" width={24} height={24} />
             </button>
           </div>
         </div>

@@ -42,13 +42,14 @@
 /* Div texte */
 .histoireTexte {
   flex: 1;
-  
   display: flex;
   flex-direction: column;
   gap: 16px;
-  overflow: auto;
-  scrollbar-width: none;
+  overflow-y: auto;
+  scrollbar-width: thin; /* ✅ visible mais fine */
+  scrollbar-color: #1e3a5f transparent; /* ✅ couleur du scrollbar et de la track */
 }
+
 
 .histoireTexte::-webkit-scrollbar {
   display: none;

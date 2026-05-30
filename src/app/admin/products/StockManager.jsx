@@ -6,6 +6,7 @@ import styles from "./products.module.css";
 export default function StockManager({ initialProducts }) {
   const [products, setProducts] = useState(initialProducts);
   const [loading, setLoading] = useState({});
+  const [error, setError] = useState(null);
 
   const updateStock = async (id, delta) => {
     setLoading((l) => ({ ...l, [id]: true }));
@@ -52,7 +53,7 @@ export default function StockManager({ initialProducts }) {
 
             <div className={styles.info}>
               <h2 className={styles.color}>{product.color}</h2>
-              <p className={styles.price}>{product.price} Ar</p>
+              <p className={styles.price}>{product.price} €</p>
 
               {/* Badge statut */}
               <div

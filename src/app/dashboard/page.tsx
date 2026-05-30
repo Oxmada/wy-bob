@@ -56,7 +56,7 @@ export default async function DashboardOverview() {
         </div>
         <div className="db-kpi-card">
           <span className="db-kpi-label">Total dépensé</span>
-          <span className="db-kpi-value">{totalSpent.toLocaleString("fr-FR")} Ar</span>
+          <span className="db-kpi-value">{totalSpent.toLocaleString("fr-FR")} €</span>
           <span className="db-kpi-sub">toutes commandes</span>
         </div>
         <div className="db-kpi-card">
@@ -102,7 +102,7 @@ export default async function DashboardOverview() {
                     </span>
                     <span className={status.badgeClass}>{status.label}</span>
                     <span className="db-recent-order-total">
-                      {Number(order.total).toLocaleString("fr-FR")} Ar
+                      {Number(order.total).toLocaleString("fr-FR")} €
                     </span>
                   </div>
                 );

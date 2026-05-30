@@ -9,9 +9,9 @@
   overflow: hidden;
 }
 .register-Zone {
- flex: 1;
+  flex: 1;
   display: flex;
-  align-items: flex-start;  /* ✅ remplace center */
+  align-items: flex-start;
   justify-content: center;
   padding: 20px;
   overflow-y: auto;
@@ -60,17 +60,25 @@
 
 
 
+/* TITRE */
+.register-Titre {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+  text-align: center;
+}
+
 /* CARD */
 .register-card {
   width: 100%;
-  max-width: 480px;  /* ✅ ajoute ça */
+  max-width: 480px;
   background: #fff;
   border-radius: 10px;
-  padding: 30px;
+  padding: 40px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin: 20px 0;  /* ✅ espace en haut et en bas */
+  gap: 20px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 

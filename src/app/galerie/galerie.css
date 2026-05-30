@@ -43,7 +43,8 @@
 
 /* Position spécifique par photo */
 .photo3 img { object-position: center 10%; }
-.photo4 img { object-position: center 75%;  }
+.photo4 img { object-position: center 60%;  }
+.photo6 img { object-position: center 30%; } /* ← ajoutez ceci */
 .galeriePagination {
   width: 100%;
   display: flex;
