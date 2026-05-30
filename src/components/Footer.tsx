@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="footerLeft">
         <span>© 2026, Wybob</span>
-        <a href="#">Mentions légales</a>
+        <a href="/mentions-legales">Mentions légales</a>
         <span>Réalisé par Oxmad-Digital</span>
       </div>
       <div className="footerRight">
