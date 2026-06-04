@@ -26,6 +26,11 @@ function VariantModal({ variant, onClose, onSave }) {
     setImageFile(file);
     setError(null);
 
+    if (file.size > 500 * 1024) {
+      setError(`Image trop lourde (${(file.size / 1024).toFixed(0)} Ko) — maximum 500 Ko. Compressez l'image avant de l'uploader.`);
+      return;
+    }
+
     const preset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     if (!preset) {
       setError("Variable NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET manquante — à ajouter dans Vercel.");

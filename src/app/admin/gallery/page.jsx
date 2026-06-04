@@ -146,6 +146,14 @@ export default function AdminGalleryPage() {
       return;
     }
 
+    const tooHeavy = files.filter(f => f.size > 500 * 1024);
+    if (tooHeavy.length > 0) {
+      const names = tooHeavy.map(f => `${f.name} (${(f.size / 1024).toFixed(0)} Ko)`).join(", ");
+      showToast(`Image${tooHeavy.length > 1 ? "s" : ""} trop lourde${tooHeavy.length > 1 ? "s" : ""} — max 500 Ko : ${names}`, "error");
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
+
     setUploading(true);
     let added = 0;
     for (const file of files) {
