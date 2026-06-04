@@ -303,6 +303,16 @@
 .fieldTextarea:focus        { border-color: #F9C464; background: #fff; }
 .fieldTextarea::placeholder { color: #a8a29e; }
 
+/* Color picker helper link */
+.colorPickerLink {
+  display: inline-block;
+  font-size: 12px;
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 500;
+}
+.colorPickerLink:hover { text-decoration: underline; }
+
 /* Color picker */
 .colorPickerRow {
   display: flex;

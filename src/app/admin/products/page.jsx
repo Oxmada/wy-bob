@@ -77,6 +77,17 @@ function VariantModal({ variant, onClose, onSave }) {
             />
           </div>
 
+          <div className={styles.fieldGroup}>
+            <a
+              href="https://imagecolorpicker.com"
+              target="_blank"
+              rel="noreferrer"
+              className={styles.colorPickerLink}
+            >
+              🎨 Trouver un code couleur (Image Color Picker)
+            </a>
+          </div>
+
           <div className={styles.fieldRow}>
             <div className={styles.fieldGroup}>
               <label className={styles.fieldLabel}>COULEUR DU BOB <span className={styles.required}>*</span></label>
