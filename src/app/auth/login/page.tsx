@@ -152,7 +152,7 @@ function LoginContent() {
                   <button
                     type="button"
                     onClick={() => setShowPwd(!showPwd)}
-                    aria-label={showPwd ? t.login.errors.fill : t.login.errors.fill}
+                    aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                   >
                     {showPwd ? <IconEyeOff /> : <IconEye />}
                   </button>

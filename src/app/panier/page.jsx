@@ -81,9 +81,9 @@ export default function Panier() {
                       <p>Cette maille est vraiment trop cool</p>
                       {item.color && <p>Couleur : {item.color}</p>}
                       <div className="qty-controls">
-                        <button onClick={() => decreaseQty(item._id)}>−</button>
+                        <button onClick={() => decreaseQty(item._id)} aria-label="Diminuer la quantité">−</button>
                         <span>{item.quantity}</span>
-                        <button onClick={() => increaseQty(item._id)}>+</button>
+                        <button onClick={() => increaseQty(item._id)} aria-label="Augmenter la quantité">+</button>
                       </div>
                     </div>
 
@@ -92,6 +92,7 @@ export default function Panier() {
                       <button
                         className="cart-remove"
                         onClick={() => removeFromCart(item._id)}
+                        aria-label="Retirer du panier"
                       >
                         🗑 Remove
                       </button>

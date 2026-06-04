@@ -66,7 +66,7 @@ function VariantModal({ variant, onClose, onSave }) {
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>{isEdit ? "Modifier la variante" : "Ajouter une variante"}</h2>
-          <button type="button" className={styles.modalClose} onClick={onClose}>✕</button>
+          <button type="button" className={styles.modalClose} onClick={onClose} aria-label="Fermer">✕</button>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.modalForm}>

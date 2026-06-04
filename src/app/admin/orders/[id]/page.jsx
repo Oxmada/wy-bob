@@ -166,7 +166,7 @@ export default function AdminOrderDetailPage() {
                 className={`od-status-btn ao-status-${s.value} ${order.status === s.value ? "od-status-current" : ""}`}
               >
                 {s.label}
-                {order.status === s.value && <span className="od-status-check">✓</span>}
+                {order.status === s.value && <span className="od-status-check" aria-hidden="true">✓</span>}
               </button>
             ))}
           </div>

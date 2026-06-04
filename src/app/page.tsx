@@ -195,9 +195,9 @@ export default function Home() {
 
           <div className="ctaRow">
           <div className="quantitySelector">
-            <button className="qtyBtn" onClick={() => setQuantity(q => Math.max(1, q - 1))}>−</button>
+            <button className="qtyBtn" onClick={() => setQuantity(q => Math.max(1, q - 1))} aria-label="Diminuer la quantité">−</button>
             <span className="qtyValue">{quantity}</span>
-            <button className="qtyBtn" onClick={() => setQuantity(q => q + 1)}>+</button>
+            <button className="qtyBtn" onClick={() => setQuantity(q => q + 1)} aria-label="Augmenter la quantité">+</button>
           </div>
           <button
             className="commanderBtn"

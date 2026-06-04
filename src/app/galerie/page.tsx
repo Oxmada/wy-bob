@@ -114,7 +114,7 @@ export default function Galerie() {
       {/* Lightbox */}
       {lightboxIndex !== null && (
         <div className="lightboxOverlay" onClick={closeLightbox}>
-          <button className="lightboxClose" onClick={closeLightbox}>×</button>
+          <button className="lightboxClose" onClick={closeLightbox} aria-label="Fermer la galerie">×</button>
           <button className="lightboxPrev" onClick={(e) => { e.stopPropagation(); goPrevLightbox() }}>
             <img src={`${CDN}/v1780172685/chevron_left_qr2oga.png`} alt={t.galerie.prev} width={24} height={24} />
           </button>

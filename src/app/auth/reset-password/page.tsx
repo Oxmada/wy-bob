@@ -107,7 +107,7 @@ function ResetPasswordForm() {
                     onChange={e => setPassword(e.target.value)}
                     required
                   />
-                  <button type="button" onClick={() => setShowPwd(!showPwd)}>
+                  <button type="button" onClick={() => setShowPwd(!showPwd)} aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}>
                     {showPwd ? "🙈" : "👁"}
                   </button>
                 </div>
@@ -124,7 +124,7 @@ function ResetPasswordForm() {
                     onChange={e => setConfirm(e.target.value)}
                     required
                   />
-                  <button type="button" onClick={() => setShowConfirm(!showConfirm)}>
+                  <button type="button" onClick={() => setShowConfirm(!showConfirm)} aria-label={showConfirm ? "Masquer le mot de passe" : "Afficher le mot de passe"}>
                     {showConfirm ? "🙈" : "👁"}
                   </button>
                 </div>

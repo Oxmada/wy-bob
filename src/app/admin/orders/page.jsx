@@ -237,7 +237,7 @@ export default function AdminOrdersPage() {
         <div className="ap-sort-wrap" ref={sortRef}>
           <button className="ap-sort-trigger" onClick={() => setSortOpen(o => !o)}>
             {SORT_OPTIONS.find(o => o.value === sort)?.label}
-            <span className={`ap-sort-trigger-arrow ${sortOpen ? "open" : ""}`}>▼</span>
+            <span className={`ap-sort-trigger-arrow ${sortOpen ? "open" : ""}`} aria-hidden="true">▼</span>
           </button>
           {sortOpen && (
             <ul className="ap-sort-dropdown">
@@ -248,13 +248,13 @@ export default function AdminOrdersPage() {
                   onClick={() => { setSort(o.value); setPage(1); setSortOpen(false); }}
                 >
                   {o.label}
-                  {sort === o.value && <span className="ap-sort-check">✓</span>}
+                  {sort === o.value && <span className="ap-sort-check" aria-hidden="true">✓</span>}
                 </li>
               ))}
             </ul>
           )}
         </div>
-        <button onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")} className="ap-sort-btn">
+        <button onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")} className="ap-sort-btn" aria-label={sortDir === "asc" ? "Trier par ordre décroissant" : "Trier par ordre croissant"}>
           {sortDir === "asc" ? "↑" : "↓"}
         </button>
 
@@ -359,7 +359,7 @@ export default function AdminOrdersPage() {
                     </td>
                     <td>
                       <div className="ap-actions">
-                        <Link href={`/admin/orders/${o._id}`} className="ap-btn-view" title="Voir le détail">↗</Link>
+                        <Link href={`/admin/orders/${o._id}`} className="ap-btn-view" aria-label="Voir le détail de la commande">↗</Link>
                         <button className="ap-btn-delete" onClick={() => deleteOrder(o._id)}>
                           Supprimer
                         </button>

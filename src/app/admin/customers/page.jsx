@@ -379,7 +379,7 @@ export default function CustomersPage() {
                     </td>
                     <td>
                       <div className="ap-actions">
-                        <Link href={`/admin/customers/${customer._id}`} className="ap-btn-view" title="Voir le profil">↗</Link>
+                        <Link href={`/admin/customers/${customer._id}`} className="ap-btn-view" aria-label="Voir le profil du client">↗</Link>
                         <button
                           className={customer.status === "active" ? "ap-btn-edit" : "ac-btn-unblock"}
                           onClick={() => toggleStatus(customer._id, customer.status)}

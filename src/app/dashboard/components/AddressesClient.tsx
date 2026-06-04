@@ -84,7 +84,7 @@ export default function AddressesClient({ initialAddresses }: { initialAddresses
                       className="db-delete-icon"
                       onClick={() => handleDelete(i)}
                       disabled={deleting === i}
-                      title="Supprimer"
+                      aria-label="Supprimer cette adresse"
                     >
                       {deleting === i ? "…" : "✕"}
                     </button>
@@ -110,7 +110,7 @@ export default function AddressesClient({ initialAddresses }: { initialAddresses
         <div className="db-modal-overlay" onClick={() => setShowModal(false)}>
           <div className="db-modal" onClick={(e) => e.stopPropagation()}>
 
-            <button className="db-modal-close" onClick={() => setShowModal(false)}>✕</button>
+            <button className="db-modal-close" onClick={() => setShowModal(false)} aria-label="Fermer">✕</button>
             <h3 className="db-modal-title">{a.modalTitle}</h3>
 
             <input

@@ -365,7 +365,7 @@ export default function CustomerDetailPage() {
                       <td><span className={`acd-order-badge ${s.cls}`}>{s.label}</span></td>
                       <td>
                         <div className="acd-actions">
-                          <Link href={`/admin/orders/${order._id}`} className="acd-btn-view" title="Voir la commande">↗</Link>
+                          <Link href={`/admin/orders/${order._id}`} className="acd-btn-view" aria-label="Voir le détail de la commande">↗</Link>
                           <button
                             className="acd-btn-ghost acd-btn-sm"
                             onClick={() => handleResendEmail(order._id)}
