@@ -98,7 +98,9 @@ export async function PATCH(req, { params }) {
     };
 
     const statusInfo = statusLabels[status];
-    const orderNumber = order._id.toString().slice(-8).toUpperCase();
+    const orderNumber = order.orderNumber
+      ? String(order.orderNumber).padStart(4, "0")
+      : order._id.toString().slice(-8).toUpperCase();
 
     const statusMessages = {
       pending: "Votre commande est en attente de traitement.",

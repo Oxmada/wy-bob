@@ -27,12 +27,14 @@ export async function GET(request) {
     const filter = {};
     if (status) filter.status = status;
     if (search) {
+      const numSearch = parseInt(search, 10);
       filter.$or = [
         { "customer.firstname": { $regex: search, $options: "i" } },
         { "customer.lastname":  { $regex: search, $options: "i" } },
         { "customer.email":     { $regex: search, $options: "i" } },
         { "customer.city":      { $regex: search, $options: "i" } },
         { "customer.phone":     { $regex: search, $options: "i" } },
+        ...(!isNaN(numSearch) ? [{ orderNumber: numSearch }] : []),
       ];
     }
 

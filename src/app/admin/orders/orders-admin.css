@@ -491,6 +491,27 @@
   white-space: nowrap;
 }
 
+/* Order number */
+.ao-order-number {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  background: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+/* Delivery */
+.ao-delivery {
+  font-size: 12px;
+  color: #57534e;
+  white-space: nowrap;
+}
+
 /* Payment badges */
 .ao-payment {
   display: inline-flex;

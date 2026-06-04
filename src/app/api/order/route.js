@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { auth } from "@/auth";
 import { connectDB } from "@/app/lib/db";
 import Order from "@/app/models/Order";
+import Counter from "@/app/models/Counter";
 import Product from "@/app/models/Product";
 import { sendEmail } from "@/app/lib/mailer";
 import Customer from "@/app/models/Customer";
@@ -64,7 +65,14 @@ export async function POST(req) {
       return NextResponse.json({ message: "Aucun produit valide dans le panier" }, { status: 400 });
     }
 
+    const counter = await Counter.findOneAndUpdate(
+      { _id: "orderNumber" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+
     const order = await Order.create({
+      orderNumber: counter.seq,
       userId: session?.user?.id ?? null,
       customer: {
         firstname,
@@ -81,7 +89,7 @@ export async function POST(req) {
       status: "pending",
     });
 
-    console.log("✅ Commande créée:", order._id);
+    console.log("✅ Commande créée:", order._id, "N°", order.orderNumber);
 
     const normalizedEmail = email.toLowerCase();
     let existingCustomer = await Customer.findOne({ email: normalizedEmail });
@@ -109,7 +117,7 @@ export async function POST(req) {
       });
     }
 
-    const orderNumber = order._id.toString().slice(-8).toUpperCase();
+    const orderNumber = String(order.orderNumber).padStart(4, "0");
     const orderDate = new Date().toLocaleDateString("fr-FR", {
       weekday: "long",
       year: "numeric",
@@ -184,7 +192,7 @@ export async function POST(req) {
             </div>
             <div style="background: linear-gradient(135deg, #059669, #047857); color: white; padding: 20px; border-radius: 8px; text-align: center;">
               <p style="margin: 0; font-size: 14px; opacity: 0.9;">TOTAL À PAYER</p>
-              <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold;">${Number(total).toLocaleString()} Ar</p>
+              <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold;">${Number(total).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</p>
             </div>
           </div>
           <div style="background: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
@@ -230,7 +238,7 @@ export async function POST(req) {
             </div>
             <div style="background: linear-gradient(135deg, #059669, #047857); color: white; padding: 20px; border-radius: 8px; text-align: center;">
               <p style="margin: 0; font-size: 14px; opacity: 0.9;">TOTAL</p>
-              <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold;">${Number(total).toLocaleString()} Ar</p>
+              <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold;">${Number(total).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</p>
             </div>
             <div style="margin-top: 30px; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
               <h3 style="margin: 0 0 10px 0; color: #1f2937;">❓ Une question ?</h3>
@@ -239,7 +247,7 @@ export async function POST(req) {
           </div>
           <div style="background: #1f2937; color: white; padding: 30px; text-align: center;">
             <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">Merci de votre confiance ! 🙏</p>
-            <p style="margin: 0; opacity: 0.7; font-size: 14px;">© ${new Date().getFullYear()} Walls Madagascar - Tous droits réservés</p>
+            <p style="margin: 0; opacity: 0.7; font-size: 14px;">© ${new Date().getFullYear()} WYBOB - Tous droits réservés</p>
           </div>
         </div>
       </body>

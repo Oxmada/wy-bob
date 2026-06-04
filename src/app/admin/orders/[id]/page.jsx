@@ -83,7 +83,9 @@ export default function AdminOrderDetailPage() {
   const c           = order.customer || {};
   const fullName    = [c.firstname, c.lastname].filter(Boolean).join(" ") || "—";
   const initials    = ((c.firstname?.[0] || "") + (c.lastname?.[0] || "")).toUpperCase() || "?";
-  const orderNumber = order._id.toString().slice(-8).toUpperCase();
+  const orderNumber = order.orderNumber
+    ? String(order.orderNumber).padStart(4, "0")
+    : order._id.toString().slice(-8).toUpperCase();
 
   return (
     <div className="od-page">

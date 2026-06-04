@@ -23,6 +23,14 @@ const PAYMENT_LABELS = {
   bank_transfer: "Virement",
 };
 
+const DELIVERY_LABELS = {
+  standard:  "Standard",
+  express:   "Express",
+  pickup:    "Retrait",
+  colissimo: "Colissimo",
+  relais:    "Point relais",
+};
+
 const STATUS_FILTERS = [
   { label: "Toutes",      value: ""           },
   { label: "En attente",  value: "pending"    },
@@ -150,14 +158,16 @@ export default function AdminOrdersPage() {
       const data = await res.json();
       if (!data.orders) return;
 
-      const headers = ["Prénom","Nom","Email","Téléphone","Adresse","Ville","Total (Ar)","Paiement","Statut","Date"];
+      const headers = ["N° Commande","Prénom","Nom","Email","Téléphone","Adresse","Ville","Total (€)","Paiement","Livraison","Statut","Date"];
       const rows = data.orders.map(o => {
         const c = o.customer || {};
         return [
+          o.orderNumber ? String(o.orderNumber).padStart(4, "0") : "",
           c.firstname || "", c.lastname || "", c.email || "",
           c.phone || "", c.address || "", c.city || "",
           o.total || 0,
           PAYMENT_LABELS[o.payment] || o.payment || "",
+          DELIVERY_LABELS[o.delivery] || o.delivery || "",
           STATUS_OPTIONS.find(s => s.value === o.status)?.label || o.status || "",
           o.createdAt ? new Date(o.createdAt).toLocaleDateString("fr-FR") : "",
         ].join(";");
@@ -212,7 +222,7 @@ export default function AdminOrdersPage() {
       <div className="ap-toolbar">
         <input
           type="text"
-          placeholder="Rechercher par nom, email, ville…"
+          placeholder="Rechercher par nom, email, ville, n° commande…"
           value={search}
           onChange={e => { setSearch(e.target.value); if (page !== 1) setPage(1); }}
           className="ap-search-input"
@@ -296,11 +306,13 @@ export default function AdminOrdersPage() {
           <table className="ap-table">
             <thead>
               <tr>
+                <th>#</th>
                 <th>Client</th>
                 <th>Contact</th>
                 <th>Localisation</th>
                 <th>Total</th>
                 <th>Paiement</th>
+                <th>Livraison</th>
                 <th>Statut</th>
                 <th>Date</th>
                 <th>Actions</th>
@@ -314,6 +326,11 @@ export default function AdminOrdersPage() {
 
                 return (
                   <tr key={o._id}>
+                    <td>
+                      <span className="ao-order-number">
+                        #{o.orderNumber ? String(o.orderNumber).padStart(4, "0") : "—"}
+                      </span>
+                    </td>
                     <td>
                       <div className="ao-client-cell">
                         <div className="ao-avatar">{initials}</div>
@@ -338,6 +355,11 @@ export default function AdminOrdersPage() {
                     <td>
                       <span className={`ao-payment ao-payment-${o.payment}`}>
                         {PAYMENT_LABELS[o.payment] || o.payment || "—"}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="ao-delivery">
+                        {DELIVERY_LABELS[o.delivery] || o.delivery || "—"}
                       </span>
                     </td>
                     <td>
