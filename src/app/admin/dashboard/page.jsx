@@ -5,7 +5,10 @@ export default function AdminDashboard() {
   return (
     <div className={styles.container}>
       <div className={styles.topbar}>
-        <h1 className={styles.title}>Dashboard Admin</h1>
+        <div>
+          <h1 className={styles.title}>Dashboard</h1>
+          <p className={styles.subtitle}>Bonjour, voici un résumé de votre activité.</p>
+        </div>
       </div>
       <DashboardStats />
     </div>
