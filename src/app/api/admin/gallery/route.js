@@ -33,3 +33,15 @@ export async function POST(request) {
   const photo = await GalleryPhoto.create({ url, publicId: publicId ?? null, order: count });
   return NextResponse.json({ success: true, photo: { _id: photo._id.toString(), url: photo.url } }, { status: 201 });
 }
+
+export async function PATCH(request) {
+  if (!(await requireAdmin())) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+  const { orderedIds } = await request.json();
+  if (!Array.isArray(orderedIds)) return NextResponse.json({ error: "orderedIds manquant" }, { status: 400 });
+
+  await connectDB();
+  await Promise.all(orderedIds.map((id, index) => GalleryPhoto.findByIdAndUpdate(id, { order: index })));
+  return NextResponse.json({ success: true });
+}

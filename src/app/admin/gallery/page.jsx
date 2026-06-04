@@ -1,18 +1,86 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import styles from "./gallery-admin.module.css";
 
 const CLOUD_NAME = "dnm9txjhm";
 
+/* ── Carte photo draggable ── */
+function SortablePhoto({ photo, index, onDelete }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: photo._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.35 : 1,
+    zIndex: isDragging ? 10 : "auto",
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className={styles.photoCard}>
+      {/* Poignée drag */}
+      <div className={styles.dragHandle} {...attributes} {...listeners} title="Déplacer">
+        <span className={styles.dragDots}>⠿</span>
+      </div>
+      <div className={styles.photoImgWrap}>
+        <img src={photo.url} alt={`Photo galerie ${index + 1}`} className={styles.photoImg} />
+      </div>
+      <div className={styles.photoActions}>
+        <button
+          className={styles.btnDelete}
+          onPointerDown={e => e.stopPropagation()}
+          onClick={() => onDelete(photo)}
+        >
+          Supprimer
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Page principale ── */
 export default function AdminGalleryPage() {
   const [photos,    setPhotos]    = useState([]);
   const [loading,   setLoading]   = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [saving,    setSaving]    = useState(false);
+  const [activeId,  setActiveId]  = useState(null);
   const [toast,     setToast]     = useState(null);
   const [confirm,   setConfirm]   = useState(null);
-  const fileRef = useRef(null);
+  const fileRef     = useRef(null);
+  const saveTimeout = useRef(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor,   { activationConstraint: { delay: 200, tolerance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   const showToast = (msg, type = "success") => {
     setToast({ msg, type });
@@ -32,6 +100,40 @@ export default function AdminGalleryPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  /* Sauvegarde de l'ordre (auto après drag, avec debounce) */
+  const saveOrder = useCallback(async (ordered) => {
+    if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    saveTimeout.current = setTimeout(async () => {
+      setSaving(true);
+      try {
+        await fetch("/api/admin/gallery", {
+          method:  "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderedIds: ordered.map(p => p._id) }),
+        });
+        showToast("Ordre sauvegardé");
+      } catch {
+        showToast("Erreur lors de la sauvegarde", "error");
+      } finally {
+        setSaving(false);
+      }
+    }, 600);
+  }, []);
+
+  const handleDragStart = ({ active }) => setActiveId(active.id);
+
+  const handleDragEnd = ({ active, over }) => {
+    setActiveId(null);
+    if (!over || active.id === over.id) return;
+    setPhotos(prev => {
+      const oldIndex = prev.findIndex(p => p._id === active.id);
+      const newIndex = prev.findIndex(p => p._id === over.id);
+      const reordered = arrayMove(prev, oldIndex, newIndex);
+      saveOrder(reordered);
+      return reordered;
+    });
   };
 
   const handleFiles = async (e) => {
@@ -94,6 +196,8 @@ export default function AdminGalleryPage() {
     });
   };
 
+  const activePhoto = photos.find(p => p._id === activeId);
+
   return (
     <div className={styles.page}>
 
@@ -126,6 +230,7 @@ export default function AdminGalleryPage() {
       <div className={styles.topbar}>
         <Link href="/admin/dashboard" className={styles.backBtn}>← Dashboard</Link>
         <h1 className={styles.topbarTitle}>Galerie photo</h1>
+        {saving && <span className={styles.savingBadge}>Sauvegarde…</span>}
       </div>
 
       {/* Upload */}
@@ -149,10 +254,13 @@ export default function AdminGalleryPage() {
         <p className={styles.uploadHint}>Formats acceptés : JPG, PNG, WebP — upload vers Cloudinary</p>
       </section>
 
-      {/* Photos grid */}
+      {/* Photos grid avec drag-and-drop */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Photos ({photos.length})</h2>
+          {photos.length > 1 && (
+            <p className={styles.dragHint}>Glissez les photos pour réorganiser</p>
+          )}
         </div>
 
         {loading ? (
@@ -160,20 +268,36 @@ export default function AdminGalleryPage() {
         ) : photos.length === 0 ? (
           <div className={styles.stateEmpty}>Aucune photo — ajoutez-en via le bouton ci-dessus.</div>
         ) : (
-          <div className={styles.photosGrid}>
-            {photos.map((photo, i) => (
-              <div key={photo._id} className={styles.photoCard}>
-                <div className={styles.photoImgWrap}>
-                  <img src={photo.url} alt={`Photo galerie ${i + 1}`} className={styles.photoImg} />
-                </div>
-                <div className={styles.photoActions}>
-                  <button className={styles.btnDelete} onClick={() => askDelete(photo)}>
-                    Supprimer
-                  </button>
-                </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={photos.map(p => p._id)} strategy={rectSortingStrategy}>
+              <div className={styles.photosGrid}>
+                {photos.map((photo, i) => (
+                  <SortablePhoto
+                    key={photo._id}
+                    photo={photo}
+                    index={i}
+                    onDelete={askDelete}
+                  />
+                ))}
               </div>
-            ))}
-          </div>
+            </SortableContext>
+
+            {/* Aperçu flottant pendant le drag */}
+            <DragOverlay>
+              {activePhoto && (
+                <div className={`${styles.photoCard} ${styles.photoCardDragging}`}>
+                  <div className={styles.photoImgWrap}>
+                    <img src={activePhoto.url} alt="" className={styles.photoImg} />
+                  </div>
+                </div>
+              )}
+            </DragOverlay>
+          </DndContext>
         )}
       </section>
 
