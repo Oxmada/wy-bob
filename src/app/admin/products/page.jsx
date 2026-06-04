@@ -27,7 +27,10 @@ function VariantModal({ variant, onClose, onSave }) {
     setError(null);
 
     const preset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-    if (!preset) return;
+    if (!preset) {
+      setError("Variable NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET manquante — à ajouter dans Vercel.");
+      return;
+    }
 
     setUploading(true);
     try {
