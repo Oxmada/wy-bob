@@ -9,47 +9,61 @@ import './galerie.css'
 
 const CDN = 'https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto'
 
-const pages = [
-  [
-    `${CDN}/v1780486486/wybob_portrait_femme_maillot_noir_chapeau_crochet_blanc_zygujw.jpg`,
-    `${CDN}/v1780486485/wybob_portrait_serre_deux_femmes_chapeaux_bikinis_iwlc3v.jpg`,
-    `${CDN}/v1780486485/wybob_portrait_femme_souriante_maillot_noir_main_chapeau_eodlwd.jpg`,
-    `${CDN}/v1780486484/wybob_deux_femmes_maillots_bikinis_chapeaux_rouges_noirs_kpt1lu.jpg`,
-    `${CDN}/v1780486485/wybob_femme_maillot_noir_touche_bois_flotte_v9i1og.jpg`,
-    `${CDN}/v1780486484/wybob_deux_femmes_face_sous_hangar_bois_turquoise_exmm9y.jpg`,
-  ],
-  [
-    `${CDN}/v1780486485/wybob_trois_femmes_allongees_pont_chapeaux_crochet_rerozt.jpg`,
-    `${CDN}/v1780486485/wybob_portrait_deux_femmes_de_bout_sous_hangar_by5fse.jpg`,
-    `${CDN}/v1780486484/wybob_portrait_serre_face_deux_femmes_chapeaux_Arrow_oupr9y.jpg`,
-  ],
+const FALLBACK_IMAGES = [
+  `${CDN}/v1780486486/wybob_portrait_femme_maillot_noir_chapeau_crochet_blanc_zygujw.jpg`,
+  `${CDN}/v1780486485/wybob_portrait_serre_deux_femmes_chapeaux_bikinis_iwlc3v.jpg`,
+  `${CDN}/v1780486485/wybob_portrait_femme_souriante_maillot_noir_main_chapeau_eodlwd.jpg`,
+  `${CDN}/v1780486484/wybob_deux_femmes_maillots_bikinis_chapeaux_rouges_noirs_kpt1lu.jpg`,
+  `${CDN}/v1780486485/wybob_femme_maillot_noir_touche_bois_flotte_v9i1og.jpg`,
+  `${CDN}/v1780486484/wybob_deux_femmes_face_sous_hangar_bois_turquoise_exmm9y.jpg`,
+  `${CDN}/v1780486485/wybob_trois_femmes_allongees_pont_chapeaux_crochet_rerozt.jpg`,
+  `${CDN}/v1780486485/wybob_portrait_deux_femmes_de_bout_sous_hangar_by5fse.jpg`,
+  `${CDN}/v1780486484/wybob_portrait_serre_face_deux_femmes_chapeaux_Arrow_oupr9y.jpg`,
 ]
 
+function chunk<T>(arr: T[], size: number): T[][] {
+  const out: T[][] = []
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
+  return out
+}
+
 export default function Galerie() {
-  const [currentPage, setCurrentPage] = useState(0)
+  const [allImages,     setAllImages]     = useState<string[]>([])
+  const [currentPage,   setCurrentPage]   = useState(0)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const { t } = useLanguage()
 
-  const images = pages[currentPage]
+  useEffect(() => {
+    fetch('/api/gallery')
+      .then(r => r.json())
+      .then(data => {
+        const urls: string[] = (data.photos ?? []).map((p: { url: string }) => p.url)
+        setAllImages(urls.length ? urls : FALLBACK_IMAGES)
+      })
+      .catch(() => setAllImages(FALLBACK_IMAGES))
+  }, [])
+
+  const pages  = chunk(allImages, 6)
+  const images = pages[currentPage] ?? []
 
   const openLightbox = (index: number) => setLightboxIndex(index)
-  const closeLightbox = useCallback(() => setLightboxIndex(null), [])
-  const goPrevLightbox = useCallback(() => setLightboxIndex(i => i !== null ? (i - 1 + images.length) % images.length : null), [images])
-  const goNextLightbox = useCallback(() => setLightboxIndex(i => i !== null ? (i + 1) % images.length : null), [images])
+  const closeLightbox   = useCallback(() => setLightboxIndex(null), [])
+  const goPrevLightbox  = useCallback(() => setLightboxIndex(i => i !== null ? (i - 1 + images.length) % images.length : null), [images])
+  const goNextLightbox  = useCallback(() => setLightboxIndex(i => i !== null ? (i + 1) % images.length : null), [images])
 
   useEffect(() => {
     if (lightboxIndex === null) return
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeLightbox()
-      else if (e.key === 'ArrowLeft') goPrevLightbox()
+      if (e.key === 'Escape')      closeLightbox()
+      else if (e.key === 'ArrowLeft')  goPrevLightbox()
       else if (e.key === 'ArrowRight') goNextLightbox()
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [lightboxIndex, closeLightbox, goPrevLightbox, goNextLightbox])
 
-  const goNext = () => setCurrentPage((p) => (p + 1) % pages.length)
-  const goPrev = () => setCurrentPage((p) => (p - 1 + pages.length) % pages.length)
+  const goNext = () => setCurrentPage(p => (p + 1) % Math.max(pages.length, 1))
+  const goPrev = () => setCurrentPage(p => (p - 1 + Math.max(pages.length, 1)) % Math.max(pages.length, 1))
 
   return (
     <div className="container">

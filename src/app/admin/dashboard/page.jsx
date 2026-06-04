@@ -12,6 +12,7 @@ export default function AdminDashboard() {
         <a href="/admin/products" className={styles.card}>Produits & Stock</a>
         <a href="/admin/customers" className={styles.card}>Utilisateurs</a>
         <a href="/admin/orders" className={styles.card}>Commandes</a>
+        <a href="/admin/gallery" className={styles.card}>Galerie photo</a>
       </div>
 
       <DashboardStats />
