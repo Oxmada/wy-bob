@@ -39,7 +39,7 @@ export default function DashboardHeader({ showLogout = false }: { showLogout?: b
         {showLogout && (
           <button
             className="db-header-logout"
-            onClick={() => signOut({ callbackUrl: '/auth/login' })}
+            onClick={() => signOut({ callbackUrl: window.location.origin + '/auth/login' })}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>

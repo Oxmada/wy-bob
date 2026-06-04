@@ -94,7 +94,7 @@ export default function Sidebar({ user }) {
             </svg>
             <span>{locale === 'fr' ? 'EN' : 'FR'}</span>
           </button>
-          <button onClick={() => signOut({ callbackUrl: "/" })} className="logout-btn">
+          <button onClick={() => signOut({ callbackUrl: window.location.origin + "/" })} className="logout-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
               <polyline points="16 17 21 12 16 7"/>
@@ -127,7 +127,7 @@ export default function Sidebar({ user }) {
           </span>
           <span>{locale === 'fr' ? 'EN' : 'FR'}</span>
         </button>
-        <button className="bottom-nav-item" onClick={() => signOut({ callbackUrl: "/" })}>
+        <button className="bottom-nav-item" onClick={() => signOut({ callbackUrl: window.location.origin + "/" })}>
           <span className="bottom-nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>

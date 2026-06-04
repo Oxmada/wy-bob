@@ -89,7 +89,7 @@ export default function Navbar() {
                   <Link href="/dashboard" onClick={() => setProfileOpen(false)}>
                     {t.nav.dashboard}
                   </Link>
-                  <button onClick={() => { setProfileOpen(false); signOut({ callbackUrl: '/' }) }}>
+                  <button onClick={() => { setProfileOpen(false); signOut({ callbackUrl: window.location.origin + '/' }) }}>
                     {t.nav.logout}
                   </button>
                 </>
@@ -147,7 +147,7 @@ export default function Navbar() {
               <Link href="/dashboard" className="mobileLink" onClick={() => setMenuOpen(false)}>
                 {t.nav.dashboard}
               </Link>
-              <button className="mobileLink" onClick={() => { setMenuOpen(false); signOut({ callbackUrl: '/' }) }}>
+              <button className="mobileLink" onClick={() => { setMenuOpen(false); signOut({ callbackUrl: window.location.origin + '/' }) }}>
                 {t.nav.logout}
               </button>
             </>
