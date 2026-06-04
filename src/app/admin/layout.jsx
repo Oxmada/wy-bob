@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import DashboardHeader from "@/app/dashboard/components/DashboardHeader";
 import DashboardFooter from "@/app/dashboard/components/DashboardFooter";
+import AdminSidebar from "./components/AdminSidebar";
 import "@/app/dashboard/dashboard.css";
 import "./admin.css";
 
@@ -13,9 +14,12 @@ export default async function AdminLayout({ children }) {
   return (
     <div className="admin-root">
       <DashboardHeader showLogout />
-      <main className="admin-main">
-        {children}
-      </main>
+      <div className="admin-body">
+        <AdminSidebar />
+        <main className="admin-main">
+          {children}
+        </main>
+      </div>
       <DashboardFooter />
     </div>
   );

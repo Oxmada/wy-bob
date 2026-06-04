@@ -1,0 +1,75 @@
+/* =============================================
+   Admin — Sidebar
+   Palette : #F9C464 | #1B1843 | #f5f5f4
+   ============================================= */
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: #1B1843;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav {
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.section {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  margin: 16px 8px 6px;
+  padding: 0;
+}
+
+.section:first-child {
+  margin-top: 4px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+  cursor: pointer;
+}
+
+.link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.link.active {
+  background: rgba(249, 196, 100, 0.15);
+  color: #F9C464;
+  font-weight: 600;
+}
+
+.externalIcon {
+  font-size: 11px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* ── Responsive : hidden on mobile ── */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
