@@ -2,34 +2,55 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/app/lib/db";
 import Customer from "@/app/models/Customer";
 import Order from "@/app/models/Order";
+import User from "@/app/models/User";
 
 // GET - Détails d'un client
 export async function GET(req, { params }) {
   try {
     await connectDB();
 
-    // ✅ Correction Next.js 15 : On attend que params soit résolu
     const resolvedParams = await params;
     const id = resolvedParams.id;
 
-    console.log("Recherche du client avec l'ID:", id);
+    let customer = await Customer.findById(id);
 
-    const customer = await Customer.findById(id);
-
+    // Fallback : l'id peut être un User._id (utilisateurs sans fiche Customer)
     if (!customer) {
-      console.log("❌ Client non trouvé en base de données");
-      return NextResponse.json(
-        { success: false, message: "Client non trouvé dans la base" },
-        { status: 404 }
-      );
+      const user = await User.findById(id);
+      if (!user) {
+        return NextResponse.json(
+          { success: false, message: "Client non trouvé dans la base" },
+          { status: 404 }
+        );
+      }
+
+      const nameParts = (user.name || "").trim().split(" ");
+      const orders = await Order.find({ "customer.email": user.email })
+        .sort({ createdAt: -1 })
+        .populate("products.product");
+
+      const pseudoCustomer = {
+        _id: user._id,
+        firstname: nameParts[0] || "",
+        lastname: nameParts.slice(1).join(" ") || "",
+        email: user.email,
+        phone: user.phone || "",
+        city: user.address?.city || "",
+        address: user.address?.street || "",
+        status: "active",
+        totalOrders: orders.length,
+        totalSpent: orders.reduce((sum, o) => sum + (o.total || 0), 0),
+        lastOrderAt: orders[0]?.createdAt || null,
+        createdAt: user.createdAt,
+      };
+
+      return NextResponse.json({ success: true, customer: pseudoCustomer, orders });
     }
 
     // Récupérer les commandes du client par son email
     const orders = await Order.find({ "customer.email": customer.email })
       .sort({ createdAt: -1 })
       .populate("products.product");
-
-    console.log(`✅ Client trouvé : ${customer.firstname} - ${orders.length} commande(s)`);
 
     return NextResponse.json({
       success: true,
@@ -51,19 +72,41 @@ export async function PUT(req, { params }) {
   try {
     await connectDB();
 
-    const { id } = await params; // ✅ Correction ici aussi
+    const { id } = await params;
     const body = await req.json();
 
-    const customer = await Customer.findByIdAndUpdate(
+    let customer = await Customer.findByIdAndUpdate(
       id,
       { $set: body },
       { new: true, runValidators: true }
     );
 
+    // Fallback : l'id est un User._id → créer la fiche Customer
     if (!customer) {
-      return NextResponse.json(
-        { success: false, message: "Client non trouvé" },
-        { status: 404 }
+      const user = await User.findById(id);
+      if (!user) {
+        return NextResponse.json(
+          { success: false, message: "Client non trouvé" },
+          { status: 404 }
+        );
+      }
+
+      const nameParts = (user.name || "").trim().split(" ");
+      customer = await Customer.findOneAndUpdate(
+        { email: user.email },
+        {
+          $set: {
+            firstname: body.firstname || nameParts[0] || "",
+            lastname:  body.lastname  || nameParts.slice(1).join(" ") || "",
+            email:     user.email,
+            phone:     body.phone    ?? user.phone ?? "",
+            city:      body.city     ?? user.address?.city ?? "",
+            address:   body.address  ?? user.address?.street ?? "",
+            notes:     body.notes    ?? "",
+            status:    body.status   ?? "active",
+          },
+        },
+        { upsert: true, new: true, runValidators: true }
       );
     }
 
@@ -92,13 +135,23 @@ export async function DELETE(req, { params }) {
     const { searchParams } = new URL(req.url);
     const action = searchParams.get("action");
 
-    const customer = await Customer.findById(id);
+    let customer = await Customer.findById(id);
 
+    // Fallback : l'id est un User._id
     if (!customer) {
-      return NextResponse.json(
-        { success: false, message: "Client non trouvé" },
-        { status: 404 }
-      );
+      const user = await User.findById(id);
+      if (!user) {
+        return NextResponse.json(
+          { success: false, message: "Client non trouvé" },
+          { status: 404 }
+        );
+      }
+      customer = await Customer.findOne({ email: user.email });
+      if (!customer) {
+        // Utilisateur sans fiche Customer et sans commandes → suppression directe du User
+        await User.findByIdAndDelete(id);
+        return NextResponse.json({ success: true, message: "Utilisateur supprimé", action: "deleted" });
+      }
     }
 
     const ordersCount = await Order.countDocuments({
