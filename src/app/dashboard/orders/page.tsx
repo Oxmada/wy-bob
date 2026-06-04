@@ -28,9 +28,9 @@ export default async function OrdersPage() {
     payment: o.payment ?? null,
     products: o.products ?? [],
     customer: o.customer ? {
-      address: o.customer.address ?? null,
-      city: o.customer.city ?? null,
-    } : null,
+      address: o.customer.address ?? undefined,
+      city: o.customer.city ?? undefined,
+    } : undefined,
   }));
 
   return <OrdersListClient orders={orders} />;
