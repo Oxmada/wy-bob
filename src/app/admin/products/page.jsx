@@ -1,34 +1,167 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import styles from "./products.module.css";
-import AddProductModal from "./AddProductModal";
 
-const LOW_STOCK_THRESHOLD = 3;
+const CLOUD_NAME = "dnm9txjhm";
 
-const STATUS_FILTERS = [
-  { label: "Tous",        value: "all" },
-  { label: "Stock faible", value: "low" },
-  { label: "Rupture",     value: "out" },
-];
+/* ── Modal ajout / édition d'une variante ── */
+function VariantModal({ variant, onClose, onSave }) {
+  const isEdit = Boolean(variant?._id);
+  const [form, setForm] = useState({
+    colorName: variant?.colorName ?? "",
+    colorCode: variant?.colorCode ?? "#000000",
+    textColor: variant?.textColor ?? "#ffffff",
+    image:     variant?.image     ?? "",
+  });
+  const [imageFile,  setImageFile]  = useState(null);
+  const [uploading,  setUploading]  = useState(false);
+  const [error,      setError]      = useState(null);
+  const fileRef = useRef(null);
 
+  const handleFile = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    setError(null);
+
+    const preset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+    if (!preset) return;
+
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file",          file);
+      fd.append("upload_preset", preset);
+      fd.append("folder",        "products");
+      const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.secure_url) setForm(f => ({ ...f, image: data.secure_url }));
+      else setError(`Upload échoué : ${data.error?.message ?? "erreur inconnue"}`);
+    } catch {
+      setError("Erreur lors de l'upload");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.colorName.trim()) return setError("Le nom de la couleur est requis");
+    if (!form.colorCode)        return setError("Le code couleur est requis");
+    onSave({ ...variant, ...form });
+  };
+
+  return (
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitle}>{isEdit ? "Modifier la variante" : "Ajouter une variante"}</h2>
+          <button type="button" className={styles.modalClose} onClick={onClose}>✕</button>
+        </div>
+
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
+
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>NOM DE LA COULEUR <span className={styles.required}>*</span></label>
+            <input
+              type="text"
+              placeholder="Ex : Bleu"
+              value={form.colorName}
+              onChange={e => setForm(f => ({ ...f, colorName: e.target.value }))}
+              className={styles.fieldInput}
+            />
+          </div>
+
+          <div className={styles.fieldRow}>
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel}>COULEUR DU BOB <span className={styles.required}>*</span></label>
+              <div className={styles.colorPickerRow}>
+                <input
+                  type="color"
+                  value={form.colorCode}
+                  onChange={e => setForm(f => ({ ...f, colorCode: e.target.value }))}
+                  className={styles.colorPickerInput}
+                />
+                <input
+                  type="text"
+                  value={form.colorCode}
+                  onChange={e => setForm(f => ({ ...f, colorCode: e.target.value }))}
+                  className={styles.fieldInput}
+                  placeholder="#000000"
+                  maxLength={7}
+                />
+              </div>
+            </div>
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel}>COULEUR TEXTE BOUTON</label>
+              <div className={styles.colorPickerRow}>
+                <input
+                  type="color"
+                  value={form.textColor}
+                  onChange={e => setForm(f => ({ ...f, textColor: e.target.value }))}
+                  className={styles.colorPickerInput}
+                />
+                <input
+                  type="text"
+                  value={form.textColor}
+                  onChange={e => setForm(f => ({ ...f, textColor: e.target.value }))}
+                  className={styles.fieldInput}
+                  placeholder="#ffffff"
+                  maxLength={7}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>PHOTO DU BOB</label>
+            <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className={styles.fileInput} />
+            {form.image && !imageFile && (
+              <p className={styles.uploadStatus}>Image actuelle : <a href={form.image} target="_blank" rel="noreferrer">voir</a></p>
+            )}
+            <p className={styles.uploadStatus}>
+              {uploading ? "Upload en cours…" : imageFile ? `${form.image ? "✅ Uploadée" : "En attente…"}` : ""}
+            </p>
+          </div>
+
+          {/* Aperçu bouton commander */}
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>APERÇU BOUTON</label>
+            <button
+              type="button"
+              className={styles.previewBtn}
+              style={{ backgroundColor: form.colorCode, color: form.textColor }}
+            >
+              Commander
+            </button>
+          </div>
+
+          {error && <p className={styles.errorMsg}>{error}</p>}
+
+          <div className={styles.modalActions}>
+            <button type="submit" className={styles.btnSubmit} disabled={uploading}>
+              {uploading ? "Upload…" : isEdit ? "Enregistrer" : "Ajouter"}
+            </button>
+            <button type="button" className={styles.btnCancelModal} onClick={onClose}>Annuler</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ── Page principale ── */
 export default function AdminProductsPage() {
-  const [products,       setProducts]       = useState([]);
-  const [loading,        setLoading]        = useState(true);
-  const [search,         setSearch]         = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter,   setStatusFilter]   = useState("all");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [sort,           setSort]           = useState("createdAt");
-  const [sortDir,        setSortDir]        = useState("desc");
-  const [stats,          setStats]          = useState({ total: 0, lowStock: 0, outOfStock: 0 });
-  const [categories,     setCategories]     = useState([]);
-  const [busy,           setBusy]           = useState({});
-  const [toast,          setToast]          = useState(null);
-  const [confirmModal,   setConfirmModal]   = useState(null);
-  const [exporting,      setExporting]      = useState(false);
-  const [showAddModal,   setShowAddModal]   = useState(false);
+  const [product,       setProduct]       = useState(null);
+  const [loading,       setLoading]       = useState(true);
+  const [saving,        setSaving]        = useState(false);
+  const [toast,         setToast]         = useState(null);
+  const [confirmModal,  setConfirmModal]  = useState(null);
+  const [variantModal,  setVariantModal]  = useState(null); // null | { variant } | { variant: null } pour ajout
+
+  const [fields, setFields] = useState({ name: "", price: "", pricePromo: "", stock: "" });
 
   const showToast = (msg, type = "success") => {
     setToast({ message: msg, type });
@@ -38,32 +171,21 @@ export default function AdminProductsPage() {
   const askConfirm = (message, onConfirm, confirmLabel = "Confirmer") =>
     setConfirmModal({ message, onConfirm, confirmLabel });
 
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search), 400);
-    return () => clearTimeout(t);
-  }, [search]);
+  useEffect(() => { loadProduct(); }, []);
 
-  useEffect(() => {
-    loadProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, statusFilter, sort, sortDir]);
-
-  const loadProducts = async () => {
+  const loadProduct = async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
-      if (debouncedSearch) params.append("search", debouncedSearch);
-      if (statusFilter !== "all") params.append("status", statusFilter);
-      params.append("sort",  sort);
-      params.append("order", sortDir);
-
-      const res  = await fetch(`/api/admin/products?${params}`);
+      const res  = await fetch("/api/admin/products");
       const data = await res.json();
-      if (data.success) {
-        setProducts(data.products);
-        setStats(data.stats);
-        const cats = [...new Set(data.products.map(p => p.color).filter(Boolean))];
-        setCategories(cats);
+      if (data.success && data.product) {
+        setProduct(data.product);
+        setFields({
+          name:       data.product.name,
+          price:      String(data.product.price),
+          pricePromo: data.product.pricePromo ? String(data.product.pricePromo) : "",
+          stock:      String(data.product.stock),
+        });
       }
     } catch (err) {
       console.error(err);
@@ -72,115 +194,108 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleSort = (field) => {
-    if (sort === field) setSortDir(d => d === "desc" ? "asc" : "desc");
-    else { setSort(field); setSortDir("desc"); }
-  };
-
-  const toggleVisible = async (id, current) => {
-    setBusy(b => ({ ...b, [id]: true }));
+  const saveFields = async () => {
+    if (!product) return;
+    setSaving(true);
     try {
-      const res = await fetch(`/api/admin/products/${id}`, {
-        method: "PATCH",
+      const res = await fetch(`/api/admin/products/${product._id}`, {
+        method:  "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ visible: !current }),
+        body: JSON.stringify({
+          name:       fields.name.trim(),
+          price:      Number(fields.price),
+          pricePromo: fields.pricePromo ? Number(fields.pricePromo) : null,
+          stock:      Number(fields.stock),
+        }),
       });
-      if (res.ok) {
-        setProducts(prev => prev.map(p => p._id === id ? { ...p, visible: !current } : p));
+      const data = await res.json();
+      if (data.success) {
+        setProduct(data.product);
+        showToast("Produit mis à jour");
+      } else {
+        showToast("Erreur lors de la sauvegarde", "error");
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      showToast("Erreur serveur", "error");
     } finally {
-      setBusy(b => ({ ...b, [id]: false }));
+      setSaving(false);
     }
   };
 
-  const deleteProduct = (id, name) => {
+  const toggleVisible = async () => {
+    if (!product) return;
+    const res = await fetch(`/api/admin/products/${product._id}`, {
+      method:  "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visible: !product.visible }),
+    });
+    const data = await res.json();
+    if (data.success) setProduct(data.product);
+  };
+
+  const saveVariants = async (variants) => {
+    if (!product) return;
+    const res = await fetch(`/api/admin/products/${product._id}`, {
+      method:  "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ variants }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      setProduct(data.product);
+      return true;
+    }
+    return false;
+  };
+
+  const handleVariantSave = async (saved) => {
+    if (!product) return;
+    let updated;
+    if (saved._id) {
+      updated = product.variants.map(v => v._id === saved._id ? saved : v);
+    } else {
+      updated = [...product.variants, saved];
+    }
+    const ok = await saveVariants(updated);
+    if (ok) {
+      showToast(saved._id ? "Variante mise à jour" : "Variante ajoutée");
+      setVariantModal(null);
+    } else {
+      showToast("Erreur lors de la sauvegarde", "error");
+    }
+  };
+
+  const handleVariantDelete = (variantId, colorName) => {
     askConfirm(
-      `Supprimer le produit "${name}" définitivement ?`,
+      `Supprimer la variante "${colorName}" ?`,
       async () => {
-        try {
-          const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
-          if (res.ok) {
-            setProducts(prev => prev.filter(p => p._id !== id));
-            setStats(prev => ({ ...prev, total: prev.total - 1 }));
-            showToast("Produit supprimé");
-          } else {
-            showToast("Erreur lors de la suppression", "error");
-          }
-        } catch {
-          showToast("Erreur lors de la suppression", "error");
-        }
+        const updated = product.variants.filter(v => v._id !== variantId);
+        const ok = await saveVariants(updated);
+        if (ok) showToast("Variante supprimée");
+        else    showToast("Erreur lors de la suppression", "error");
       },
       "Supprimer"
     );
   };
 
-  const exportCSV = async () => {
-    setExporting(true);
-    try {
-      const res  = await fetch("/api/admin/products?sort=createdAt&order=desc");
-      const data = await res.json();
-      if (!data.success) return;
-
-      const headers = ["Nom", "Catégorie", "Prix (€)", "Stock", "Visible", "Ajouté le"];
-      const rows = data.products.map(p => [
-        p.name,
-        p.color || "—",
-        p.price,
-        p.stock,
-        p.visible ? "Oui" : "Non",
-        new Date(p.createdAt).toLocaleDateString("fr-FR"),
-      ].join(";"));
-
-      const csv  = [headers.join(";"), ...rows].join("\n");
-      const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement("a");
-      a.href     = url;
-      a.download = `produits_${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const visibleProducts = categoryFilter === "all"
-    ? products
-    : products.filter(p => p.color === categoryFilter);
-
-  const handleProductAdded = (newProduct) => {
-    setProducts(prev => [newProduct, ...prev]);
-    setStats(prev => ({ ...prev, total: prev.total + 1 }));
-    showToast("Produit ajouté avec succès");
-  };
-
-  const getStatus = (stock) => {
-    if (stock === 0) return { label: "Rupture",      cls: styles.statusOut };
-    if (stock <= LOW_STOCK_THRESHOLD) return { label: "Stock faible", cls: styles.statusLow };
-    return { label: "Disponible", cls: styles.statusOk };
-  };
-
   return (
     <div className={styles.page}>
 
-      {/* Modal ajout produit */}
-      {showAddModal && (
-        <AddProductModal
-          onClose={() => setShowAddModal(false)}
-          onSuccess={handleProductAdded}
+      {/* Modals */}
+      {variantModal && (
+        <VariantModal
+          variant={variantModal.variant}
+          onClose={() => setVariantModal(null)}
+          onSave={handleVariantSave}
         />
       )}
 
-      {/* Toast */}
       {toast && (
         <div className={`${styles.toast} ${toast.type === "error" ? styles.toastError : styles.toastSuccess}`}>
           {toast.message}
         </div>
       )}
 
-      {/* Modal confirmation */}
       {confirmModal && (
         <div className={styles.confirmOverlay} onClick={() => setConfirmModal(null)}>
           <div className={styles.confirmDialog} onClick={e => e.stopPropagation()}>
@@ -201,215 +316,149 @@ export default function AdminProductsPage() {
       {/* Topbar */}
       <div className={styles.topbar}>
         <Link href="/admin/dashboard" className={styles.backBtn}>← Dashboard</Link>
-        <h1 className={styles.topbarTitle}>Produits &amp; Stock</h1>
-        <button className={styles.btnExport} onClick={exportCSV} disabled={exporting}>
-          {exporting ? "Export…" : "↓ Export CSV"}
-        </button>
-        <button className={styles.btnAdd} onClick={() => setShowAddModal(true)}>
-          + Ajouter un produit
-        </button>
+        <h1 className={styles.topbarTitle}>Fiche produit</h1>
       </div>
 
-      {/* Toolbar */}
-      <div className={styles.toolbar}>
-        <input
-          type="text"
-          placeholder="Rechercher un produit…"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className={styles.searchInput}
-        />
-        <div className={styles.divider} />
-        <select
-          value={categoryFilter}
-          onChange={e => setCategoryFilter(e.target.value)}
-          className={styles.categorySelect}
-        >
-          <option value="all">Toutes catégories</option>
-          {categories.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
-        <div className={styles.divider} />
-        <div className={styles.filters}>
-          {STATUS_FILTERS.map(f => (
-            <button
-              key={f.value}
-              onClick={() => setStatusFilter(f.value)}
-              className={`${styles.filterBtn} ${statusFilter === f.value ? styles.filterBtnActive : ""}`}
-            >
-              {f.label}
-            </button>
-          ))}
+      {loading ? (
+        <div className={styles.stateEmpty}>
+          <span className={styles.stateIcon}>⏳</span>
+          Chargement…
         </div>
-        <div className={styles.divider} />
-        <button
-          className={`${styles.sortBtn} ${sort === "createdAt" ? styles.sortBtnActive : ""}`}
-          onClick={() => handleSort("createdAt")}
-        >
-          Date création {sort === "createdAt" ? (sortDir === "desc" ? "▼" : "▲") : ""}
-        </button>
-        <button className={styles.sortDirBtn} onClick={() => setSortDir(d => d === "desc" ? "asc" : "desc")}>
-          {sortDir === "desc" ? "↓" : "↑"}
-        </button>
-        <div className={styles.divider} />
-        <div className={styles.statsInline}>
-          <div className={styles.statChip}>
-            <span className={styles.statValue}>{stats.total}</span>
-            <span className={styles.statLabel}>TOTAL</span>
-          </div>
-          <div className={styles.statSep} />
-          <div className={styles.statChip}>
-            <span className={`${styles.statValue} ${styles.statLow}`}>{stats.lowStock}</span>
-            <span className={styles.statLabel}>FAIBLE</span>
-          </div>
-          <div className={styles.statSep} />
-          <div className={styles.statChip}>
-            <span className={`${styles.statValue} ${styles.statOut}`}>{stats.outOfStock}</span>
-            <span className={styles.statLabel}>RUPTURE</span>
-          </div>
+      ) : !product ? (
+        <div className={styles.stateEmpty}>
+          <span className={styles.stateIcon}>📦</span>
+          Aucun produit trouvé
         </div>
-      </div>
+      ) : (
+        <>
+          {/* ── Infos générales ── */}
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Informations générales</h2>
+              <div className={styles.visibleRow}>
+                <span className={styles.visibleLabel}>Visible sur le site</span>
+                <button
+                  className={`${styles.toggleBtn} ${product.visible ? styles.toggleOn : styles.toggleOff}`}
+                  onClick={toggleVisible}
+                  aria-label={product.visible ? "Masquer" : "Afficher"}
+                >
+                  <span className={styles.toggleThumb} />
+                </button>
+              </div>
+            </div>
 
-      {/* Table */}
-      <div className={styles.tableWrap}>
-        {loading ? (
-          <div className={styles.stateEmpty}>
-            <span className={styles.stateIcon}>⏳</span>
-            Chargement…
-          </div>
-        ) : visibleProducts.length === 0 ? (
-          <div className={styles.stateEmpty}>
-            <span className={styles.stateIcon}>📦</span>
-            Aucun produit trouvé
-          </div>
-        ) : (
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>PRODUIT</th>
-                <th>CATÉGORIE</th>
-                <th>PRIX</th>
-                <th>STOCK</th>
-                <th>STATUT</th>
-                <th>VISIBLE</th>
-                <th>AJOUTÉ LE</th>
-                <th>ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleProducts.map(product => {
-                const status  = getStatus(product.stock);
-                const isBusy  = busy[product._id];
-                return (
-                  <tr key={product._id}>
+            <div className={styles.fieldsGrid}>
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>NOM DU PRODUIT</label>
+                <input
+                  type="text"
+                  value={fields.name}
+                  onChange={e => setFields(f => ({ ...f, name: e.target.value }))}
+                  className={styles.fieldInput}
+                />
+              </div>
 
-                    {/* Produit */}
-                    <td>
-                      <div className={styles.productCell}>
-                        <div className={styles.productImgWrap}>
-                          {product.image ? (
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className={styles.productImg}
-                            />
-                          ) : (
-                            <div className={styles.productImgPlaceholder} />
-                          )}
-                        </div>
-                        <span className={styles.productName}>{product.name}</span>
-                      </div>
-                    </td>
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>STOCK</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={fields.stock}
+                  onChange={e => setFields(f => ({ ...f, stock: e.target.value }))}
+                  className={styles.fieldInput}
+                />
+              </div>
 
-                    {/* Catégorie */}
-                    <td>
-                      {product.color
-                        ? <span className={styles.categoryBadge}>{product.color}</span>
-                        : <span className={styles.emptyCell}>—</span>
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>PRIX (€)</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={fields.price}
+                  onChange={e => setFields(f => ({ ...f, price: e.target.value }))}
+                  className={styles.fieldInput}
+                />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>PRIX PROMO (€) — optionnel</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  placeholder="Laisser vide si aucune promo"
+                  value={fields.pricePromo}
+                  onChange={e => setFields(f => ({ ...f, pricePromo: e.target.value }))}
+                  className={styles.fieldInput}
+                />
+              </div>
+            </div>
+
+            <div className={styles.sectionActions}>
+              <button className={styles.btnSave} onClick={saveFields} disabled={saving}>
+                {saving ? "Enregistrement…" : "Enregistrer"}
+              </button>
+            </div>
+          </section>
+
+          {/* ── Variantes couleur ── */}
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Variantes de couleur</h2>
+              <button
+                className={styles.btnAdd}
+                onClick={() => setVariantModal({ variant: null })}
+              >
+                + Ajouter une couleur
+              </button>
+            </div>
+
+            {product.variants.length === 0 ? (
+              <p className={styles.emptyVariants}>Aucune variante — ajoutez des couleurs.</p>
+            ) : (
+              <div className={styles.variantsGrid}>
+                {product.variants.map(v => (
+                  <div key={v._id} className={styles.variantCard}>
+                    <div className={styles.variantImgWrap}>
+                      {v.image
+                        ? <img src={v.image} alt={v.colorName} className={styles.variantImg} />
+                        : <div className={styles.variantImgPlaceholder} style={{ backgroundColor: v.colorCode }} />
                       }
-                    </td>
-
-                    {/* Prix */}
-                    <td>
-                      <span className={styles.priceCell}>
-                        {product.price.toLocaleString("fr-FR")} €
-                      </span>
-                    </td>
-
-                    {/* Stock */}
-                    <td>
-                      <div className={styles.stockSizes}>
-                        <span className={styles.sizeBadge} title="Total stock">
-                          <span className={styles.sizeLabel}>Qté</span>
-                          <span className={styles.sizeQty}>{product.stock}</span>
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Statut */}
-                    <td>
-                      <span className={`${styles.statusBadge} ${status.cls}`}>
-                        {status.label}
-                      </span>
-                    </td>
-
-                    {/* Visible */}
-                    <td>
+                    </div>
+                    <div className={styles.variantInfo}>
+                      <span className={styles.variantName}>{v.colorName}</span>
+                      <div className={styles.variantSwatch} style={{ backgroundColor: v.colorCode }} title={v.colorCode} />
+                    </div>
+                    <div className={styles.previewBtnWrap}>
                       <button
-                        className={`${styles.toggleBtn} ${product.visible ? styles.toggleOn : styles.toggleOff}`}
-                        onClick={() => toggleVisible(product._id, product.visible)}
-                        disabled={isBusy}
-                        aria-label={product.visible ? "Masquer" : "Afficher"}
+                        className={styles.previewBtnSmall}
+                        style={{ backgroundColor: v.colorCode, color: v.textColor }}
                       >
-                        <span className={styles.toggleThumb} />
+                        Commander
                       </button>
-                    </td>
-
-                    {/* Date */}
-                    <td>
-                      <span className={styles.dateCell}>
-                        {new Date(product.createdAt).toLocaleDateString("fr-FR", {
-                          day:   "2-digit",
-                          month: "short",
-                          year:  "numeric",
-                        })}
-                      </span>
-                    </td>
-
-                    {/* Actions */}
-                    <td>
-                      <div className={styles.actions}>
-                        <Link
-                          href={`/admin/products/${product._id}`}
-                          className={styles.btnView}
-                          title="Voir"
-                        >
-                          ↗
-                        </Link>
-                        <Link
-                          href={`/admin/products/${product._id}/edit`}
-                          className={styles.btnEdit}
-                        >
-                          Modifier
-                        </Link>
-                        <button
-                          className={styles.btnDelete}
-                          onClick={() => deleteProduct(product._id, product.name)}
-                        >
-                          Supprimer
-                        </button>
-                      </div>
-                    </td>
-
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
-
+                    </div>
+                    <div className={styles.variantActions}>
+                      <button
+                        className={styles.btnEdit}
+                        onClick={() => setVariantModal({ variant: v })}
+                      >
+                        Modifier
+                      </button>
+                      <button
+                        className={styles.btnDelete}
+                        onClick={() => handleVariantDelete(v._id, v.colorName)}
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </>
+      )}
     </div>
   );
 }

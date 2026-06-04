@@ -8,31 +8,58 @@ import { useCart } from '@/components/panier-context'
 import { useLanguage } from '@/contexts/LanguageContext'
 import './page.css'
 
-const productColors = [
-  { id: 1, key: 'Blue',   code: "#1B2D5E", textColor: "#ffffff", image: "/images/wybob_bleu.webp"  },
-  { id: 2, key: 'White',  code: "#f5f5f0", textColor: "#1B1843", image: "/images/wybob_blanc.webp" },
-  { id: 3, key: 'Yellow', code: "#e6a817", textColor: "#1B1843", image: "/images/wybob_jaune.webp" },
-  { id: 4, key: 'Red',    code: "#c0392b", textColor: "#ffffff", image: "/images/wybob_rouge.webp" },
+interface Variant {
+  _id: string
+  colorName: string
+  colorCode: string
+  textColor: string
+  image: string
+}
+
+interface ProductData {
+  _id: string
+  name: string
+  price: number
+  pricePromo: number | null
+  stock: number
+  visible: boolean
+  variants: Variant[]
+}
+
+const FALLBACK_VARIANTS: Variant[] = [
+  { _id: '1', colorName: 'Bleu',  colorCode: '#1B2D5E', textColor: '#ffffff', image: '/images/wybob_bleu.webp'  },
+  { _id: '2', colorName: 'Blanc', colorCode: '#f5f5f0', textColor: '#1B1843', image: '/images/wybob_blanc.webp' },
+  { _id: '3', colorName: 'Jaune', colorCode: '#e6a817', textColor: '#1B1843', image: '/images/wybob_jaune.webp' },
+  { _id: '4', colorName: 'Rouge', colorCode: '#c0392b', textColor: '#ffffff', image: '/images/wybob_rouge.webp' },
 ]
 
-const productName = "WYBOB Essentials"
-const productPrice = 85
-const productRating = 4.8
+const productRating  = 4.8
 const productReviews = 12
 
 export default function Home() {
-  const [selectedColor, setSelectedColor] = useState(productColors[0].id)
-  const [hatImage, setHatImage] = useState(productColors[0].image)
-  const [selectedColorKey, setSelectedColorKey] = useState<'Blue'|'White'|'Yellow'|'Red'>(productColors[0].key as 'Blue')
-  const [selectedColorCode, setSelectedColorCode] = useState(productColors[0].code)
-  const [selectedTextColor, setSelectedTextColor] = useState(productColors[0].textColor)
-  const [openSection, setOpenSection] = useState<string | null>(null)
-  const [quantity, setQuantity] = useState(1)
-  const [isFading, setIsFading] = useState(false)
+  const [product,           setProduct]           = useState<ProductData | null>(null)
+  const [selectedVariant,   setSelectedVariant]   = useState<Variant>(FALLBACK_VARIANTS[0])
+  const [openSection,       setOpenSection]       = useState<string | null>(null)
+  const [quantity,          setQuantity]          = useState(1)
+  const [isFading,          setIsFading]          = useState(false)
   const { addToCart } = useCart()
   const { t } = useLanguage()
   const router = useRouter()
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    fetch('/api/product')
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.product) {
+          setProduct(data.product)
+          if (data.product.variants?.length > 0) {
+            setSelectedVariant(data.product.variants[0])
+          }
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const el = scrollRef.current
@@ -40,30 +67,29 @@ export default function Home() {
     el.style.maxHeight = el.getBoundingClientRect().height + 'px'
   }, [])
 
+  const variants = product?.variants?.length ? product.variants : FALLBACK_VARIANTS
+  const productName  = product?.name  ?? 'WYBOB Essentials'
+  const productPrice = product?.pricePromo ?? product?.price ?? 85
+
   const toggleSection = (section: string) => {
     setOpenSection(prev => prev === section ? null : section)
   }
 
-  const handleColorChange = (id: number, image: string, key: string, code: string, textColor: string) => {
+  const handleVariantChange = (variant: Variant) => {
     setIsFading(true)
     setTimeout(() => {
-      setSelectedColor(id)
-      setHatImage(image)
-      setSelectedColorKey(key as 'Blue'|'White'|'Yellow'|'Red')
-      setSelectedColorCode(code)
-      setSelectedTextColor(textColor)
+      setSelectedVariant(variant)
       setIsFading(false)
     }, 150)
   }
 
   const handleCommander = () => {
-    const colorName = t.home.colors[selectedColorKey]
     addToCart({
-      _id: 'wybob-' + selectedColorKey,
-      name: productName,
+      _id:   'wybob-' + selectedVariant._id,
+      name:  productName,
       price: productPrice,
-      image: hatImage,
-      color: colorName,
+      image: selectedVariant.image,
+      color: selectedVariant.colorName,
     }, quantity)
     router.push('/panier')
   }
@@ -77,7 +103,7 @@ export default function Home() {
         {/* GAUCHE — image */}
         <div className="imageCol">
           <img
-            src={hatImage}
+            src={selectedVariant.image}
             alt="Chapeau WYBOB"
             className={`hatImage${isFading ? ' fading' : ''}`}
           />
@@ -97,7 +123,16 @@ export default function Home() {
           </div>
 
           {/* Prix */}
-          <p className="priceTag">{productPrice}€</p>
+          <div className="priceRow">
+            {product?.pricePromo ? (
+              <>
+                <p className="priceTag">{product.pricePromo}€</p>
+                <p className="priceOriginal">{product.price}€</p>
+              </>
+            ) : (
+              <p className="priceTag">{product?.price ?? 85}€</p>
+            )}
+          </div>
 
           {/* Description */}
           <div className="productFeature" onClick={() => toggleSection('description')}>
@@ -112,21 +147,21 @@ export default function Home() {
 
           {/* Couleur */}
           <div className="productFeature" onClick={() => toggleSection('color')}>
-            <span>{t.home.colorLabel} <span className="colorNameInline">{t.home.colors[selectedColorKey]}</span></span>
+            <span>{t.home.colorLabel} <span className="colorNameInline">{selectedVariant.colorName}</span></span>
             <span className={`featureToggle ${openSection === 'color' ? 'open' : ''}`}>+</span>
           </div>
           {openSection === 'color' && (
             <div className="swatches">
-              {productColors.map((color) => (
+              {variants.map((v) => (
                 <button
-                  key={color.id}
-                  className={`swatchDot ${selectedColor === color.id ? 'active' : ''}`}
-                  onClick={(e) => { e.stopPropagation(); handleColorChange(color.id, color.image, color.key, color.code, color.textColor); }}
-                  aria-label={t.home.colors[color.key as 'Blue'|'White'|'Yellow'|'Red']}
+                  key={v._id}
+                  className={`swatchDot ${selectedVariant._id === v._id ? 'active' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); handleVariantChange(v) }}
+                  aria-label={v.colorName}
                   style={{
-                    backgroundColor: color.code,
-                    boxShadow: selectedColor === color.id
-                      ? `0 0 0 1.5px rgba(255,255,255,0.9), 0 0 0 3.5px ${color.code}`
+                    backgroundColor: v.colorCode,
+                    boxShadow: selectedVariant._id === v._id
+                      ? `0 0 0 1.5px rgba(255,255,255,0.9), 0 0 0 3.5px ${v.colorCode}`
                       : '0 2px 6px rgba(0,0,0,0.18)'
                   }}
                 />
@@ -167,12 +202,11 @@ export default function Home() {
           <button
             className="commanderBtn"
             onClick={handleCommander}
-            style={{ backgroundColor: selectedColorCode, color: selectedTextColor }}
+            style={{ backgroundColor: selectedVariant.colorCode, color: selectedVariant.textColor }}
           >{t.home.order}</button>
           </div>
 
         </div>
-
         </div>
 
       </div>
