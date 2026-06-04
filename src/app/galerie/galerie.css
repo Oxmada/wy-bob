@@ -88,22 +88,18 @@
   background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* ===== GRILLE 2×2 ===== */
+/* ===== GRILLE 3×2 ===== */
 .galerieGrid {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   align-content: center;
   overflow: hidden;
 }
 
 .galerieGridSolo {
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  max-width: 50%;
-  margin: 0 auto;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .galeriePhoto {
@@ -303,7 +299,7 @@
   }
 
   .galerieGrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     overflow: visible;
   }
 
