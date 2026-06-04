@@ -14,7 +14,6 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || "";
-    const vip    = searchParams.get("vip") || "";
     const sort   = searchParams.get("sort") || "createdAt";
     const order  = searchParams.get("order") || "desc";
     const page   = parseInt(searchParams.get("page")) || 1;
@@ -71,10 +70,6 @@ export async function GET(req) {
     if (status) {
       filtered = filtered.filter(c => c.status === status);
     }
-    if (vip === "true") {
-      filtered = filtered.filter(c => (c.totalSpent || 0) >= 50000);
-    }
-
     // Tri
     const dir = order === "desc" ? -1 : 1;
     filtered.sort((a, b) => {

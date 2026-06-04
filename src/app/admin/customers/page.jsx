@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import "./customers.css";
 
-const VIP_THRESHOLD = 50_000;
 const PER_PAGE = 25;
 
 export default function CustomersPage() {
@@ -50,8 +49,7 @@ export default function CustomersPage() {
       setLoading(true);
       const params = new URLSearchParams();
       if (debouncedSearch) params.append("search", debouncedSearch);
-      if (statusFilter === "vip") params.append("vip", "true");
-      else if (statusFilter && statusFilter !== "all") params.append("status", statusFilter);
+      if (statusFilter && statusFilter !== "all") params.append("status", statusFilter);
       params.append("sort", sort);
       params.append("order", sortDir);
       params.append("page", page);
@@ -90,8 +88,7 @@ export default function CustomersPage() {
     try {
       const params = new URLSearchParams();
       if (debouncedSearch) params.append("search", debouncedSearch);
-      if (statusFilter === "vip") params.append("vip", "true");
-      else if (statusFilter && statusFilter !== "all") params.append("status", statusFilter);
+      if (statusFilter && statusFilter !== "all") params.append("status", statusFilter);
       params.append("sort", sort);
       params.append("order", sortDir);
       params.append("limit", "9999");
@@ -197,7 +194,6 @@ export default function CustomersPage() {
     { label: "Tous",    value: "all"     },
     { label: "Actifs",  value: "active"  },
     { label: "Bloqués", value: "blocked" },
-    { label: "⭐ VIP",  value: "vip"     },
   ];
 
   // Page numbers with ellipsis
@@ -264,7 +260,7 @@ export default function CustomersPage() {
             <button
               key={f.value}
               onClick={() => handleFilter(f.value)}
-              className={`ap-filter-btn ${statusFilter === f.value ? "active" : ""} ${f.value === "vip" ? "ac-filter-vip" : ""}`}
+              className={`ap-filter-btn ${statusFilter === f.value ? "active" : ""}`}
             >
               {f.label}
             </button>
@@ -332,9 +328,6 @@ export default function CustomersPage() {
                             </span>
                             {customer.role === "admin" && (
                               <span className="ac-admin-badge">ADMIN</span>
-                            )}
-                            {customer.role !== "admin" && (customer.totalSpent || 0) >= VIP_THRESHOLD && (
-                              <span className="ac-vip-badge">VIP</span>
                             )}
                           </div>
                           <span className="ac-customer-date">

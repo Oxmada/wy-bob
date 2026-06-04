@@ -5,8 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import "./customer-detail.css";
 
-const VIP_THRESHOLD = 50_000;
-
 const ORDER_STATUS = {
   pending:    { label: "En attente",  cls: "s-pending"    },
   confirmed:  { label: "Confirmée",   cls: "s-confirmed"  },
@@ -172,7 +170,6 @@ export default function CustomerDetailPage() {
   );
 
   const isAnonymized = customer.status === "deleted";
-  const isVip        = (customer.totalSpent || 0) >= VIP_THRESHOLD;
   const initials     = `${customer.firstname?.charAt(0) || ""}${customer.lastname?.charAt(0) || ""}`;
 
   return (
@@ -209,7 +206,6 @@ export default function CustomerDetailPage() {
           <div className="acd-profile-info">
             <div className="acd-name-row">
               <span className="acd-fullname">{customer.firstname} {customer.lastname}</span>
-              {isVip && <span className="acd-vip">VIP</span>}
               <span className={`acd-status-badge ${customer.status === "active" ? "ok" : customer.status === "blocked" ? "blocked" : "anon"}`}>
                 {customer.status === "active" ? "Actif" : customer.status === "blocked" ? "Bloqué" : "Anonymisé"}
               </span>
