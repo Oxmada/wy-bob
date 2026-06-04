@@ -236,7 +236,10 @@ export default function CustomersPage() {
       {/* Topbar */}
       <div className="ap-topbar">
         <Link href="/admin/dashboard" className="ap-back-btn">← Dashboard</Link>
-        <h1 className="ap-topbar-title">Utilisateurs</h1>
+        <div className="ap-topbar-title-group">
+          <h1 className="ap-topbar-title">Clients</h1>
+          <p className="ap-topbar-subtitle">Gérez vos clients et leur historique d'achats</p>
+        </div>
         <button className="ac-btn-export" onClick={exportCSV} disabled={exporting}>
           {exporting ? "Export…" : "↓ Export CSV"}
         </button>

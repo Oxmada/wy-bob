@@ -23,6 +23,8 @@ const OrderSchema = new mongoose.Schema(
       },
     ],
     total: Number,
+    promoCode: { type: String, default: null },
+    promoDiscount: { type: Number, default: 0 },
     payment: {
       type: String,
       enum: ["cash", "mobile_money", "card", "bank_transfer"],

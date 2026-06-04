@@ -7,6 +7,7 @@ import { connectDB } from "@/app/lib/db";
 import Order from "@/app/models/Order";
 import Counter from "@/app/models/Counter";
 import Product from "@/app/models/Product";
+import PromoCode from "@/app/models/PromoCode";
 import { sendEmail } from "@/app/lib/mailer";
 import Customer from "@/app/models/Customer";
 
@@ -20,7 +21,7 @@ export async function POST(req) {
 
     const body = await req.json();
     // 'total' is intentionally NOT destructured from body — it is calculated server-side below
-    const { customer, cartItems, payment, delivery } = body;
+    const { customer, cartItems, payment, delivery, promoCode, promoDiscount } = body;
 
     if (!customer) {
       return NextResponse.json({ message: "Client manquant" }, { status: 400 });
@@ -71,6 +72,21 @@ export async function POST(req) {
       { new: true, upsert: true }
     );
 
+    // Apply promo discount — re-validate server-side for safety
+    let appliedDiscount = 0;
+    let validatedPromoCode = null;
+    if (promoCode) {
+      const promo = await PromoCode.findOne({ code: promoCode.toUpperCase().trim(), active: true });
+      if (promo && (!promo.expiresAt || new Date(promo.expiresAt) >= new Date()) && (promo.maxUses === null || promo.usedCount < promo.maxUses)) {
+        appliedDiscount = promo.type === "percent"
+          ? Math.round(total * (promo.value / 100) * 100) / 100
+          : Math.min(promo.value, total);
+        validatedPromoCode = promo.code;
+        await PromoCode.findByIdAndUpdate(promo._id, { $inc: { usedCount: 1 } });
+      }
+    }
+    const finalTotal = Math.max(0, Math.round((total - appliedDiscount) * 100) / 100);
+
     const order = await Order.create({
       orderNumber: counter.seq,
       userId: session?.user?.id ?? null,
@@ -83,7 +99,9 @@ export async function POST(req) {
         address,
       },
       products,
-      total,
+      total: finalTotal,
+      promoCode: validatedPromoCode,
+      promoDiscount: appliedDiscount,
       payment: payment || "cash",
       delivery: delivery || "colissimo",
       status: "pending",
@@ -96,7 +114,7 @@ export async function POST(req) {
 
     if (existingCustomer) {
       existingCustomer.totalOrders += 1;
-      existingCustomer.totalSpent += total;
+      existingCustomer.totalSpent += finalTotal;
       existingCustomer.lastOrderAt = new Date();
       if (!existingCustomer.phone && phone) existingCustomer.phone = phone;
       if (!existingCustomer.city && city) existingCustomer.city = city;
@@ -111,7 +129,7 @@ export async function POST(req) {
         city: city || "",
         address: address || "",
         totalOrders: 1,
-        totalSpent: total,
+        totalSpent: finalTotal,
         lastOrderAt: new Date(),
         status: "active",
       });
@@ -192,7 +210,8 @@ export async function POST(req) {
             </div>
             <div style="background: linear-gradient(135deg, #059669, #047857); color: white; padding: 20px; border-radius: 8px; text-align: center;">
               <p style="margin: 0; font-size: 14px; opacity: 0.9;">TOTAL À PAYER</p>
-              <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold;">${Number(total).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</p>
+              <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold;">${Number(finalTotal).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</p>
+              ${validatedPromoCode ? `<p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.85;">Code promo : ${validatedPromoCode} (−${Number(appliedDiscount).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €)</p>` : ""}
             </div>
           </div>
           <div style="background: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
@@ -238,7 +257,8 @@ export async function POST(req) {
             </div>
             <div style="background: linear-gradient(135deg, #059669, #047857); color: white; padding: 20px; border-radius: 8px; text-align: center;">
               <p style="margin: 0; font-size: 14px; opacity: 0.9;">TOTAL</p>
-              <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold;">${Number(total).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</p>
+              <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold;">${Number(finalTotal).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</p>
+              ${validatedPromoCode ? `<p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.85;">Code promo : ${validatedPromoCode} (−${Number(appliedDiscount).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €)</p>` : ""}
             </div>
             <div style="margin-top: 30px; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
               <h3 style="margin: 0 0 10px 0; color: #1f2937;">❓ Une question ?</h3>

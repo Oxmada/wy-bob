@@ -9,10 +9,14 @@ import "../page.css";
 import "./panier.css";
 
 export default function Panier() {
-  const { cartItems, removeFromCart, increaseQty, decreaseQty, cartTotal } = useCart();
+  const { cartItems, removeFromCart, increaseQty, decreaseQty, cartTotal, appliedPromo, setAppliedPromo, finalTotal } = useCart();
   const router = useRouter();
   const rightRef = useRef(null);
   const [leftHeight, setLeftHeight] = useState(null);
+
+  const [promoInput, setPromoInput] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState("");
 
   useEffect(() => {
     if (!rightRef.current) return;
@@ -24,6 +28,37 @@ export default function Panier() {
     observer.observe(rightRef.current);
     return () => observer.disconnect();
   }, []);
+
+  const handleApplyPromo = async () => {
+    if (!promoInput.trim()) return;
+    setPromoError("");
+    setPromoLoading(true);
+    try {
+      const res = await fetch("/api/promo/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: promoInput.trim(), cartTotal }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPromoError(data.message || "Code invalide");
+        setAppliedPromo(null);
+        return;
+      }
+      setAppliedPromo({ code: data.promo.code, type: data.promo.type, value: data.promo.value, discount: data.discount });
+      setPromoInput("");
+    } catch {
+      setPromoError("Erreur lors de la vérification");
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoInput("");
+    setPromoError("");
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -110,14 +145,37 @@ export default function Panier() {
             <div className="cart-promo">
               <h3 className="cart-section-title">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+                  <line x1="7" y1="7" x2="7.01" y2="7" />
                 </svg>
                 Code promo
               </h3>
-              <div className="promo-input-row">
-                <input type="text" placeholder="Entre ton code promo" />
-                <button>Appliquer</button>
-              </div>
+
+              {appliedPromo ? (
+                <div className="promo-applied">
+                  <span className="promo-applied-code">{appliedPromo.code}</span>
+                  <span className="promo-applied-discount">
+                    -{appliedPromo.type === "percent" ? `${appliedPromo.value}%` : `${appliedPromo.value}€`}
+                  </span>
+                  <button className="promo-remove-btn" onClick={handleRemovePromo} aria-label="Retirer le code">✕</button>
+                </div>
+              ) : (
+                <>
+                  <div className="promo-input-row">
+                    <input
+                      type="text"
+                      placeholder="Entre ton code promo"
+                      value={promoInput}
+                      onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError(""); }}
+                      onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
+                    />
+                    <button onClick={handleApplyPromo} disabled={promoLoading || !promoInput.trim()}>
+                      {promoLoading ? "..." : "Appliquer"}
+                    </button>
+                  </div>
+                  {promoError && <p className="promo-error">{promoError}</p>}
+                </>
+              )}
             </div>
 
             <div className="cart-summary">
@@ -126,10 +184,16 @@ export default function Panier() {
                 <span>Sous-total ({cartItems.length})</span>
                 <span>{cartTotal}€</span>
               </div>
+              {appliedPromo && (
+                <div className="summary-row summary-discount">
+                  <span>Réduction ({appliedPromo.code})</span>
+                  <span>−{appliedPromo.discount}€</span>
+                </div>
+              )}
               <hr className="summary-divider" />
               <div className="summary-row summary-total">
                 <span>Total</span>
-                <span>{cartTotal}€</span>
+                <span>{finalTotal}€</span>
               </div>
               <button
                 className="checkout-btn"

@@ -12,7 +12,7 @@ export default function CheckoutForm({ total }: { total: number }) {
   const elements = useElements();
   const router = useRouter();
   const { data: session } = useSession();
-  const { cartItems, cartTotal } = useCart();
+  const { cartItems, cartTotal, appliedPromo, finalTotal, setAppliedPromo } = useCart();
 
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
@@ -27,7 +27,7 @@ export default function CheckoutForm({ total }: { total: number }) {
   const [loading, setLoading] = useState(false);
 
   const TVA_RATE = 0.20;
-  const tva = Math.round(cartTotal * TVA_RATE);
+  const tva = Math.round(finalTotal * TVA_RATE);
   const livraison = 25;
   const totalQty = cartItems.reduce((acc, i) => acc + i.quantity, 0);
 
@@ -61,6 +61,7 @@ export default function CheckoutForm({ total }: { total: number }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         cartItems: cartItems.map((i: any) => ({ _id: i._id, quantity: i.quantity })),
+        promoCode: appliedPromo?.code ?? null,
       }),
     });
     if (!res.ok) {
@@ -91,9 +92,11 @@ export default function CheckoutForm({ total }: { total: number }) {
       body: JSON.stringify({
         customer: { firstname, lastname, email, phone, company, city, address, postalCode, country },
         cartItems,
-        total: cartTotal,
+        total: finalTotal,
         payment: "card",
         delivery: shipping,
+        promoCode: appliedPromo?.code ?? null,
+        promoDiscount: appliedPromo?.discount ?? 0,
       }),
     });
 
@@ -103,6 +106,7 @@ export default function CheckoutForm({ total }: { total: number }) {
       return;
     }
 
+    setAppliedPromo(null);
     alert("✅ Commande confirmée !");
     localStorage.removeItem("cart");
     router.push("/");
@@ -188,6 +192,12 @@ export default function CheckoutForm({ total }: { total: number }) {
               <span>Sous-total ({totalQty})</span>
               <span>{cartTotal} Ar</span>
             </div>
+            {appliedPromo && (
+              <div className="checkout-summary-row checkout-summary-discount">
+                <span>Réduction ({appliedPromo.code})</span>
+                <span>−{appliedPromo.discount} Ar</span>
+              </div>
+            )}
             <div className="checkout-summary-row">
               <span>TVA (20%)</span>
               <span>{tva} Ar</span>

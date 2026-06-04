@@ -212,7 +212,10 @@ export default function AdminOrdersPage() {
       {/* Topbar */}
       <div className="ap-topbar">
         <Link href="/admin/dashboard" className="ap-back-btn">← Dashboard</Link>
-        <h1 className="ap-topbar-title">Commandes</h1>
+        <div className="ap-topbar-title-group">
+          <h1 className="ap-topbar-title">Commandes</h1>
+          <p className="ap-topbar-subtitle">Suivez et gérez toutes les commandes</p>
+        </div>
         <button className="ac-btn-export" onClick={exportCSV} disabled={exporting}>
           {exporting ? "Export…" : "↓ Export CSV"}
         </button>

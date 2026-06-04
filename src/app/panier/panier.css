@@ -146,6 +146,13 @@
 .promo-input-row input:focus { border-color: #1B1843; }
 .promo-input-row button { height: 40px; padding: 0 14px; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.15); border-radius: 10px; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; flex-shrink: 0; margin-right: 2px; }
 .promo-input-row button:hover { background: rgba(255,255,255,0.8); }
+.promo-input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+.promo-error { font-size: 12px; color: #e53935; margin: 6px 0 0; }
+.promo-applied { display: flex; align-items: center; gap: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 8px 12px; }
+.promo-applied-code { flex: 1; font-size: 13px; font-weight: 700; color: #166534; letter-spacing: 1px; }
+.promo-applied-discount { font-size: 13px; font-weight: 600; color: #166534; }
+.promo-remove-btn { background: none; border: none; color: #6b7280; font-size: 14px; cursor: pointer; padding: 0 2px; line-height: 1; }
+.promo-remove-btn:hover { color: #e53935; }
 
 /* RÉSUMÉ */
 .cart-summary {
@@ -164,6 +171,7 @@
     0 4px 30px rgba(0, 0, 0, 0.1);
 }
 .summary-row { display: flex; justify-content: space-between; font-size: 14px; color: #1B1843; margin-bottom: 12px; }
+.summary-discount { color: #16a34a; font-weight: 600; }
 .summary-divider { border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 8px 0 12px 0; }
 .summary-total { font-size: 15px; font-weight: 700; }
 

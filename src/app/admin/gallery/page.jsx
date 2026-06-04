@@ -237,7 +237,10 @@ export default function AdminGalleryPage() {
       {/* Topbar */}
       <div className={styles.topbar}>
         <Link href="/admin/dashboard" className={styles.backBtn}>← Dashboard</Link>
-        <h1 className={styles.topbarTitle}>Galerie photo</h1>
+        <div className={styles.topbarTitleGroup}>
+          <h1 className={styles.topbarTitle}>Galerie photo</h1>
+          <p className={styles.topbarSubtitle}>Gérez les photos affichées sur le site</p>
+        </div>
         {saving && <span className={styles.savingBadge}>Sauvegarde…</span>}
       </div>
 

@@ -21,6 +21,13 @@ interface PanierItem {
   quantity: number;
 }
 
+interface AppliedPromo {
+  code: string;
+  type: "percent" | "fixed";
+  value: number;
+  discount: number;
+}
+
 interface PanierContextType {
   cartItems: PanierItem[];
   addToCart: (product: Omit<PanierItem, 'quantity'>, qty?: number) => void;
@@ -28,6 +35,9 @@ interface PanierContextType {
   decreaseQty: (id: string) => void;
   removeFromCart: (id: string) => void;
   cartTotal: number;
+  appliedPromo: AppliedPromo | null;
+  setAppliedPromo: (promo: AppliedPromo | null) => void;
+  finalTotal: number;
 }
 
 /* ===========================
@@ -40,6 +50,7 @@ const PanierContext = createContext<PanierContextType | undefined>(undefined);
    =========================== */
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<PanierItem[]>([]);
+  const [appliedPromo, setAppliedPromo] = useState<AppliedPromo | null>(null);
 
   /* 🔄 Charger depuis localStorage */
   useEffect(() => {
@@ -71,6 +82,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...product, quantity: qty }];
     });
+    // Reset promo when cart changes
+    setAppliedPromo(null);
   };
 
   /* ➕ Augmenter quantité */
@@ -82,6 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           : item
       )
     );
+    setAppliedPromo(null);
   };
 
   /* ➖ Diminuer quantité */
@@ -95,18 +109,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
         )
         .filter((item) => item.quantity > 0)
     );
+    setAppliedPromo(null);
   };
 
   /* ❌ Supprimer */
   const removeFromCart = (id: string) => {
     setCartItems((prev) => prev.filter((item) => item._id !== id));
+    setAppliedPromo(null);
   };
 
-  /* 💰 Total */
+  /* 💰 Sous-total */
   const cartTotal = cartItems.reduce((total, item) => {
     const price = Number(item.promoPrice ?? item.price);
     return total + price * item.quantity;
   }, 0);
+
+  /* 💰 Total après réduction promo */
+  const finalTotal = appliedPromo
+    ? Math.max(0, Math.round((cartTotal - appliedPromo.discount) * 100) / 100)
+    : cartTotal;
 
   return (
     <PanierContext.Provider
@@ -117,6 +138,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         decreaseQty,
         removeFromCart,
         cartTotal,
+        appliedPromo,
+        setAppliedPromo,
+        finalTotal,
       }}
     >
       {children}

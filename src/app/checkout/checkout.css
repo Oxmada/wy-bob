@@ -235,6 +235,11 @@
   margin-bottom: 10px;
 }
 
+.checkout-summary-discount {
+  color: #16a34a;
+  font-weight: 600;
+}
+
 .checkout-summary-divider {
   border: none;
   border-top: 1px solid #E5E7EB;

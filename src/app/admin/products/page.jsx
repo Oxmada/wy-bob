@@ -335,7 +335,10 @@ export default function AdminProductsPage() {
       {/* Topbar */}
       <div className={styles.topbar}>
         <Link href="/admin/dashboard" className={styles.backBtn}>← Dashboard</Link>
-        <h1 className={styles.topbarTitle}>Fiche produit</h1>
+        <div className={styles.topbarTitleGroup}>
+          <h1 className={styles.topbarTitle}>Produits & Stock</h1>
+          <p className={styles.topbarSubtitle}>Gérez votre produit et ses variantes de couleur</p>
+        </div>
       </div>
 
       {loading ? (
