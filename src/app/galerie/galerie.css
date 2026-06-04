@@ -93,8 +93,8 @@
   flex: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
   gap: 10px;
+  align-content: center;
   overflow: hidden;
 }
 
@@ -103,6 +103,7 @@
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s;
+  aspect-ratio: 1 / 1;
 }
 
 .galeriePhoto:hover {
@@ -113,12 +114,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 20%;
+  object-position: center center;
   display: block;
 }
-
-.photo3 img { object-position: center 10%; }
-.photo4 img { object-position: center 60%; }
 
 /* ===== LIGHTBOX ===== */
 .lightboxOverlay {
@@ -298,7 +296,6 @@
 
   .galerieGrid {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 160px 160px;
     overflow: visible;
   }
 
