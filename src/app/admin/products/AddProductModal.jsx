@@ -107,7 +107,7 @@ export default function AddProductModal({ onClose, onSuccess }) {
             </label>
             <input
               type="text"
-              placeholder="Ex : Pull Bleu Femme"
+              placeholder="Ex : Le Bob Marley"
               value={form.name}
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
               className={styles.fieldInput}
