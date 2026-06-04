@@ -290,7 +290,7 @@ export default function AdminProductsPage() {
                 <th>PRODUIT</th>
                 <th>CATÉGORIE</th>
                 <th>PRIX</th>
-                <th>STOCK PAR TAILLE</th>
+                <th>STOCK</th>
                 <th>STATUT</th>
                 <th>VISIBLE</th>
                 <th>AJOUTÉ LE</th>

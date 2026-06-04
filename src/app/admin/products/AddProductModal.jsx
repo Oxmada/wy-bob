@@ -3,24 +3,17 @@
 import { useState, useRef } from "react";
 import styles from "./products.module.css";
 
-const SIZES      = ["XS", "S", "M", "L", "XL"];
 const CATEGORIES = ["Homme", "Femme", "Enfant", "Unisexe", "Pull-Lover", "Accessoire"];
 const CLOUD_NAME = "dnm9txjhm";
 
 export default function AddProductModal({ onClose, onSuccess }) {
-  const [form, setForm] = useState({ name: "", color: "", description: "", price: "", pricePromo: "" });
-  const [sizes, setSizes] = useState({ XS: 0, S: 0, M: 0, L: 0, XL: 0 });
+  const [form, setForm] = useState({ name: "", color: "", description: "", price: "", pricePromo: "", stock: "" });
   const [imageFiles,  setImageFiles]  = useState([]);
   const [imageUrls,   setImageUrls]   = useState([]);
   const [uploading,   setUploading]   = useState(false);
   const [submitting,  setSubmitting]  = useState(false);
   const [error,       setError]       = useState(null);
   const fileRef = useRef(null);
-
-  const totalStock = Object.values(sizes).reduce((s, v) => s + Number(v), 0);
-
-  const handleSize = (size, val) =>
-    setSizes(p => ({ ...p, [size]: Math.max(0, parseInt(val) || 0) }));
 
   const handleFiles = async (e) => {
     const files = Array.from(e.target.files);
@@ -77,7 +70,7 @@ export default function AddProductModal({ onClose, onSuccess }) {
           description: form.description.trim(),
           price:       Number(form.price),
           pricePromo:  form.pricePromo ? Number(form.pricePromo) : null,
-          stock:       totalStock,
+          stock:       form.stock ? Number(form.stock) : 0,
           image:       imageUrls[0] || "",
         }),
       });
@@ -121,26 +114,18 @@ export default function AddProductModal({ onClose, onSuccess }) {
             />
           </div>
 
-          {/* Stock par taille */}
+          {/* Stock */}
           <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel}>STOCK PAR TAILLE</label>
-            <div className={styles.sizesGrid}>
-              {SIZES.map(s => (
-                <div key={s} className={styles.sizeBox}>
-                  <span className={styles.sizeBoxLabel}>{s}</span>
-                  <input
-                    type="number"
-                    min="0"
-                    value={sizes[s]}
-                    onChange={e => handleSize(s, e.target.value)}
-                    className={styles.sizeBoxInput}
-                  />
-                </div>
-              ))}
-            </div>
-            <p className={styles.totalStock}>
-              Total : <strong>{totalStock}</strong> article{totalStock !== 1 ? "s" : ""}
-            </p>
+            <label className={styles.fieldLabel}>STOCK</label>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              placeholder="Ex : 50"
+              value={form.stock}
+              onChange={e => setForm(f => ({ ...f, stock: e.target.value }))}
+              className={styles.fieldInput}
+            />
           </div>
 
           {/* Description */}

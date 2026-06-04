@@ -696,51 +696,6 @@
 }
 .fieldSelect:focus { border-color: #F9C464; }
 
-/* Stock par taille */
-.sizesGrid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-}
-
-.sizeBox {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-}
-
-.sizeBoxLabel {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #57534e;
-}
-
-.sizeBoxInput {
-  width: 100%;
-  text-align: center;
-  padding: 8px 4px;
-  border: 1.5px solid #e7e5e4;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 700;
-  font-family: inherit;
-  color: #0f172a;
-  background: #fafaf9;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.sizeBoxInput:focus { border-color: #F9C464; background: #fff; }
-
-.totalStock {
-  font-size: 13px;
-  color: #57534e;
-  text-align: right;
-  margin: 0;
-}
-.totalStock strong { color: #F9C464; }
 
 /* Images */
 .fileInput {
