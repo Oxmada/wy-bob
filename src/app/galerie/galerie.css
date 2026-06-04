@@ -88,18 +88,15 @@
   background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* ===== GRILLE 3×2 ===== */
+/* ===== GRILLE photos ===== */
 .galerieGrid {
   flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  /* grid-template-rows défini inline selon le nombre de photos */
   gap: 10px;
-  align-content: center;
   overflow: hidden;
-}
-
-.galerieGridSolo {
-  grid-template-columns: repeat(3, 1fr);
 }
 
 .galeriePhoto {
@@ -107,7 +104,7 @@
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s;
-  aspect-ratio: 1 / 1;
+  min-height: 0;
 }
 
 .galeriePhoto:hover {

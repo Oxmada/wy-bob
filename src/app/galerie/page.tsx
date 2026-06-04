@@ -83,11 +83,14 @@ export default function Galerie() {
           </div>
         </div>
 
-        {/* Grille 1×2 ou 1×1 */}
-        <div className={`galerieGrid${images.length === 1 ? ' galerieGridSolo' : ''}`}>
+        {/* Grille photos */}
+        <div
+          className="galerieGrid"
+          style={{ gridTemplateRows: `repeat(${Math.ceil(images.length / 3)}, 1fr)` }}
+        >
           {images.map((src, i) => (
             <div key={i} className="galeriePhoto" onClick={() => openLightbox(i)}>
-              <img src={src} alt={`WYBOB — photo ${currentPage * 4 + i + 1}`} />
+              <img src={src} alt={`WYBOB — photo ${currentPage * 6 + i + 1}`} />
             </div>
           ))}
         </div>
