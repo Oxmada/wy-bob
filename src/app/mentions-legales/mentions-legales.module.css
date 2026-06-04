@@ -1,92 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&display=swap');
-
-/* ── LAYOUT RACINE ── */
-.pageRoot {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-  background: #ffffff;
-}
-
-/* ── BANDE NAVBAR (fixe haut) ── */
-.navBand {
-  background: #1B1843;
-  flex-shrink: 0;
-  z-index: 100;
-}
-
-/* Forcer fond transparent sur le nav interne */
-.navBand :global(.navbar) {
-  background-color: transparent !important;
-}
-
-/* Liens de navigation → blanc */
-.navBand :global(.link),
-.navBand :global(.mobileLink) {
-  color: #ffffff !important;
-}
-.navBand :global(.link::after) {
-  background: #ffffff !important;
-}
-
-/* Boutons icônes → blanc */
-.navBand :global(.iconBtn) {
-  color: #ffffff !important;
-}
-
-/* Toutes les SVG dans la bande nav → blanc */
-.navBand :global(svg) {
-  color: #ffffff !important;
-  stroke: #ffffff !important;
-}
-
-/* Menu mobile → fond bleu foncé, texte blanc */
-.navBand :global(.mobileMenu) {
-  background: #1B1843 !important;
-  backdrop-filter: none !important;
-}
-.navBand :global(.mobileLink) {
-  color: #ffffff !important;
-}
-
-/* ── ZONE SCROLLABLE ── */
-.scrollArea {
+/* ── ZONE SCROLLABLE (flex:1, scroll interne) ── */
+.mentionsZone {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  background: #ffffff;
-}
-
-/* ── CONTAINER (centrage horizontal) ── */
-.container {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 60px 64px;
+  overflow-x: hidden;
+  padding: 24px 64px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(27, 24, 67, 0.2) transparent;
 }
 
-/* ── CONTENT ── */
+.mentionsZone::-webkit-scrollbar { width: 4px; }
+.mentionsZone::-webkit-scrollbar-track { background: transparent; }
+.mentionsZone::-webkit-scrollbar-thumb { background: rgba(27, 24, 67, 0.2); border-radius: 4px; }
+
+/* ── CONTENT (centrage + max-width lisibilité) ── */
 .content {
   width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 16px;
   box-sizing: border-box;
 }
 
 /* ── TITRE PRINCIPAL ── */
 .title {
-  font-family: 'Georgia', serif;
-  font-size: 2.5rem;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2rem;
   font-weight: 700;
-  color: #111111;
+  color: #1B1843;
   margin: 0;
-  padding-bottom: 24px;
-  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 16px;
+  border-bottom: 3px solid #F9C464;
   width: 100%;
   text-align: left;
 }
@@ -97,52 +44,61 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.48);
+  backdrop-filter: blur(60px) brightness(1.08);
+  -webkit-backdrop-filter: blur(60px) brightness(1.08);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 4px 30px rgba(0, 0, 0, 0.08);
 }
-
-.section1 { min-height: 330px; }
-.section2 { min-height: 138px; }
-.section3 { min-height: 202px; }
-.section4 { min-height: 384px; }
-.section5 { min-height: 608px; }
-.section6 { min-height: 234px; }
-.section7 { min-height: 138px; }
 
 /* ── TITRES DE SECTION ── */
 .heading {
-  font-family: 'Georgia', serif;
-  font-size: 1.25rem;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.15rem;
   font-weight: 700;
-  color: #111111;
+  color: #1B1843;
   margin: 0;
   text-align: left;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+/* Numéro en accent or */
+.numAccent {
+  color: #F9C464;
+  font-weight: 700;
+  font-family: 'Quicksand', sans-serif;
+  flex-shrink: 0;
 }
 
 /* ── TEXTE ── */
 .text {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.9375rem;
   font-weight: 400;
-  line-height: 1.8;
-  color: #4b5563;
+  line-height: 1.65;
+  color: #3b4563;
   margin: 0;
-  text-align: left !important;
-  padding: 0 !important;
 }
 
 /* ── LISTES ── */
 .list {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.9375rem;
   font-weight: 400;
-  line-height: 1.8;
-  color: #4b5563;
+  line-height: 1.65;
+  color: #3b4563;
   margin: 0;
   padding-left: 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  text-align: left;
 }
 
 .list li {
@@ -152,62 +108,34 @@
 
 .label {
   font-weight: 600;
-  color: #111111;
+  color: #1B1843;
 }
 
-/* ── LIENS (dans le contenu) ── */
+/* ── LIENS ── */
 .link {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: #2563eb;
+  font-family: 'DM Sans', sans-serif;
+  color: #1B1843;
   text-decoration: underline;
   text-underline-offset: 3px;
-  font-weight: 400;
+  font-weight: 500;
   transition: color 0.2s ease;
 }
 
 .link:hover {
-  color: #1d4ed8;
-}
-
-/* ── BANDE FOOTER (fixe bas) ── */
-.footerBand {
-  background: #1B1843;
-  flex-shrink: 0;
-  z-index: 100;
-}
-
-/* Toutes les SVG dans la bande footer → blanc */
-.footerBand :global(svg) {
-  color: #ffffff !important;
-  stroke: #ffffff !important;
-}
-
-/* Texte footer → blanc */
-.footerBand :global(.footerLeft),
-.footerBand :global(.footerLeft span),
-.footerBand :global(.footerLeft a),
-.footerBand :global(.footerRight a) {
-  color: #ffffff !important;
+  color: #c99b3a;
 }
 
 /* =============================================
    TABLETTE — max-width: 1024px
    ============================================= */
 @media (max-width: 1024px) {
-  .container {
-    padding: 40px 48px;
+  .mentionsZone {
+    padding: 32px 40px;
   }
 
   .content {
-    width: 100%;
-    gap: 40px;
-  }
-
-  .section,
-  .section1, .section2, .section3,
-  .section4, .section5, .section6, .section7 {
-    width: 100%;
-    min-height: auto;
+    max-width: 100%;
+    gap: 28px;
   }
 
   .title {
@@ -215,7 +143,7 @@
   }
 
   .heading {
-    font-size: 1.125rem;
+    font-size: 1.05rem;
   }
 }
 
@@ -223,20 +151,17 @@
    MOBILE — max-width: 767px
    ============================================= */
 @media (max-width: 767px) {
-  .container {
-    padding: 32px 24px;
+  .mentionsZone {
+    padding: 24px 16px;
   }
 
   .content {
-    width: 100%;
+    max-width: 100%;
     gap: 20px;
   }
 
-  .section,
-  .section1, .section2, .section3,
-  .section4, .section5, .section6, .section7 {
-    width: 100%;
-    min-height: auto;
+  .section {
+    padding: 16px 16px 16px 18px;
   }
 
   .title {
@@ -256,6 +181,5 @@
 
   .list {
     padding-left: 16px;
-    gap: 8px;
   }
 }

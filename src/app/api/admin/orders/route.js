@@ -1,15 +1,14 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { auth } from "@/auth";
 import { connectDB } from "@/app/lib/db";
 import Order from "@/app/models/Order";
 import Product from "@/app/models/Product";
 
 export async function GET(request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ message: "Accès refusé" }, { status: 401 });

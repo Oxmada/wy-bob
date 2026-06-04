@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { CartProvider } from '@/components/panier-context'
 import SessionWrapper from '@/components/SessionWrapper'
+import { LanguageProvider } from '@/contexts/LanguageContext'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -17,9 +18,11 @@ export default function RootLayout({
     <html lang="fr">
       <body>
         <SessionWrapper>
-          <CartProvider>
-            {children}
-          </CartProvider>
+          <LanguageProvider>
+            <CartProvider>
+              {children}
+            </CartProvider>
+          </LanguageProvider>
         </SessionWrapper>
       </body>
     </html>

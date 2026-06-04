@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import "@/app/dashboard/dashboard.css";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-export default function AddressesClient({ initialAddresses }) {
+export default function AddressesClient({ initialAddresses }: { initialAddresses: any[] }) {
   const [addresses, setAddresses] = useState(
     Array.isArray(initialAddresses) ? initialAddresses : []
   );
@@ -14,7 +15,10 @@ export default function AddressesClient({ initialAddresses }) {
     label: "", fullName: "", street: "", zip: "", city: "", country: "",
   });
 
-  const handleChange = (e) => {
+  const { t } = useLanguage();
+  const a = t.dashboard.addresses;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -59,38 +63,47 @@ export default function AddressesClient({ initialAddresses }) {
 
   return (
     <>
-      <div className="db-addresses-grid">
-        {addresses.length === 0 && (
-          <p style={{ fontSize: 13, color: "#888", margin: 0 }}>
-            Aucune adresse enregistrée.
-          </p>
-        )}
+      <div>
+        <h1 className="db-page-title">{a.title}</h1>
+        <div className="db-wrapper">
+          <div className="db-card">
+            <p className="db-section-title">{a.sectionTitle}</p>
 
-        {addresses.map((addr, i) => (
-          <div className="db-address-block" key={i}>
-            <div className="db-address-label">
-              {addr.label || `Adresse n°${i + 1}`}
-              <button
-                className="db-delete-icon"
-                onClick={() => handleDelete(i)}
-                disabled={deleting === i}
-                title="Supprimer"
-              >
-                {deleting === i ? "…" : "✕"}
+            <div className="db-addresses-grid">
+              {addresses.length === 0 && (
+                <p style={{ fontSize: 13, color: "#888", margin: 0 }}>
+                  {a.noAddresses}
+                </p>
+              )}
+
+              {addresses.map((addr, i) => (
+                <div className="db-address-block" key={i}>
+                  <div className="db-address-label">
+                    {addr.label || `${a.defaultLabel}${i + 1}`}
+                    <button
+                      className="db-delete-icon"
+                      onClick={() => handleDelete(i)}
+                      disabled={deleting === i}
+                      title="Supprimer"
+                    >
+                      {deleting === i ? "…" : "✕"}
+                    </button>
+                  </div>
+                  <p className="db-address-text">
+                    {addr.fullName}<br />
+                    {addr.street}<br />
+                    {addr.zip} {addr.city}{addr.country ? `, ${addr.country}` : ""}
+                  </p>
+                </div>
+              ))}
+
+              <button className="db-add-address" onClick={() => setShowModal(true)}>
+                <span>+</span>
+                {a.addBtn.slice(2)}
               </button>
             </div>
-            <p className="db-address-text">
-              {addr.fullName}<br />
-              {addr.street}<br />
-              {addr.zip} {addr.city}{addr.country ? `, ${addr.country}` : ""}
-            </p>
           </div>
-        ))}
-
-        <button className="db-add-address" onClick={() => setShowModal(true)}>
-          <span>+</span>
-          Ajouter une adresse
-        </button>
+        </div>
       </div>
 
       {showModal && (
@@ -98,26 +111,26 @@ export default function AddressesClient({ initialAddresses }) {
           <div className="db-modal" onClick={(e) => e.stopPropagation()}>
 
             <button className="db-modal-close" onClick={() => setShowModal(false)}>✕</button>
-            <h3 className="db-modal-title">Nouvelle adresse</h3>
+            <h3 className="db-modal-title">{a.modalTitle}</h3>
 
             <input
               className="db-modal-input"
               name="label"
-              placeholder="Nom de l'adresse (ex : Domicile)"
+              placeholder={a.labelPlaceholder}
               value={form.label}
               onChange={handleChange}
             />
             <input
               className="db-modal-input"
               name="fullName"
-              placeholder="Nom complet *"
+              placeholder={a.fullNamePlaceholder}
               value={form.fullName}
               onChange={handleChange}
             />
             <input
               className="db-modal-input"
               name="street"
-              placeholder="Adresse (numéro et nom de rue) *"
+              placeholder={a.streetPlaceholder}
               value={form.street}
               onChange={handleChange}
             />
@@ -126,14 +139,14 @@ export default function AddressesClient({ initialAddresses }) {
               <input
                 className="db-modal-input"
                 name="zip"
-                placeholder="Code postal"
+                placeholder={a.zipPlaceholder}
                 value={form.zip}
                 onChange={handleChange}
               />
               <input
                 className="db-modal-input"
                 name="city"
-                placeholder="Ville *"
+                placeholder={a.cityPlaceholder}
                 value={form.city}
                 onChange={handleChange}
               />
@@ -145,7 +158,7 @@ export default function AddressesClient({ initialAddresses }) {
               value={form.country}
               onChange={handleChange}
             >
-              <option value="">Pays *</option>
+              <option value="">{a.countryPlaceholder}</option>
               <option value="Madagascar">Madagascar</option>
               <option value="France">France</option>
               <option value="Belgique">Belgique</option>
@@ -158,7 +171,7 @@ export default function AddressesClient({ initialAddresses }) {
               onClick={handleSave}
               disabled={saving || !form.fullName || !form.street || !form.city || !form.country}
             >
-              {saving ? "Enregistrement…" : "Enregistrer"}
+              {saving ? a.saving : a.save}
             </button>
 
           </div>

@@ -1,0 +1,184 @@
+/* ── ZONE SCROLLABLE ── */
+.privacyZone {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px 64px;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(27, 24, 67, 0.2) transparent;
+}
+
+.privacyZone::-webkit-scrollbar { width: 4px; }
+.privacyZone::-webkit-scrollbar-track { background: transparent; }
+.privacyZone::-webkit-scrollbar-thumb { background: rgba(27, 24, 67, 0.2); border-radius: 4px; }
+
+/* ── CONTENT ── */
+.content {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+/* ── TITRE PRINCIPAL ── */
+.title {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1B1843;
+  margin: 0;
+  padding-bottom: 16px;
+  border-bottom: 3px solid #F9C464;
+  width: 100%;
+  text-align: left;
+}
+
+/* ── SECTIONS ── */
+.section {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.48);
+  backdrop-filter: blur(60px) brightness(1.08);
+  -webkit-backdrop-filter: blur(60px) brightness(1.08);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 4px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ── TITRES DE SECTION ── */
+.heading {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1B1843;
+  margin: 0;
+  text-align: left;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.numAccent {
+  color: #F9C464;
+  font-weight: 700;
+  font-family: 'Quicksand', sans-serif;
+  flex-shrink: 0;
+}
+
+/* ── TEXTE ── */
+.text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: #3b4563;
+  margin: 0;
+}
+
+/* ── LISTES ── */
+.list {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: #3b4563;
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.list li {
+  list-style-type: disc;
+  font-weight: 400;
+}
+
+.label {
+  font-weight: 600;
+  color: #1B1843;
+}
+
+/* ── LIENS ── */
+.link {
+  font-family: 'DM Sans', sans-serif;
+  color: #1B1843;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #c99b3a;
+}
+
+/* =============================================
+   TABLETTE — max-width: 1024px
+   ============================================= */
+@media (max-width: 1024px) {
+  .privacyZone {
+    padding: 32px 40px;
+  }
+
+  .content {
+    max-width: 100%;
+    gap: 28px;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .heading {
+    font-size: 1.05rem;
+  }
+}
+
+/* =============================================
+   MOBILE — max-width: 767px
+   ============================================= */
+@media (max-width: 767px) {
+  .privacyZone {
+    padding: 24px 16px;
+  }
+
+  .content {
+    max-width: 100%;
+    gap: 20px;
+  }
+
+  .section {
+    padding: 16px 16px 16px 18px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    padding-bottom: 16px;
+  }
+
+  .heading {
+    font-size: 1rem;
+  }
+
+  .text,
+  .list {
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  .list {
+    padding-left: 16px;
+  }
+}

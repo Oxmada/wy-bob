@@ -7,7 +7,7 @@
   min-height: 100vh;
   background: #f5f5f4;
   padding: 28px 36px;
-  font-family: var(--font-montserrat), 'Montserrat', sans-serif;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .acd-state {
@@ -33,7 +33,7 @@
   animation: acd-slide-in 0.25s ease;
 }
 .acd-toast-ok    { background: #0f172a; }
-.acd-toast-error { background: #C95D5D; }
+.acd-toast-error { background: #F9C464; color: #0f172a; }
 
 @keyframes acd-slide-in {
   from { opacity: 0; transform: translateX(12px); }
@@ -83,8 +83,8 @@
 .acd-btn-cancel:hover { background: #e7e5e4; }
 .acd-btn-confirm {
   padding: 8px 18px;
-  background: #be123c;
-  color: #fff;
+  background: #F9C464;
+  color: #0f172a;
   border: none;
   border-radius: 8px;
   font-size: 13px;
@@ -93,7 +93,7 @@
   cursor: pointer;
   transition: background 0.15s;
 }
-.acd-btn-confirm:hover { background: #9f1239; }
+.acd-btn-confirm:hover { background: #e6af4e; }
 
 /* ── Topbar ── */
 .acd-topbar {
@@ -181,7 +181,7 @@
   letter-spacing: 0.04em;
 }
 .acd-status-badge.ok      { background: #f0fdf4; color: #15803d; }
-.acd-status-badge.blocked { background: #fff1f2; color: #be123c; }
+.acd-status-badge.blocked { background: #fef9ec; color: #c58b00; }
 .acd-status-badge.anon    { background: #f5f5f4; color: #a8a29e; }
 
 .acd-email-sub {
@@ -192,7 +192,7 @@
   display: block;
   transition: color 0.15s;
 }
-.acd-email-sub:hover { color: #C95D5D; }
+.acd-email-sub:hover { color: #c58b00; }
 
 /* ── Boutons header ── */
 .acd-header-btns {
@@ -204,8 +204,8 @@
 
 .acd-btn-primary {
   padding: 8px 18px;
-  background: #C95D5D;
-  color: #fff;
+  background: #F9C464;
+  color: #0f172a;
   border: none;
   border-radius: 8px;
   font-size: 13px;
@@ -215,8 +215,8 @@
   transition: background 0.15s;
   white-space: nowrap;
 }
-.acd-btn-primary:hover:not(:disabled)  { background: #b04d4d; }
-.acd-btn-primary:disabled { background: #e8a0a0; cursor: not-allowed; }
+.acd-btn-primary:hover:not(:disabled)  { background: #e6af4e; }
+.acd-btn-primary:disabled { background: #fde68a; cursor: not-allowed; }
 
 .acd-btn-ghost {
   padding: 8px 16px;
@@ -235,9 +235,9 @@
 
 .acd-btn-warn {
   padding: 8px 16px;
-  background: #fff1f2;
-  color: #be123c;
-  border: 1.5px solid #fecdd3;
+  background: #fef9ec;
+  color: #c58b00;
+  border: 1.5px solid #F9C464;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
@@ -246,7 +246,7 @@
   transition: all 0.15s;
   white-space: nowrap;
 }
-.acd-btn-warn:hover { background: #be123c; color: #fff; border-color: #be123c; }
+.acd-btn-warn:hover { background: #F9C464; color: #0f172a; border-color: #F9C464; }
 
 .acd-btn-success {
   padding: 8px 16px;
@@ -265,9 +265,9 @@
 
 .acd-btn-danger {
   padding: 8px 16px;
-  background: #fff1f2;
-  color: #be123c;
-  border: 1.5px solid #fecdd3;
+  background: #fef9ec;
+  color: #c58b00;
+  border: 1.5px solid #F9C464;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
@@ -276,7 +276,7 @@
   transition: all 0.15s;
   white-space: nowrap;
 }
-.acd-btn-danger:hover { background: #be123c; color: #fff; border-color: #be123c; }
+.acd-btn-danger:hover { background: #F9C464; color: #0f172a; border-color: #F9C464; }
 
 /* ── Grille cards ── */
 .acd-grid {
@@ -359,7 +359,7 @@
   text-decoration: none;
   transition: color 0.15s;
 }
-.acd-link:hover { color: #C95D5D; text-decoration: underline; }
+.acd-link:hover { color: #c58b00; text-decoration: underline; }
 
 /* ── Formulaire d'édition ── */
 .acd-form { display: flex; flex-direction: column; gap: 12px; }
@@ -384,7 +384,7 @@
   outline: none;
   transition: border-color 0.2s;
 }
-.acd-field-input:focus { border-color: #C95D5D; background: #fff; }
+.acd-field-input:focus { border-color: #F9C464; background: #fff; }
 .acd-textarea { resize: vertical; min-height: 72px; }
 
 /* ── Statistiques ── */

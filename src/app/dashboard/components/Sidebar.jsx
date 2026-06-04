@@ -2,14 +2,55 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+function IconHome() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+  );
+}
+
+function IconPackage() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+      <line x1="12" y1="22.08" x2="12" y2="12"/>
+    </svg>
+  );
+}
+
+function IconUser() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>
+  );
+}
+
+function IconMapPin() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+      <circle cx="12" cy="10" r="3"/>
+    </svg>
+  );
+}
 
 export default function Sidebar({ user }) {
   const pathname = usePathname();
+  const { t, locale, toggleLocale } = useLanguage();
+  const s = t.dashboard.sidebar;
+
   const menuItems = [
-    { icon: "🏠", label: "Vue d'ensemble", short: "Dashboard", path: "/dashboard" },
-    { icon: "📦", label: "Commandes", short: "Commandes", path: "/dashboard/orders" },
-    { icon: "👤", label: "Profil", short: "Profil", path: "/dashboard/profile" },
-    { icon: "📍", label: "Adresses", short: "Adresses", path: "/dashboard/addresses" },
+    { icon: <IconHome />,    label: s.overview,  short: s.overview,  path: "/dashboard" },
+    { icon: <IconPackage />, label: s.orders,    short: s.orders,    path: "/dashboard/orders" },
+    { icon: <IconUser />,    label: s.profile,   short: s.profile,   path: "/dashboard/profile" },
+    { icon: <IconMapPin />,  label: s.addresses, short: s.addresses, path: "/dashboard/addresses" },
   ];
 
   return (
@@ -40,13 +81,26 @@ export default function Sidebar({ user }) {
         </nav>
 
         <div className="sidebar-footer">
+          <button
+            onClick={toggleLocale}
+            className="logout-btn"
+            style={{ marginBottom: 8 }}
+            aria-label="Switch language"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            <span>{locale === 'fr' ? 'EN' : 'FR'}</span>
+          </button>
           <button onClick={() => signOut({ callbackUrl: "/" })} className="logout-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
               <polyline points="16 17 21 12 16 7"/>
               <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
-            <span>Déconnexion</span>
+            <span>{s.logout}</span>
           </button>
         </div>
       </aside>
@@ -63,6 +117,16 @@ export default function Sidebar({ user }) {
             <span>{item.short}</span>
           </Link>
         ))}
+        <button className="bottom-nav-item" onClick={toggleLocale} aria-label="Switch language">
+          <span className="bottom-nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </span>
+          <span>{locale === 'fr' ? 'EN' : 'FR'}</span>
+        </button>
         <button className="bottom-nav-item" onClick={() => signOut({ callbackUrl: "/" })}>
           <span className="bottom-nav-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -71,7 +135,7 @@ export default function Sidebar({ user }) {
               <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
           </span>
-          <span>Sortir</span>
+          <span>{s.exit}</span>
         </button>
       </nav>
     </>

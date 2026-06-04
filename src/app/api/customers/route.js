@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/app/lib/db";
 import Customer from "@/app/models/Customer";
 import Order from "@/app/models/Order";
+import User from "@/app/models/User";
 
 /* =========================
    GET - Liste des clients
@@ -19,41 +20,80 @@ export async function GET(req) {
     const page   = parseInt(searchParams.get("page")) || 1;
     const limit  = parseInt(searchParams.get("limit")) || 20;
 
-    let query = {};
+    // Charge tous les Users et tous les Customers
+    const [allUsers, allCustomers] = await Promise.all([
+      User.find({}, { name: 1, email: 1, phone: 1, address: 1, createdAt: 1, role: 1 }),
+      Customer.find({}),
+    ]);
 
+    // Index des Customers par email pour le merge
+    const customerByEmail = {};
+    for (const c of allCustomers) {
+      customerByEmail[c.email.toLowerCase()] = c;
+    }
+
+    // Merge : un enregistrement par email
+    const merged = allUsers.map((user) => {
+      const email = user.email.toLowerCase();
+      const customer = customerByEmail[email];
+
+      const nameParts = (user.name || "").trim().split(" ");
+      const firstname = nameParts[0] || "";
+      const lastname  = nameParts.slice(1).join(" ") || "";
+
+      return {
+        _id:          customer?._id  ?? user._id,
+        firstname:    customer?.firstname || firstname,
+        lastname:     customer?.lastname  || lastname,
+        email,
+        phone:        customer?.phone || user.phone || "",
+        city:         customer?.city  || user.address?.city || "",
+        address:      customer?.address || user.address?.street || "",
+        totalOrders:  customer?.totalOrders ?? 0,
+        totalSpent:   customer?.totalSpent  ?? 0,
+        lastOrderAt:  customer?.lastOrderAt ?? null,
+        status:       customer?.status ?? "active",
+        role:         user.role ?? "customer",
+        createdAt:    customer?.createdAt ?? user.createdAt,
+        updatedAt:    customer?.updatedAt ?? user.createdAt,
+      };
+    });
+
+    // Filtre recherche
+    let filtered = merged;
     if (search) {
-      query.$or = [
-        { firstname: { $regex: search, $options: "i" } },
-        { lastname: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-        { phone: { $regex: search, $options: "i" } },
-      ];
+      const re = new RegExp(search, "i");
+      filtered = filtered.filter(c =>
+        re.test(c.firstname) || re.test(c.lastname) ||
+        re.test(c.email)     || re.test(c.phone)
+      );
     }
-
     if (status) {
-      query.status = status;
+      filtered = filtered.filter(c => c.status === status);
     }
-
     if (vip === "true") {
-      query.totalSpent = { $gte: 50000 };
+      filtered = filtered.filter(c => (c.totalSpent || 0) >= 50000);
     }
 
-    const total = await Customer.countDocuments(query);
+    // Tri
+    const dir = order === "desc" ? -1 : 1;
+    filtered.sort((a, b) => {
+      const av = a[sort] ?? 0;
+      const bv = b[sort] ?? 0;
+      if (av < bv) return -dir;
+      if (av > bv) return dir;
+      return 0;
+    });
 
-    const customers = await Customer.find(query)
-      .sort({ [sort]: order === "desc" ? -1 : 1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+    // Pagination
+    const total      = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const customers  = filtered.slice((page - 1) * limit, page * limit);
 
     return NextResponse.json({
       success: true,
       customers,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      pagination: { total, page, limit, totalPages },
     });
   } catch (error) {
     console.error("GET CUSTOMERS ERROR:", error);
@@ -115,13 +155,13 @@ async function syncCustomersFromOrders() {
   try {
     await connectDB();
 
+    const customersMap = {};
+
+    // 1. Agrège les commandes par email
     const orders = await Order.find({
       "customer.email": { $exists: true },
     }).sort({ createdAt: -1 });
 
-    const customersMap = {};
-
-    // Grouper les commandes par email
     for (const order of orders) {
       const email = order.customer.email.toLowerCase();
 
@@ -143,19 +183,47 @@ async function syncCustomersFromOrders() {
       customersMap[email].totalSpent += order.total || 0;
     }
 
+    // 2. Importe les utilisateurs inscrits sans commande
+    const registeredUsers = await User.find(
+      { role: { $ne: "admin" } },
+      { name: 1, email: 1, phone: 1, address: 1, createdAt: 1 }
+    );
+
+    for (const user of registeredUsers) {
+      const email = user.email.toLowerCase();
+      if (customersMap[email]) continue; // déjà dans les commandes
+
+      const nameParts = (user.name || "").trim().split(" ");
+      const firstname = nameParts[0] || "";
+      const lastname = nameParts.slice(1).join(" ") || "";
+
+      customersMap[email] = {
+        firstname,
+        lastname,
+        email,
+        phone: user.phone || "",
+        city: user.address?.city || "",
+        address: user.address?.street || "",
+        totalOrders: 0,
+        totalSpent: 0,
+        lastOrderAt: null,
+      };
+    }
+
     let created = 0;
     let updated = 0;
 
     for (const email in customersMap) {
       const data = customersMap[email];
 
-      const result = await Customer.findOneAndUpdate(
+      const before = await Customer.findOne({ email });
+      await Customer.findOneAndUpdate(
         { email },
         { $set: data },
         { upsert: true, new: true }
       );
 
-      if (result.createdAt.getTime() === result.updatedAt.getTime()) {
+      if (!before) {
         created++;
       } else {
         updated++;
@@ -164,7 +232,7 @@ async function syncCustomersFromOrders() {
 
     return NextResponse.json({
       success: true,
-      message: "Synchronisation terminée",
+      message: `Synchronisation terminée — ${created} créés, ${updated} mis à jour`,
       created,
       updated,
       total: created + updated,

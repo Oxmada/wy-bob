@@ -6,17 +6,18 @@ if (!MONGODB_URI) {
   throw new Error('MONGODB_URI manquant dans .env.local')
 }
 
-let cached = global.mongoose
+const g = global as any;
+let cached = g.mongoose
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null }
+  cached = g.mongoose = { conn: null, promise: null }
 }
 
 export async function connectDB() {
   if (cached.conn) return cached.conn
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
+    cached.promise = mongoose.connect(MONGODB_URI!, {
       tls: true,
       tlsAllowInvalidCertificates: true,  /* ✅ fix SSL */
       serverSelectionTimeoutMS: 10000,

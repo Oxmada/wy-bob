@@ -19,7 +19,7 @@ const STATUS_LABELS = {
   cancelled:  "Annulée",
 };
 
-const font = "var(--font-montserrat), 'Montserrat', sans-serif";
+const font = "'DM Sans', sans-serif";
 
 const N = {
   border:      "#e9e9e7",

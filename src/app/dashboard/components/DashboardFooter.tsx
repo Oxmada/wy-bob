@@ -1,10 +1,17 @@
+'use client'
+import { useLanguage } from '@/contexts/LanguageContext'
+
 export default function DashboardFooter() {
+  const { t } = useLanguage()
+
   return (
     <footer className="db-footer">
       <div className="db-footer-left">
         <span>© 2026, Wybob</span>
-        <a href="#">Mentions légales</a>
-        <span>Réalisé par Oxmad-Digital</span>
+        <a href="/mentions-legales">{t.footer.legal}</a>
+        <a href="/cgv">{t.footer.cgv}</a>
+        <a href="/politique-confidentialite">{t.footer.privacy}</a>
+        <span>{t.footer.madeBy}</span>
       </div>
       <div className="db-footer-right">
         <a href="#" aria-label="Instagram">

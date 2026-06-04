@@ -55,12 +55,20 @@ export default function CheckoutForm({ total }: { total: number }) {
       return;
     }
 
-    // 2 — Créer le payment intent
+    // 2 — Créer le payment intent (montant calculé côté serveur via les IDs produits)
     const res = await fetch("/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: total }),
+      body: JSON.stringify({
+        cartItems: cartItems.map((i: any) => ({ _id: i._id, quantity: i.quantity })),
+      }),
     });
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.error || "Erreur lors de la création du paiement");
+      setLoading(false);
+      return;
+    }
     const { clientSecret } = await res.json();
 
     // 3 — Confirmer le paiement

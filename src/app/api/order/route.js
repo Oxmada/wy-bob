@@ -2,10 +2,10 @@
 
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { auth } from "@/auth";
 import { connectDB } from "@/app/lib/db";
 import Order from "@/app/models/Order";
+import Product from "@/app/models/Product";
 import { sendEmail } from "@/app/lib/mailer";
 import Customer from "@/app/models/Customer";
 
@@ -15,10 +15,11 @@ export async function POST(req) {
   try {
     await connectDB();
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     const body = await req.json();
-    const { customer, cartItems, total, payment, delivery } = body;
+    // 'total' is intentionally NOT destructured from body — it is calculated server-side below
+    const { customer, cartItems, payment, delivery } = body;
 
     if (!customer) {
       return NextResponse.json({ message: "Client manquant" }, { status: 400 });
@@ -41,20 +42,27 @@ export async function POST(req) {
       return NextResponse.json({ message: "Panier vide" }, { status: 400 });
     }
 
-    const products = cartItems.map((item) => {
-  if (mongoose.Types.ObjectId.isValid(item._id)) {
-    return {
-      product: new mongoose.Types.ObjectId(item._id),
-      quantity: Number(item.quantity) || 1,
-    };
-  }
+    // Calculate total strictly server-side — fetch each product price from the database
+    const products = [];
+    let total = 0;
 
-  return {
-    product: new mongoose.Types.ObjectId(),
-    quantity: Number(item.quantity) || 1,
-  };
-});
-  
+    for (const item of cartItems) {
+      if (!mongoose.Types.ObjectId.isValid(item._id)) continue;
+
+      const product = await Product.findById(item._id).select("price name");
+      if (!product) continue;
+
+      const qty = Math.max(1, Math.floor(Number(item.quantity) || 1));
+      total += product.price * qty;
+      products.push({
+        product: new mongoose.Types.ObjectId(item._id),
+        quantity: qty,
+      });
+    }
+
+    if (products.length === 0) {
+      return NextResponse.json({ message: "Aucun produit valide dans le panier" }, { status: 400 });
+    }
 
     const order = await Order.create({
       userId: session?.user?.id ?? null,
@@ -67,7 +75,7 @@ export async function POST(req) {
         address,
       },
       products,
-      total: Number(total),
+      total,
       payment: payment || "cash",
       delivery: delivery || "colissimo",
       status: "pending",
@@ -80,7 +88,7 @@ export async function POST(req) {
 
     if (existingCustomer) {
       existingCustomer.totalOrders += 1;
-      existingCustomer.totalSpent += Number(total);
+      existingCustomer.totalSpent += total;
       existingCustomer.lastOrderAt = new Date();
       if (!existingCustomer.phone && phone) existingCustomer.phone = phone;
       if (!existingCustomer.city && city) existingCustomer.city = city;
@@ -95,7 +103,7 @@ export async function POST(req) {
         city: city || "",
         address: address || "",
         totalOrders: 1,
-        totalSpent: Number(total),
+        totalSpent: total,
         lastOrderAt: new Date(),
         status: "active",
       });
@@ -118,7 +126,6 @@ export async function POST(req) {
       bank_transfer: "🏦 Virement bancaire",
     };
 
-    // ✅ colissimo et relais ajoutés
     const deliveryLabels = {
       standard: "🚚 Livraison standard",
       express: "⚡ Livraison express",
@@ -133,7 +140,7 @@ export async function POST(req) {
         <tr>
           <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${item.name || "Produit"}</td>
           <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-          <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;">${item.price ? Number(item.price).toLocaleString() + " €" : "-"}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;">-</td>
         </tr>
       `
       )
@@ -306,6 +313,11 @@ export async function POST(req) {
 
 export async function GET(req) {
   try {
+    const session = await auth();
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Accès refusé" }, { status: 401 });
+    }
+
     await connectDB();
 
     const { searchParams } = new URL(req.url);

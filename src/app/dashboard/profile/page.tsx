@@ -2,32 +2,35 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function ProfilePage() {
   const { data: session, update } = useSession();
+  const { t } = useLanguage();
+  const p = t.dashboard.profile;
 
   const [form, setForm] = useState({ name: "", phone: "" });
 
-  // Sync session → form dès que la session est disponible
   useEffect(() => {
     if (session?.user?.name) {
       setForm(f => ({ ...f, name: session.user.name }));
     }
   }, [session?.user?.name]);
+
   const [pwForm, setPwForm] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
-  const [infoMsg, setInfoMsg] = useState(null);
-  const [pwMsg, setPwMsg] = useState(null);
+  const [infoMsg, setInfoMsg] = useState<{ type: string; text: string } | null>(null);
+  const [pwMsg, setPwMsg] = useState<{ type: string; text: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [pwLoading, setPwLoading] = useState(false);
 
-  async function handleInfoSave(e) {
+  async function handleInfoSave(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name.trim()) {
-      setInfoMsg({ type: "error", text: "Le nom ne peut pas être vide." });
+      setInfoMsg({ type: "error", text: p.errors.nameEmpty });
       return;
     }
     setLoading(true);
@@ -41,21 +44,21 @@ export default function ProfilePage() {
       const data = await res.json();
       if (res.ok) {
         await update({ name: form.name.trim() });
-        setInfoMsg({ type: "success", text: "Profil mis à jour." });
+        setInfoMsg({ type: "success", text: p.success.profile });
       } else {
         setInfoMsg({ type: "error", text: data.message });
       }
     } catch {
-      setInfoMsg({ type: "error", text: "Erreur réseau." });
+      setInfoMsg({ type: "error", text: p.errors.network });
     } finally {
       setLoading(false);
     }
   }
 
-  async function handlePasswordSave(e) {
+  async function handlePasswordSave(e: React.FormEvent) {
     e.preventDefault();
     if (pwForm.newPassword !== pwForm.confirmPassword) {
-      setPwMsg({ type: "error", text: "Les mots de passe ne correspondent pas." });
+      setPwMsg({ type: "error", text: p.errors.noMatch });
       return;
     }
     setPwLoading(true);
@@ -72,12 +75,12 @@ export default function ProfilePage() {
       const data = await res.json();
       if (res.ok) {
         setPwForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-        setPwMsg({ type: "success", text: "Mot de passe modifié." });
+        setPwMsg({ type: "success", text: p.success.password });
       } else {
         setPwMsg({ type: "error", text: data.message });
       }
     } catch {
-      setPwMsg({ type: "error", text: "Erreur réseau." });
+      setPwMsg({ type: "error", text: p.errors.network });
     } finally {
       setPwLoading(false);
     }
@@ -85,16 +88,16 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <h1 className="db-page-title">Mon profil</h1>
+      <h1 className="db-page-title">{p.title}</h1>
       <div className="db-wrapper">
 
-        {/* ── Informations ── */}
+        {/* Personal info */}
         <div className="db-card">
-          <p className="db-section-title">Informations personnelles</p>
+          <p className="db-section-title">{p.personalInfo}</p>
           <form onSubmit={handleInfoSave} className="db-form">
 
             <div className="db-form-row">
-              <label className="db-form-label">Nom complet</label>
+              <label className="db-form-label">{p.fullName}</label>
               <input
                 className="db-form-input"
                 type="text"
@@ -106,18 +109,18 @@ export default function ProfilePage() {
             </div>
 
             <div className="db-form-row">
-              <label className="db-form-label">Email</label>
+              <label className="db-form-label">{p.email}</label>
               <input
                 className="db-form-input db-form-input-disabled"
                 type="email"
                 value={session?.user?.email || ""}
                 disabled
               />
-              <span className="db-form-hint">L&apos;email ne peut pas être modifié.</span>
+              <span className="db-form-hint">{p.emailHint}</span>
             </div>
 
             <div className="db-form-row">
-              <label className="db-form-label">Téléphone</label>
+              <label className="db-form-label">{p.phone}</label>
               <input
                 className="db-form-input"
                 type="tel"
@@ -134,18 +137,18 @@ export default function ProfilePage() {
             )}
 
             <button className="db-form-btn" type="submit" disabled={loading}>
-              {loading ? "Enregistrement…" : "Enregistrer"}
+              {loading ? p.saving : p.save}
             </button>
           </form>
         </div>
 
-        {/* ── Mot de passe ── */}
+        {/* Password */}
         <div className="db-card">
-          <p className="db-section-title">Changer le mot de passe</p>
+          <p className="db-section-title">{p.changePassword}</p>
           <form onSubmit={handlePasswordSave} className="db-form">
 
             <div className="db-form-row">
-              <label className="db-form-label">Mot de passe actuel</label>
+              <label className="db-form-label">{p.currentPassword}</label>
               <input
                 className="db-form-input"
                 type="password"
@@ -156,7 +159,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="db-form-row">
-              <label className="db-form-label">Nouveau mot de passe</label>
+              <label className="db-form-label">{p.newPassword}</label>
               <input
                 className="db-form-input"
                 type="password"
@@ -168,7 +171,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="db-form-row">
-              <label className="db-form-label">Confirmer le mot de passe</label>
+              <label className="db-form-label">{p.confirmPassword}</label>
               <input
                 className="db-form-input"
                 type="password"
@@ -185,7 +188,7 @@ export default function ProfilePage() {
             )}
 
             <button className="db-form-btn" type="submit" disabled={pwLoading}>
-              {pwLoading ? "Modification…" : "Modifier le mot de passe"}
+              {pwLoading ? p.changing : p.changeBtn}
             </button>
           </form>
         </div>

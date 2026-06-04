@@ -10,7 +10,7 @@ const CustomerSchema = new mongoose.Schema({
   totalOrders: { type: Number, default: 0 },
   totalSpent: { type: Number, default: 0 },
   lastOrderAt: { type: Date },
-  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  status: { type: String, enum: ['active', 'inactive', 'blocked'], default: 'active' },
 }, {
   timestamps: true,
 })

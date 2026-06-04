@@ -44,6 +44,46 @@ export function getPasswordResetEmailTemplate(name, resetUrl) {
   `;
 }
 
+export function getOrderStatusUpdateEmailTemplate({ firstname, orderNumber, statusInfo, statusMessage, address, city, total }) {
+  return `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background: #f9f9f9; border-radius: 16px;">
+
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h1 style="color: #1B1843; font-size: 28px; font-weight: 700;">WYBOB 🎩</h1>
+      </div>
+
+      <div style="background: ${statusInfo.color}18; border-left: 4px solid ${statusInfo.color}; border-radius: 8px; padding: 16px 20px; margin-bottom: 24px;">
+        <p style="margin: 0; font-size: 18px; font-weight: 700; color: #1B1843;">
+          ${statusInfo.icon} Statut : ${statusInfo.label}
+        </p>
+      </div>
+
+      <p style="color: #444; font-size: 16px; line-height: 1.6;">
+        Bonjour ${firstname},<br/>
+        ${statusMessage}
+      </p>
+
+      <div style="background: #fff; border-radius: 12px; padding: 20px; margin: 24px 0;">
+        <p style="margin: 0 0 8px; color: #888; font-size: 13px;">Numéro de commande</p>
+        <p style="margin: 0; color: #1B1843; font-size: 18px; font-weight: 700;">#${orderNumber}</p>
+        ${address ? `<p style="margin: 12px 0 0; color: #666; font-size: 14px;">📍 ${address}${city ? `, ${city}` : ""}</p>` : ""}
+        <p style="margin: 12px 0 0; color: #1B1843; font-size: 16px; font-weight: 600;">Total : ${Number(total).toFixed(2)} €</p>
+      </div>
+
+      <p style="color: #888; font-size: 13px; text-align: center;">
+        Pour toute question, contactez-nous à support@wybob.fr
+      </p>
+
+      <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
+
+      <p style="color: #888; font-size: 12px; text-align: center;">
+        © 2026 WYBOB — Créé avec âme. Porté avec lumière.
+      </p>
+
+    </div>
+  `;
+}
+
 export function getVerificationEmailTemplate(name, dashboardUrl) {
   return `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background: #f9f9f9; border-radius: 16px;">

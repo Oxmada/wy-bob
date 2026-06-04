@@ -1,12 +1,11 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { connectDB } from "@/app/lib/db";
 import User from "@/app/models/User";
 import AddressesClient from "../components/AddressesClient";
 
 export default async function AddressesPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session) redirect("/auth/login");
 
   await connectDB();
@@ -21,15 +20,5 @@ export default async function AddressesPage() {
     country:  a.country  ?? "",
   }));
 
-  return (
-    <div>
-      <h1 className="db-page-title">Mes adresses</h1>
-      <div className="db-wrapper">
-        <div className="db-card">
-          <p className="db-section-title">Adresses de livraison</p>
-          <AddressesClient initialAddresses={addresses} />
-        </div>
-      </div>
-    </div>
-  );
+  return <AddressesClient initialAddresses={addresses} />;
 }

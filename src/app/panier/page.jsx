@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useRef, useEffect, useState } from "react";
 import { useCart } from '@/components/panier-context'
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,6 +11,19 @@ import "./panier.css";
 export default function Panier() {
   const { cartItems, removeFromCart, increaseQty, decreaseQty, cartTotal } = useCart();
   const router = useRouter();
+  const rightRef = useRef(null);
+  const [leftHeight, setLeftHeight] = useState(null);
+
+  useEffect(() => {
+    if (!rightRef.current) return;
+    const observer = new ResizeObserver(() => {
+      if (rightRef.current) {
+        setLeftHeight(rightRef.current.offsetHeight);
+      }
+    });
+    observer.observe(rightRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   if (cartItems.length === 0) {
     return (
@@ -32,60 +46,67 @@ export default function Panier() {
       <Navbar />
       <div className="cart-page">
 
-        {/* Bouton retour */}
-        <button className="panierRetour" onClick={() => router.back()}>
-          ← Retour
-        </button>
-
         <div className="cart-wrapper">
 
+          <button className="panierRetour" onClick={() => router.back()}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Retour
+          </button>
+
           {/* GAUCHE */}
-          <div className="cart-left">
-            <h2 className="cart-title">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              Mon panier
-            </h2>
+          <div
+            className="cart-left"
+            style={leftHeight ? { height: leftHeight } : {}}
+          >
+            <div className="cart-scroll-inner">
+              <h2 className="cart-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                Mon panier
+              </h2>
 
-            <ul className="cart-list">
-              {cartItems.map((item) => (
-                <li key={item._id} className="cart-item">
+              <ul className="cart-list">
+                {cartItems.map((item) => (
+                  <li key={item._id} className="cart-item">
 
-                  <div className="cart-item-image">
-                    {item.image ? (
-                      <img src={item.image} alt={item.name} />
-                    ) : null}
-                  </div>
-
-                  <div className="cart-item-info">
-                    <strong>{item.name}</strong>
-                    <p>Cette maille est vraiment trop cool</p>
-                    {item.color && <p>Couleur : {item.color}</p>}
-                    <div className="qty-controls">
-                      <button onClick={() => decreaseQty(item._id)}>−</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => increaseQty(item._id)}>+</button>
+                    <div className="cart-item-image">
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} />
+                      ) : null}
                     </div>
-                  </div>
 
-                  <div className="cart-item-right">
-                    <span className="cart-item-price">{item.price}€</span>
-                    <button
-                      className="cart-remove"
-                      onClick={() => removeFromCart(item._id)}
-                    >
-                      🗑 Remove
-                    </button>
-                  </div>
+                    <div className="cart-item-info">
+                      <strong>{item.name}</strong>
+                      <p>Cette maille est vraiment trop cool</p>
+                      {item.color && <p>Couleur : {item.color}</p>}
+                      <div className="qty-controls">
+                        <button onClick={() => decreaseQty(item._id)}>−</button>
+                        <span>{item.quantity}</span>
+                        <button onClick={() => increaseQty(item._id)}>+</button>
+                      </div>
+                    </div>
 
-                </li>
-              ))}
-            </ul>
+                    <div className="cart-item-right">
+                      <span className="cart-item-price">{item.price}€</span>
+                      <button
+                        className="cart-remove"
+                        onClick={() => removeFromCart(item._id)}
+                      >
+                        🗑 Remove
+                      </button>
+                    </div>
+
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* DROITE */}
-          <div className="cart-right">
+          <div className="cart-right" ref={rightRef}>
 
             <div className="cart-promo">
               <h3 className="cart-section-title">
@@ -117,7 +138,7 @@ export default function Panier() {
               </div>
               <button
                 className="checkout-btn"
-               onClick={() => router.push("/checkout")}
+                onClick={() => router.push("/checkout")}
               >
                 Procéder au paiement
               </button>

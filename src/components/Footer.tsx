@@ -1,12 +1,18 @@
+'use client'
+import { useLanguage } from '@/contexts/LanguageContext'
 import './Footer.css'
 
 export default function Footer() {
+  const { t } = useLanguage()
+
   return (
     <footer className="footer">
       <div className="footerLeft">
         <span>© 2026, Wybob</span>
-        <a href="/mentions-legales">Mentions légales</a>
-        <span>Réalisé par Oxmad-Digital</span>
+        <a href="/mentions-legales">{t.footer.legal}</a>
+        <a href="/cgv">{t.footer.cgv}</a>
+        <a href="/politique-confidentialite">{t.footer.privacy}</a>
+        <span>{t.footer.madeBy}</span>
       </div>
       <div className="footerRight">
         <a href="#" aria-label="Instagram">

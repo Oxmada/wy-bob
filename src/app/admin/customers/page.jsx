@@ -330,7 +330,10 @@ export default function CustomersPage() {
                             <span className="ac-customer-name">
                               {customer.firstname} {customer.lastname}
                             </span>
-                            {(customer.totalSpent || 0) >= VIP_THRESHOLD && (
+                            {customer.role === "admin" && (
+                              <span className="ac-admin-badge">ADMIN</span>
+                            )}
+                            {customer.role !== "admin" && (customer.totalSpent || 0) >= VIP_THRESHOLD && (
                               <span className="ac-vip-badge">VIP</span>
                             )}
                           </div>

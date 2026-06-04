@@ -1,14 +1,61 @@
 "use client";
 import { signIn, getSession, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useLanguage } from "@/contexts/LanguageContext";
 import "../../page.css";
 import "./login.css";
 
-export default function LoginPage() {
+function IconEmail() {
+  return (
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+    </svg>
+  );
+}
+
+function IconLock() {
+  return (
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+  );
+}
+
+function IconEye() {
+  return (
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  );
+}
+
+function IconEyeOff() {
+  return (
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+  );
+}
+
+function IconAlert() {
+  return (
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink: 0}}>
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  );
+}
+
+function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,21 +65,13 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
   const { data: session } = useSession();
-  const menuRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (session?.user && !loading) {
       router.push(session.user?.role === "admin" ? "/admin" : redirectTo);
     }
   }, [session, router, loading]);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!menuRef.current?.contains(e.target as Node)) {}
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
 
   function validateEmail(value: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -43,17 +82,17 @@ export default function LoginPage() {
     setError("");
 
     if (!email || !password) {
-      setError("Veuillez remplir tous les champs");
+      setError(t.login.errors.fill);
       return;
     }
 
     if (!validateEmail(email)) {
-      setError("Adresse e-mail invalide");
+      setError(t.login.errors.invalidEmail);
       return;
     }
 
-    if (password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères");
+    if (password.length < 8 || !/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+      setError(t.login.errors.weakPassword);
       return;
     }
 
@@ -62,7 +101,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (res?.error) {
-      setError("Email ou mot de passe incorrect");
+      setError(t.login.errors.invalid);
       return;
     }
 
@@ -75,17 +114,22 @@ export default function LoginPage() {
       <Navbar />
 
       <div className="loginZone">
-        <div className="login-card" ref={menuRef}>
+        <div className="login-card">
+
+          <div className="login-header">
+            <div className="login-logo">WYBOB</div>
+            <p className="login-welcome">{t.login.welcome}</p>
+          </div>
 
           <form onSubmit={handleLogin}>
             <div className="login-inputs">
               <div className="login-field">
-                <label>Adresse e-mail</label>
+                <label>{t.login.emailLabel}</label>
                 <div className="login-input-wrap">
-                  <span>@</span>
+                  <IconEmail />
                   <input
                     type="email"
-                    placeholder="Tom.exemple@gmail.com"
+                    placeholder="tom.exemple@gmail.com"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     autoComplete="off"
@@ -95,9 +139,9 @@ export default function LoginPage() {
               </div>
 
               <div className="login-field">
-                <label>Mot de passe</label>
+                <label>{t.login.passwordLabel}</label>
                 <div className="login-input-wrap">
-                  <span>🔒</span>
+                  <IconLock />
                   <input
                     type={showPwd ? "text" : "password"}
                     placeholder="••••••••••••"
@@ -105,8 +149,12 @@ export default function LoginPage() {
                     onChange={e => setPassword(e.target.value)}
                     required
                   />
-                  <button type="button" onClick={() => setShowPwd(!showPwd)}>
-                    {showPwd ? "🙈" : "👁"}
+                  <button
+                    type="button"
+                    onClick={() => setShowPwd(!showPwd)}
+                    aria-label={showPwd ? t.login.errors.fill : t.login.errors.fill}
+                  >
+                    {showPwd ? <IconEyeOff /> : <IconEye />}
                   </button>
                 </div>
               </div>
@@ -114,25 +162,33 @@ export default function LoginPage() {
 
             <div className="login-actions">
               <div className="login-options">
-                <label><input type="checkbox" /> Se souvenir de moi</label>
-                <Link href="/auth/forgot-password">Mot de passe oublié</Link>
+                <label className="login-remember">
+                  <input type="checkbox" />
+                  {t.login.remember}
+                </label>
+                <Link href="/auth/forgot-password">{t.login.forgot}</Link>
               </div>
 
-              {error && <p className="login-error">{error}</p>}
+              {error && (
+                <div className="login-error">
+                  <IconAlert />
+                  <span>{error}</span>
+                </div>
+              )}
 
               <button
                 type="submit"
                 className="login-btn"
                 disabled={loading || !email || !password}
               >
-                {loading ? "Connexion..." : "Se connecter"}
+                {loading ? t.login.loading : t.login.submit}
               </button>
             </div>
           </form>
 
           <div className="login-footer">
-            <p>Pas encore de compte ?</p>
-            <Link href="/auth/register">Créer un compte</Link>
+            <p>{t.login.noAccount}</p>
+            <Link href="/auth/register">{t.login.createAccount}</Link>
           </div>
 
         </div>
@@ -140,5 +196,13 @@ export default function LoginPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
   );
 }

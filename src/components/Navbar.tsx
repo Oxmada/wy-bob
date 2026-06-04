@@ -2,24 +2,27 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useSession, signOut } from 'next-auth/react'
 import { useCart } from '@/components/panier-context'
+import { useLanguage } from '@/contexts/LanguageContext'
 import './Navbar.css'
-
-const links = [
-  { label: 'Home', href: '/' },
-  { label: 'Notre Histoire', href: '/histoire' },
-  { label: 'Gallerie', href: '/galerie' },
-  { label: 'Contacts', href: '/contact' },
-]
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
   const { cartItems } = useCart()
+  const { t, locale, toggleLocale } = useLanguage()
+  const { data: session } = useSession()
   const totalArticles = cartItems.reduce((acc, item) => acc + item.quantity, 0)
 
-  /* Fermer le menu profil si clic ailleurs */
+  const links = [
+    { label: t.nav.home, href: '/' },
+    { label: t.nav.histoire, href: '/histoire' },
+    { label: t.nav.galerie, href: '/galerie' },
+    { label: t.nav.contact, href: '/contact' },
+  ]
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (!profileRef.current?.contains(e.target as Node)) {
@@ -56,6 +59,11 @@ export default function Navbar() {
       {/* Icônes desktop */}
       <div className="icons">
 
+        {/* Sélecteur de langue */}
+        <button className="langBtn" onClick={toggleLocale} aria-label="Switch language">
+          {locale === 'fr' ? 'EN' : 'FR'}
+        </button>
+
         {/* Panier */}
         <Link href="/panier" className="iconBtn panierIcon">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: '#1B1843' }}>
@@ -76,12 +84,25 @@ export default function Navbar() {
 
           {profileOpen && (
             <div className="profileMenu">
-              <Link href="/auth/login" onClick={() => setProfileOpen(false)}>
-                Se connecter
-              </Link>
-              <Link href="/auth/register" onClick={() => setProfileOpen(false)}>
-                Créer un compte
-              </Link>
+              {session ? (
+                <>
+                  <Link href="/dashboard" onClick={() => setProfileOpen(false)}>
+                    {t.nav.dashboard}
+                  </Link>
+                  <button onClick={() => { setProfileOpen(false); signOut({ callbackUrl: '/' }) }}>
+                    {t.nav.logout}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/login" onClick={() => setProfileOpen(false)}>
+                    {t.nav.login}
+                  </Link>
+                  <Link href="/auth/register" onClick={() => setProfileOpen(false)}>
+                    {t.nav.register}
+                  </Link>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -119,14 +140,30 @@ export default function Navbar() {
             </Link>
           ))}
           <Link href="/panier" className="mobileLink" onClick={() => setMenuOpen(false)}>
-            🛒 Panier {totalArticles > 0 && `(${totalArticles})`}
+            🛒 {t.nav.panier} {totalArticles > 0 && `(${totalArticles})`}
           </Link>
-          <Link href="/auth\login" className="mobileLink" onClick={() => setMenuOpen(false)}>
-            Se connecter
-          </Link>
-          <Link href="/auth/register" className="mobileLink" onClick={() => setMenuOpen(false)}>
-            Créer un compte
-          </Link>
+          {session ? (
+            <>
+              <Link href="/dashboard" className="mobileLink" onClick={() => setMenuOpen(false)}>
+                {t.nav.dashboard}
+              </Link>
+              <button className="mobileLink" onClick={() => { setMenuOpen(false); signOut({ callbackUrl: '/' }) }}>
+                {t.nav.logout}
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/login" className="mobileLink" onClick={() => setMenuOpen(false)}>
+                {t.nav.login}
+              </Link>
+              <Link href="/auth/register" className="mobileLink" onClick={() => setMenuOpen(false)}>
+                {t.nav.register}
+              </Link>
+            </>
+          )}
+          <button className="mobileLink mobileLangBtn" onClick={() => { toggleLocale(); setMenuOpen(false) }}>
+            {locale === 'fr' ? '🇬🇧 English' : '🇫🇷 Français'}
+          </button>
         </div>
       )}
 

@@ -4,8 +4,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/app/lib/db";
 import Order from "@/app/models/Order";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { auth } from "@/auth";
 import mongoose from "mongoose";
 import { sendEmail } from "@/app/lib/mailer";
 import { getOrderStatusUpdateEmailTemplate } from "@/app/lib/emailTemplates";
@@ -15,7 +14,7 @@ import { getOrderStatusUpdateEmailTemplate } from "@/app/lib/emailTemplates";
 // ✅ AJOUTER CETTE FONCTION GET
 export async function GET(req, { params }) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ message: "Accès refusé" }, { status: 401 });
@@ -45,7 +44,7 @@ export async function GET(req, { params }) {
 // ✅ PATCH - Mettre à jour le statut (votre code existant)
 export async function PATCH(req, { params }) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ message: "Accès refusé" }, { status: 401 });
@@ -139,7 +138,7 @@ export async function PATCH(req, { params }) {
 // ✅ DELETE - Supprimer une commande
 export async function DELETE(req, { params }) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ message: "Accès refusé" }, { status: 401 });

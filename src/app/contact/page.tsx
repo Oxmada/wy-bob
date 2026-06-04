@@ -1,10 +1,15 @@
+'use client'
+
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Image from 'next/image'
+import { useLanguage } from '@/contexts/LanguageContext'
 import '../page.css'
 import './contact.css'
 
 export default function Contact() {
+  const { t } = useLanguage()
+
   return (
     <div className="container">
 
@@ -15,33 +20,33 @@ export default function Contact() {
 
           {/* GAUCHE — Formulaire */}
           <div className="contactBloc">
-            <h1 className="contactTitre">Contacts</h1>
+            <h1 className="contactTitre">{t.contact.title}</h1>
             <input
               className="contactInput"
               type="text"
-              placeholder="Nom complet"
+              placeholder={t.contact.name}
             />
             <input
               className="contactInput"
               type="email"
-              placeholder="Adresse email"
+              placeholder={t.contact.email}
             />
             <input
               className="contactInput"
               type="tel"
-              placeholder="Numéro de téléphone (optionnel)"
+              placeholder={t.contact.phone}
             />
             <textarea
               className="contactTextarea"
-              placeholder="Message"
+              placeholder={t.contact.message}
             />
-            <button className="contactBtn">ENVOYER</button>
+            <button className="contactBtn">{t.contact.send}</button>
           </div>
 
           {/* DROITE — Image */}
           <div className="contactImage">
             <Image
-              src="/images/contact.png"
+              src="https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto/v1780486949/wybov-portee-bob-noir-crochet-lookbook_ybglrr.jpg"
               alt="Contact WYBOB"
               width={456}
               height={431}

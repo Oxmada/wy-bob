@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
+  padding: 0 clamp(16px, 3vw, 40px);
   box-sizing: border-box;
   flex-shrink: 0;
 }
@@ -22,17 +22,18 @@
 .links {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 40px;
 }
 
 .link {
   text-decoration: none;
   color: #1B1843;
-  font-size: 20px;
+  font-size: clamp(13px, 1.4vw, 18px);
   font-weight: 200;
   font-family: 'DM Sans', sans-serif;
   transition: opacity 0.2s;
   position: relative;
+  white-space: nowrap;
 }
 
 .link::after {
@@ -53,6 +54,26 @@
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.langBtn {
+  background: none;
+  border: 1.5px solid #1B1843;
+  cursor: pointer;
+  color: #1B1843;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  transition: background 0.2s, color 0.2s;
+  line-height: 1.4;
+}
+
+.langBtn:hover {
+  background: #1B1843;
+  color: #fff;
 }
 
 .iconBtn {
@@ -122,7 +143,8 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.profileMenu a {
+.profileMenu a,
+.profileMenu button {
   padding: 10px 16px;
   border-radius: 8px;
   font-family: 'DM Sans', sans-serif;
@@ -130,9 +152,15 @@
   color: #1B1843;
   text-decoration: none;
   transition: background 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
 }
 
-.profileMenu a:hover {
+.profileMenu a:hover,
+.profileMenu button:hover {
   background: rgba(27, 24, 67, 0.08);
 }
 
@@ -164,8 +192,6 @@
   }
 
   .navLogo { margin-top: 0; }
-  .links { gap: 16px; }
-  .link { font-size: 14px; }
 }
 
 /* MOBILE */
@@ -224,4 +250,19 @@
   }
 
   .mobileLink:hover { opacity: 0.7; }
+
+  button.mobileLink {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .mobileLangBtn {
+    background: none;
+    border: 1.5px solid #1B1843;
+    border-radius: 20px;
+    padding: 6px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
 }
