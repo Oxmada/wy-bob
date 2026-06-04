@@ -11,18 +11,6 @@ const CDN = 'https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto'
 
 const pages = [
   [
-    `${CDN}/v1780172698/galerie1_rteglh.png`,
-    `${CDN}/v1780172690/galerie2_j2flds.png`,
-    `${CDN}/v1780172698/galerie3_klz7l1.png`,
-    `${CDN}/v1780172701/galerie4_btnizk.png`,
-  ],
-  [
-    `${CDN}/v1780172702/galerie7_ykaezz.jpg`,
-    `${CDN}/v1780172702/galerie8_p1tkbd.jpg`,
-    `${CDN}/v1780172704/galerie9_i9yb2z.jpg`,
-    `${CDN}/v1780172706/galerie10_sz9jal.jpg`,
-  ],
-  [
     `${CDN}/v1780486486/wybob_portrait_femme_maillot_noir_chapeau_crochet_blanc_zygujw.jpg`,
     `${CDN}/v1780486485/wybob_portrait_serre_deux_femmes_chapeaux_bikinis_iwlc3v.jpg`,
     `${CDN}/v1780486485/wybob_portrait_femme_souriante_maillot_noir_main_chapeau_eodlwd.jpg`,
