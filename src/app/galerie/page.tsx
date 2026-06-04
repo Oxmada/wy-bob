@@ -13,12 +13,16 @@ const pages = [
   [
     `${CDN}/v1780486486/wybob_portrait_femme_maillot_noir_chapeau_crochet_blanc_zygujw.jpg`,
     `${CDN}/v1780486485/wybob_portrait_serre_deux_femmes_chapeaux_bikinis_iwlc3v.jpg`,
+  ],
+  [
     `${CDN}/v1780486485/wybob_portrait_femme_souriante_maillot_noir_main_chapeau_eodlwd.jpg`,
     `${CDN}/v1780486484/wybob_deux_femmes_maillots_bikinis_chapeaux_rouges_noirs_kpt1lu.jpg`,
   ],
   [
     `${CDN}/v1780486485/wybob_femme_maillot_noir_touche_bois_flotte_v9i1og.jpg`,
     `${CDN}/v1780486484/wybob_deux_femmes_face_sous_hangar_bois_turquoise_exmm9y.jpg`,
+  ],
+  [
     `${CDN}/v1780486485/wybob_trois_femmes_allongees_pont_chapeaux_crochet_rerozt.jpg`,
     `${CDN}/v1780486485/wybob_portrait_deux_femmes_de_bout_sous_hangar_by5fse.jpg`,
   ],
@@ -85,11 +89,11 @@ export default function Galerie() {
           </div>
         </div>
 
-        {/* Grille 2×2 */}
-        <div className="galerieGrid">
+        {/* Grille 1×2 ou 1×1 */}
+        <div className={`galerieGrid${images.length === 1 ? ' galerieGridSolo' : ''}`}>
           {images.map((src, i) => (
-            <div key={i} className={`galeriePhoto photo${i + 1}`} onClick={() => openLightbox(i)}>
-              <img src={src} alt={`WYBOB — photo ${currentPage * 4 + i + 1}`} />
+            <div key={i} className="galeriePhoto" onClick={() => openLightbox(i)}>
+              <img src={src} alt={`WYBOB — photo ${currentPage * 2 + i + 1}`} />
             </div>
           ))}
         </div>
