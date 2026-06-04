@@ -18,14 +18,16 @@ const DEFAULT_PRODUCT = {
 export async function GET() {
   await connectDB();
 
-  let product = await Product.findOne({}).lean();
+  let product = await Product.findOne({}).lean() as any;
 
   if (!product) {
-    product = await Product.create(DEFAULT_PRODUCT);
-    product = (product as any).toObject();
+    product = (await Product.create(DEFAULT_PRODUCT)).toObject();
+  } else if (!product.variants?.length) {
+    await Product.updateOne({ _id: product._id }, { $set: { variants: DEFAULT_PRODUCT.variants } });
+    product = await Product.findById(product._id).lean() as any;
   }
 
-  const p = product as any;
+  const p = product;
 
   return NextResponse.json({
     success: true,
