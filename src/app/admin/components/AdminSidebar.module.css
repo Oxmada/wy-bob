@@ -11,23 +11,78 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.nav {
-  padding: 20px 12px;
+/* ── Brand area ── */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.brandMark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #F9C464;
+  color: #1B1843;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 800;
+  font-family: 'Quicksand', sans-serif;
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
+}
+
+.brandInfo {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
+  min-width: 0;
+}
+
+.brandName {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+  line-height: 1;
+}
+
+.brandRole {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.38);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  line-height: 1;
+}
+
+/* ── Nav ── */
+.nav {
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
 }
 
 .section {
   font-family: 'DM Sans', sans-serif;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
-  margin: 16px 8px 6px;
+  color: rgba(255, 255, 255, 0.28);
+  margin: 14px 6px 5px;
   padding: 0;
 }
 
@@ -35,36 +90,72 @@
   margin-top: 4px;
 }
 
+/* ── Link ── */
 .link {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 9px 12px;
+  gap: 9px;
+  padding: 8px 10px;
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.58);
   font-family: 'DM Sans', sans-serif;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
   text-decoration: none;
   transition: background 0.12s, color 0.12s;
   cursor: pointer;
+  position: relative;
 }
 
 .link:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .link.active {
-  background: rgba(249, 196, 100, 0.15);
+  background: rgba(249, 196, 100, 0.13);
   color: #F9C464;
   font-weight: 600;
 }
 
-.externalIcon {
-  font-size: 11px;
-  opacity: 0.5;
+.link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: #F9C464;
+  border-radius: 0 3px 3px 0;
+}
+
+/* ── Icons ── */
+.linkIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  width: 18px;
+  opacity: 0.8;
+}
+
+.link.active .linkIcon {
+  opacity: 1;
+}
+
+.linkLabel {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.externalIcon {
+  font-size: 10px;
+  opacity: 0.35;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* ── Responsive : hidden on mobile ── */

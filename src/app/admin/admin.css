@@ -39,3 +39,51 @@ body:has(.admin-root) {
   overflow-x: hidden;
   min-height: 0;
 }
+
+/* ── Header overrides in admin context ── */
+.admin-root .db-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 0 rgba(249, 196, 100, 0.22);
+}
+
+.admin-root .db-header-link {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.admin-root .db-header-link:hover {
+  opacity: 1;
+  color: #F9C464;
+}
+
+/* ── Footer overrides in admin context ── */
+.admin-root .db-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  height: 36px;
+}
+
+.admin-root .db-footer-left {
+  font-size: 11px;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.admin-root .db-footer-left a {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.admin-root .db-footer-left a:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.admin-root .db-footer-right {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.admin-root .db-footer-right a {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.admin-root .db-footer-right a:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
