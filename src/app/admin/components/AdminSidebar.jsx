@@ -18,6 +18,7 @@ const externalTools = [
   { href: 'https://ap.www.namecheap.com/dashboard', label: 'Namecheap' },
   { href: 'https://dashboard.stripe.com/', label: 'Stripe' },
   { href: 'https://www.chronopost.fr/expedier', label: 'Chronopost' },
+  { href: 'https://github.com/Oxmada/wy-bob', label: 'GitHub' },
 ];
 
 export default function AdminSidebar() {
