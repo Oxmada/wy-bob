@@ -26,7 +26,7 @@ export default function AdminSidebar() {
   return (
     <aside className={styles.sidebar}>
       <nav className={styles.nav}>
-        <p className={styles.section}>Navigation</p>
+        <p className={styles.section}>Gestion du site</p>
         {internalLinks.map((link) => (
           <Link
             key={link.href}
