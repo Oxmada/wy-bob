@@ -38,8 +38,6 @@ export default function Panier() {
     );
   }
 
-  const tva = Math.round(cartTotal * 0.2);
-  const totalTTC = cartTotal + tva;
 
   return (
     <div className="container">
@@ -127,14 +125,10 @@ export default function Panier() {
                 <span>Sous-total ({cartItems.length})</span>
                 <span>{cartTotal}€</span>
               </div>
-              <div className="summary-row">
-                <span>TVA (20%)</span>
-                <span>{tva}€</span>
-              </div>
               <hr className="summary-divider" />
               <div className="summary-row summary-total">
                 <span>Total</span>
-                <span>{totalTTC}€</span>
+                <span>{cartTotal}€</span>
               </div>
               <button
                 className="checkout-btn"
