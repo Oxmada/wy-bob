@@ -156,8 +156,8 @@ export default function ReferralPage() {
             className={`${styles.toggleBtn} ${shareAll ? styles.toggleBtnActive : ""}`}
             onClick={() => { setShareAll(true); if (sliderVal === 0) setSliderVal(Math.floor((referral?.totalPercent ?? 10) / 2)); }}
           >
-            <span className={styles.toggleBtnPercent}>{referral?.totalPercent}% partagé</span>
-            <span className={styles.toggleBtnLabel}>Partager</span>
+            <span className={styles.toggleBtnPercent}>{referral?.totalPercent}%</span>
+            <span className={styles.toggleBtnLabel}>Partager avec le filleul</span>
             <span className={styles.toggleBtnHint}>Le filleul reçoit une réduction</span>
           </button>
         </div>
