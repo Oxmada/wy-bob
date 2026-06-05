@@ -914,6 +914,10 @@ body:has(.db-root) {
     display: none;
   }
 
+  .db-header {
+    grid-template-columns: 1fr auto;
+  }
+
   .db-header-links {
     display: none;
   }
