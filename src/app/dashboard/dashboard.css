@@ -898,6 +898,18 @@ body:has(.db-root) {
 
 /* Mobile (≤810px) : sidebar masquée, bottom nav visible */
 @media (max-width: 810px) {
+  body:has(.db-root) {
+    padding: 0 !important;
+  }
+
+  .db-root {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
   .db-footer {
     display: none;
   }
@@ -917,8 +929,10 @@ body:has(.db-root) {
     left: 0;
     right: 0;
     height: 60px;
-    background: #fff;
-    border-top: 1px solid #e2e5ea;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.45);
     z-index: 100;
     align-items: stretch;
   }
@@ -974,6 +988,19 @@ body:has(.db-root) {
   .db-page-title {
     padding: 20px 16px 16px 16px;
   }
+
+  .db-card {
+    padding: 14px 16px;
+    margin: 12px 0;
+  }
+
+  .db-modal {
+    max-width: calc(100vw - 32px);
+    max-height: calc(100dvh - 80px);
+    overflow-y: auto;
+    margin: 0;
+    border-radius: 16px;
+  }
 }
 
 @media (max-width: 600px) {
@@ -988,6 +1015,39 @@ body:has(.db-root) {
 
   .db-form {
     max-width: 100%;
+  }
+
+  .db-kpi-card {
+    padding: 14px 16px;
+  }
+
+  .db-summary-address-chip {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
+/* Très petit mobile (≤480px) */
+@media (max-width: 480px) {
+  .db-header {
+    padding: 0 12px;
+  }
+
+  .db-kpi-value {
+    font-size: 22px;
+  }
+
+  .order-card-header {
+    padding: 12px 14px;
+  }
+
+  .order-card-body {
+    padding: 12px 14px;
+  }
+
+  .timeline-label {
+    font-size: 9px;
+    max-width: 48px;
   }
 }
 
