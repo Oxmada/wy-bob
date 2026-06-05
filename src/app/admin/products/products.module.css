@@ -633,4 +633,6 @@
   .modal     { max-height: 95vh; border-radius: 12px; }
   .fieldRow  { grid-template-columns: 1fr; }
   .variantsGrid { grid-template-columns: 1fr 1fr; }
+  .variantActions { flex-direction: column; }
+  .btnEdit, .btnDelete { width: 100%; }
 }
