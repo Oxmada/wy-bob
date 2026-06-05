@@ -101,4 +101,12 @@ body:has(.admin-root) {
   .admin-root .db-footer {
     display: none;
   }
+
+  .admin-root .db-header-logout-label {
+    display: none;
+  }
+
+  .admin-root .db-header-logout {
+    padding: 5px 8px;
+  }
 }
