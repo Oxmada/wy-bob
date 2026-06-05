@@ -35,6 +35,11 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [menuOpen])
+
   return (
     <nav className="navbar">
 
@@ -114,58 +119,82 @@ export default function Navbar() {
       {/* Bouton hamburger */}
       <button
         className="hamburgerBtn"
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label="Menu"
+        onClick={() => setMenuOpen(true)}
+        aria-label="Ouvrir le menu"
       >
-        {menuOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#1B1843" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#1B1843" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        )}
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#1B1843" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
       </button>
 
-      {/* Menu mobile */}
+      {/* Menu mobile plein écran */}
       {menuOpen && (
         <div className="mobileMenu">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="mobileLink"
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.label}
+
+          {/* Header : logo + bouton fermer */}
+          <div className="mobileMenuHeader">
+            <Link href="/" className="mobileMenuLogo" onClick={() => setMenuOpen(false)}>
+              <Image
+                src="/images/logo.png"
+                alt="WYBOB Logo"
+                width={56}
+                height={56}
+                style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+              />
             </Link>
-          ))}
-          <Link href="/panier" className="mobileLink" onClick={() => setMenuOpen(false)}>
-            🛒 {t.nav.panier} {totalArticles > 0 && `(${totalArticles})`}
-          </Link>
-          {session ? (
-            <>
-              <Link href="/dashboard" className="mobileLink" onClick={() => setMenuOpen(false)}>
-                {t.nav.dashboard}
+            <button className="mobileCloseBtn" onClick={() => setMenuOpen(false)} aria-label="Fermer le menu">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Liens de navigation */}
+          <nav className="mobileNavLinks">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="mobileLink"
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
               </Link>
-              <button className="mobileLink" onClick={() => { setMenuOpen(false); signOut({ redirect: false }).then(() => router.push('/')) }}>
-                {t.nav.logout}
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/auth/login" className="mobileLink" onClick={() => setMenuOpen(false)}>
-                {t.nav.login}
-              </Link>
-              <Link href="/auth/register" className="mobileLink" onClick={() => setMenuOpen(false)}>
-                {t.nav.register}
-              </Link>
-            </>
-          )}
-          <button className="mobileLink mobileLangBtn" onClick={() => { toggleLocale(); setMenuOpen(false) }}>
-            {locale === 'fr' ? '🇬🇧 English' : '🇫🇷 Français'}
-          </button>
+            ))}
+          </nav>
+
+          {/* Séparateur */}
+          <div className="mobileSeparator" />
+
+          {/* Actions secondaires */}
+          <div className="mobileActions">
+            <Link href="/panier" className="mobileActionLink" onClick={() => setMenuOpen(false)}>
+              🛒 {t.nav.panier}{totalArticles > 0 && ` (${totalArticles})`}
+            </Link>
+            {session ? (
+              <>
+                <Link href="/dashboard" className="mobileActionLink" onClick={() => setMenuOpen(false)}>
+                  👤 {t.nav.dashboard}
+                </Link>
+                <button className="mobileActionLink" onClick={() => { setMenuOpen(false); signOut({ redirect: false }).then(() => router.push('/')) }}>
+                  {t.nav.logout}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/login" className="mobileActionLink" onClick={() => setMenuOpen(false)}>
+                  👤 {t.nav.login}
+                </Link>
+                <Link href="/auth/register" className="mobileActionLink" onClick={() => setMenuOpen(false)}>
+                  {t.nav.register}
+                </Link>
+              </>
+            )}
+            <button className="mobileLangBtn" onClick={() => { toggleLocale(); setMenuOpen(false) }}>
+              {locale === 'fr' ? '🇬🇧 English' : '🇫🇷 Français'}
+            </button>
+          </div>
+
         </div>
       )}
 

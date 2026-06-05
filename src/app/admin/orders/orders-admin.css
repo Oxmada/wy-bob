@@ -574,6 +574,30 @@
 }
 
 @media (max-width: 640px) {
-  .ap-topbar { flex-wrap: wrap; }
+  .ap-topbar {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  .ap-topbar-title-group {
+    order: -1;
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  .ac-btn-export {
+    order: 1;
+    flex: 1;
+    justify-content: center;
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+
+  .ap-back-btn {
+    order: 2;
+    flex: 1;
+    justify-content: center;
+  }
+
   .ap-filters { display: none; }
 }
