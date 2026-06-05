@@ -628,7 +628,8 @@
 }
 
 @media (max-width: 640px) {
-  .topbar    { flex-wrap: wrap; }
+  .topbar    { flex-wrap: wrap; row-gap: 10px; }
+  .topbarTitleGroup { width: 100%; flex-basis: 100%; }
   .modal     { max-height: 95vh; border-radius: 12px; }
   .fieldRow  { grid-template-columns: 1fr; }
   .variantsGrid { grid-template-columns: 1fr 1fr; }
