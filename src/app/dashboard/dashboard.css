@@ -108,6 +108,37 @@ body:has(.db-root) {
   gap: 10px;
 }
 
+.db-header-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.88);
+  text-decoration: none;
+  padding: 5px 8px;
+  transition: color 0.15s;
+}
+.db-header-cart:hover { color: #fff; }
+
+.db-header-cart-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #F9C464;
+  color: #1B1843;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Quicksand', sans-serif;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+}
+
 .db-header-lang {
   display: flex;
   align-items: center;

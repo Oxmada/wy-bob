@@ -7,6 +7,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import { useSession } from "next-auth/react";
 
 /* ===========================
    TYPES
@@ -49,25 +50,37 @@ const PanierContext = createContext<PanierContextType | undefined>(undefined);
    PROVIDER
    =========================== */
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { data: session, status } = useSession();
   const [cartItems, setCartItems] = useState<PanierItem[]>([]);
   const [appliedPromo, setAppliedPromo] = useState<AppliedPromo | null>(null);
+  const [loadedForUser, setLoadedForUser] = useState<string | null>(null);
 
-  /* 🔄 Charger depuis localStorage */
+  const storageKey = session?.user?.id
+    ? `wybob-cart-${session.user.id}`
+    : "wybob-cart-guest";
+
+  /* 🔄 Charger/réinitialiser le panier quand l'utilisateur change */
   useEffect(() => {
+    if (status === "loading") return;
+    const userId = session?.user?.id ?? "guest";
+    if (userId === loadedForUser) return;
+
     if (typeof window !== 'undefined') {
-      const savedCart = localStorage.getItem("wybob-cart");
-      if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
-      }
+      const savedCart = localStorage.getItem(storageKey);
+      setCartItems(savedCart ? JSON.parse(savedCart) : []);
+    } else {
+      setCartItems([]);
     }
-  }, []);
+    setAppliedPromo(null);
+    setLoadedForUser(userId);
+  }, [status, session?.user?.id]);
 
   /* 💾 Sauvegarde auto */
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem("wybob-cart", JSON.stringify(cartItems));
+    if (typeof window !== 'undefined' && loadedForUser !== null) {
+      localStorage.setItem(storageKey, JSON.stringify(cartItems));
     }
-  }, [cartItems]);
+  }, [cartItems, storageKey, loadedForUser]);
 
   /* ➕ Ajouter au panier */
   const addToCart = (product: Omit<PanierItem, 'quantity'>, qty = 1) => {
