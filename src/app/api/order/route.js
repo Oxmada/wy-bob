@@ -8,8 +8,17 @@ import Order from "@/app/models/Order";
 import Counter from "@/app/models/Counter";
 import Product from "@/app/models/Product";
 import PromoCode from "@/app/models/PromoCode";
+import ReferralConfig from "@/app/models/ReferralConfig";
+import User from "@/app/models/User";
 import { sendEmail } from "@/app/lib/mailer";
 import Customer from "@/app/models/Customer";
+
+function generateRewardCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let suffix = "";
+  for (let i = 0; i < 6; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+  return `PARRAIN-${suffix}`;
+}
 
 export async function POST(req) {
   console.log("🚀 API /api/order APPELÉE");
@@ -75,14 +84,65 @@ export async function POST(req) {
     // Apply promo discount — re-validate server-side for safety
     let appliedDiscount = 0;
     let validatedPromoCode = null;
+    let referralRewardData = null;
+
     if (promoCode) {
       const promo = await PromoCode.findOne({ code: promoCode.toUpperCase().trim(), active: true });
-      if (promo && (!promo.expiresAt || new Date(promo.expiresAt) >= new Date()) && (promo.maxUses === null || promo.usedCount < promo.maxUses)) {
-        appliedDiscount = promo.type === "percent"
-          ? Math.round(total * (promo.value / 100) * 100) / 100
-          : Math.min(promo.value, total);
-        validatedPromoCode = promo.code;
-        await PromoCode.findByIdAndUpdate(promo._id, { $inc: { usedCount: 1 } });
+      if (
+        promo &&
+        (!promo.expiresAt || new Date(promo.expiresAt) >= new Date()) &&
+        (promo.maxUses === null || promo.usedCount < promo.maxUses)
+      ) {
+        if (promo.isReferral) {
+          const userId = session?.user?.id;
+          const selfReferral = userId && String(promo.referrerId) === String(userId);
+          const alreadyUsed = userId && promo.usedByUserIds.some((id) => String(id) === String(userId));
+
+          if (userId && !selfReferral && !alreadyUsed) {
+            const effectivePercent = promo.filleulPercent ?? 0;
+            appliedDiscount = Math.round(total * (effectivePercent / 100) * 100) / 100;
+            validatedPromoCode = promo.code;
+
+            await PromoCode.findByIdAndUpdate(promo._id, {
+              $inc: { usedCount: 1 },
+              $push: { usedByUserIds: userId },
+            });
+
+            if (promo.parrainPercent > 0) {
+              const referralConfig = await ReferralConfig.findOne();
+              const validityDays = referralConfig?.rewardValidityDays ?? 30;
+              const expiresAt = new Date();
+              expiresAt.setDate(expiresAt.getDate() + validityDays);
+
+              let rewardCode;
+              let attempts = 0;
+              do {
+                rewardCode = generateRewardCode();
+                attempts++;
+              } while (attempts < 10 && (await PromoCode.exists({ code: rewardCode })));
+
+              await PromoCode.create({
+                code: rewardCode,
+                type: "percent",
+                value: promo.parrainPercent,
+                maxUses: 1,
+                active: true,
+                expiresAt,
+              });
+
+              const parrain = await User.findById(promo.referrerId).select("email name");
+              if (parrain) {
+                referralRewardData = { email: parrain.email, name: parrain.name, rewardCode, parrainPercent: promo.parrainPercent, validityDays };
+              }
+            }
+          }
+        } else {
+          appliedDiscount = promo.type === "percent"
+            ? Math.round(total * (promo.value / 100) * 100) / 100
+            : Math.min(promo.value, total);
+          validatedPromoCode = promo.code;
+          await PromoCode.findByIdAndUpdate(promo._id, { $inc: { usedCount: 1 } });
+        }
       }
     }
     const finalTotal = Math.max(0, Math.round((total - appliedDiscount) * 100) / 100);
@@ -299,6 +359,49 @@ export async function POST(req) {
     } catch (emailError) {
       console.error("❌ Erreur email CLIENT:", emailError.message);
       emailErrors.push({ type: "client", error: emailError.message });
+    }
+
+    if (referralRewardData) {
+      const { email: parrainEmail, name: parrainName, rewardCode, parrainPercent, validityDays } = referralRewardData;
+      const rewardEmailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+        <body style="margin:0;padding:0;background-color:#f3f4f6;">
+          <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:white;">
+            <div style="background:linear-gradient(135deg,#1B1843,#2a236e);color:white;padding:30px;text-align:center;">
+              <h1 style="margin:0;font-size:26px;">Votre filleul a commandé !</h1>
+              <p style="margin:10px 0 0;opacity:.85;font-size:15px;">Vous avez gagné une récompense de parrainage</p>
+            </div>
+            <div style="padding:30px;">
+              <p style="color:#4b5563;line-height:1.7;">Bonjour ${parrainName},<br><br>
+              Un de vos filleuls vient de passer sa première commande grâce à votre code de parrainage. En récompense, voici votre bon de réduction :</p>
+              <div style="background:#f0fdf4;border:2px dashed #22c55e;border-radius:12px;padding:24px;text-align:center;margin:24px 0;">
+                <p style="margin:0 0 8px;font-size:13px;color:#166534;font-weight:600;letter-spacing:.05em;text-transform:uppercase;">Votre code de réduction</p>
+                <p style="margin:0;font-size:28px;font-weight:800;color:#15803d;letter-spacing:3px;">${rewardCode}</p>
+                <p style="margin:12px 0 0;font-size:14px;color:#16a34a;">− ${parrainPercent}% sur votre prochaine commande</p>
+                <p style="margin:6px 0 0;font-size:12px;color:#6b7280;">Valable ${validityDays} jours · Usage unique</p>
+              </div>
+              <p style="color:#6b7280;font-size:13px;line-height:1.6;">Utilisez ce code au moment du paiement sur notre site. Il ne peut être utilisé qu'une seule fois.</p>
+            </div>
+            <div style="background:#1f2937;color:white;padding:24px;text-align:center;">
+              <p style="margin:0;opacity:.7;font-size:13px;">© ${new Date().getFullYear()} WYBOB — Merci pour votre fidélité !</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+      try {
+        await sendEmail({
+          to: parrainEmail,
+          subject: `Votre récompense de parrainage — ${parrainPercent}% de réduction !`,
+          html: rewardEmailHtml,
+        });
+        console.log("✅ Email PARRAIN envoyé à:", parrainEmail);
+      } catch (emailError) {
+        console.error("❌ Erreur email PARRAIN:", emailError.message);
+        emailErrors.push({ type: "parrain", error: emailError.message });
+      }
     }
 
     return NextResponse.json(

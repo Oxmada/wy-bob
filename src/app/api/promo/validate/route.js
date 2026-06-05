@@ -1,6 +1,7 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { connectDB } from "@/app/lib/db";
 import PromoCode from "@/app/models/PromoCode";
 
@@ -35,10 +36,37 @@ export async function POST(request) {
       );
     }
 
+    if (promo.isReferral) {
+      const session = await auth();
+      if (!session) {
+        return NextResponse.json(
+          { message: "Créez un compte pour utiliser un code de parrainage" },
+          { status: 401 }
+        );
+      }
+      if (String(promo.referrerId) === String(session.user.id)) {
+        return NextResponse.json(
+          { message: "Vous ne pouvez pas utiliser votre propre code de parrainage" },
+          { status: 400 }
+        );
+      }
+      const alreadyUsed = promo.usedByUserIds.some(
+        (id) => String(id) === String(session.user.id)
+      );
+      if (alreadyUsed) {
+        return NextResponse.json(
+          { message: "Vous avez déjà utilisé ce code de parrainage" },
+          { status: 400 }
+        );
+      }
+    }
+
+    const effectiveValue = promo.isReferral ? (promo.filleulPercent ?? 0) : promo.value;
+
     const discount =
       promo.type === "percent"
-        ? Math.round(cartTotal * (promo.value / 100) * 100) / 100
-        : Math.min(promo.value, cartTotal);
+        ? Math.round(cartTotal * (effectiveValue / 100) * 100) / 100
+        : Math.min(effectiveValue, cartTotal);
 
     return NextResponse.json({
       success: true,
@@ -46,7 +74,10 @@ export async function POST(request) {
         _id: promo._id,
         code: promo.code,
         type: promo.type,
-        value: promo.value,
+        value: effectiveValue,
+        isReferral: promo.isReferral,
+        filleulPercent: promo.filleulPercent,
+        parrainPercent: promo.parrainPercent,
       },
       discount,
     });

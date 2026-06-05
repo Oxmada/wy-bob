@@ -1,0 +1,265 @@
+.page {
+  max-width: 640px;
+  padding: 32px 0;
+}
+
+.loading {
+  padding: 60px 0;
+  color: #78716c;
+  font-size: 14px;
+}
+
+.inactive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 80px 20px;
+  color: #a8a29e;
+  text-align: center;
+  font-size: 15px;
+}
+.inactiveSub { font-size: 13px; color: #c4bfba; margin: 0; }
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1B1843;
+  margin: 0 0 6px;
+  letter-spacing: -0.4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #78716c;
+  margin: 0 0 28px;
+}
+
+/* ── Code card ── */
+.codeCard {
+  background: linear-gradient(135deg, #1B1843, #2a236e);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.codeLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin: 0 0 12px;
+}
+
+.codeRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.code {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  flex: 1;
+}
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  transition: all 0.15s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.copyBtn:hover { background: rgba(255,255,255,0.2); }
+.copyBtnCopied { background: rgba(34,197,94,0.3); border-color: rgba(34,197,94,0.5); }
+
+.codeUsed {
+  font-size: 12px;
+  opacity: 0.55;
+  margin: 0;
+}
+
+/* ── Split card ── */
+.splitCard {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e7e5e4;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.splitTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1B1843;
+  margin: 0 0 4px;
+}
+
+.splitSub {
+  font-size: 13px;
+  color: #78716c;
+  margin: 0 0 20px;
+}
+
+.toggleRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.toggleBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 2px solid #e7e5e4;
+  background: #fafaf9;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  text-align: left;
+}
+.toggleBtn:hover { border-color: #1B1843; }
+.toggleBtnActive {
+  border-color: #1B1843;
+  background: #f0eeff;
+}
+
+.toggleBtnPercent {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1B1843;
+}
+
+.toggleBtnLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c1917;
+}
+
+.toggleBtnHint {
+  font-size: 11px;
+  color: #a8a29e;
+}
+
+/* ── Slider ── */
+.sliderSection {
+  margin-bottom: 20px;
+}
+
+.sliderLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sliderParty {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sliderPartyRight { text-align: right; }
+
+.sliderPartyName {
+  font-size: 11px;
+  color: #78716c;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sliderPartyVal {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1B1843;
+}
+
+.slider {
+  width: 100%;
+  height: 6px;
+  accent-color: #1B1843;
+  cursor: pointer;
+}
+
+.saveBtn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 10px;
+  background: #F9C464;
+  color: #1B1843;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.saveBtn:hover { background: #f5b83d; }
+.saveBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── How card ── */
+.howCard {
+  background: #fafaf9;
+  border-radius: 14px;
+  border: 1px solid #f0eeec;
+  padding: 20px 24px;
+}
+
+.howTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #78716c;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 12px;
+}
+
+.howList {
+  padding-left: 20px;
+  margin: 0;
+  font-size: 13.5px;
+  color: #44403c;
+  line-height: 1.9;
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  animation: slideUp 0.2s ease;
+}
+.toastSuccess { background: #1B1843; color: #fff; }
+.toastError { background: #ef4444; color: #fff; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 500px) {
+  .code { font-size: 20px; letter-spacing: 2px; }
+  .toggleRow { grid-template-columns: 1fr; }
+}
