@@ -3,7 +3,7 @@ export type Locale = 'fr' | 'en'
 export const translations = {
   fr: {
     nav: {
-      home: 'Home',
+      home: 'Notre bob',
       histoire: 'Notre Histoire',
       galerie: 'Gallerie',
       contact: 'Contacts',
@@ -232,7 +232,7 @@ export const translations = {
   },
   en: {
     nav: {
-      home: 'Home',
+      home: 'Notre bob',
       histoire: 'Our Story',
       galerie: 'Gallery',
       contact: 'Contact',
