@@ -580,23 +580,23 @@
   }
 
   .ap-topbar-title-group {
-    order: -1;
+    order: 3;
     width: 100%;
     flex-basis: 100%;
   }
 
-  .ac-btn-export {
+  .ap-back-btn {
     order: 1;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .ac-btn-export {
+    order: 2;
     flex: 1;
     justify-content: center;
     padding: 7px 14px;
     font-size: 13px;
-  }
-
-  .ap-back-btn {
-    order: 2;
-    flex: 1;
-    justify-content: center;
   }
 
   .ap-filters { display: none; }
