@@ -265,21 +265,6 @@ export default function DashboardStats() {
 
       </div>
 
-      {/* ── Top 5 produits ── */}
-      <div style={{ ...card, padding: "18px 22px" }}>
-        <SectionHeader label="Top 5 produits" />
-        <ResponsiveContainer width="100%" height={160}>
-          <BarChart data={topProducts} layout="vertical" margin={{ top: 0, right: 12, bottom: 0, left: 0 }}>
-            <XAxis type="number" fontSize={10} tick={{ fill: N.muted, fontFamily: font }} tickLine={false} axisLine={false} />
-            <YAxis dataKey="name" type="category" width={140} tick={{ fill: N.text, fontSize: 11, fontFamily: font }} tickLine={false} axisLine={false} />
-            <Tooltip
-              contentStyle={{ background: N.bg, border: `1px solid ${N.border}`, borderRadius: "8px", fontSize: "12px", fontFamily: font, boxShadow: N.shadowMd }}
-            />
-            <Bar dataKey="quantity" fill="#F9C464" radius={[0, 6, 6, 0]} maxBarSize={12} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
       {/* ── Dernières commandes + Top clients ── */}
       <div className={styles.tablesGrid}>
 
@@ -290,7 +275,12 @@ export default function DashboardStats() {
           </div>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
-              <tr>{["Client", "Montant", "Statut", "Date"].map(h => <th key={h} style={thStyle}>{h}</th>)}</tr>
+              <tr>
+                <th style={thStyle}>Client</th>
+                <th style={thStyle}>Montant</th>
+                <th style={thStyle}>Statut</th>
+                <th style={thStyle} className={styles.dateCol}>Date</th>
+              </tr>
             </thead>
             <tbody>
               {recentOrders.map((order, i) => (
@@ -298,7 +288,7 @@ export default function DashboardStats() {
                   <td style={tdStyle}>{order.customer.firstname} {order.customer.lastname}</td>
                   <td style={{ ...tdStyle, fontWeight: "700", whiteSpace: "nowrap" }}>{parseFloat(order.total).toLocaleString("fr-FR")} €</td>
                   <td style={tdStyle}><StatusBadge status={order.status} /></td>
-                  <td style={{ ...tdStyle, color: N.muted, fontSize: "11px", whiteSpace: "nowrap" }}>{new Date(order.createdAt).toLocaleDateString("fr-FR")}</td>
+                  <td style={{ ...tdStyle, color: N.muted, fontSize: "11px", whiteSpace: "nowrap" }} className={styles.dateCol}>{new Date(order.createdAt).toLocaleDateString("fr-FR")}</td>
                 </tr>
               ))}
             </tbody>

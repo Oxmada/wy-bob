@@ -83,4 +83,5 @@
 @media (max-width: 640px) {
   .container { padding: 14px; }
   .kpiGrid   { grid-template-columns: repeat(2, 1fr); }
+  .dateCol   { display: none; }
 }
