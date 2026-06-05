@@ -263,6 +263,15 @@ export default function AdminGalleryPage() {
           />
         </label>
         <p className={styles.uploadHint}>Formats acceptés : JPG, PNG, WebP — upload vers Cloudinary</p>
+        <a
+          href="https://squoosh.app"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          className={styles.backBtn}
+          style={{ marginTop: "10px", display: "inline-flex" }}
+        >
+          🗜 Compresser une image
+        </a>
       </section>
 
       {/* Photos grid avec drag-and-drop */}
