@@ -75,10 +75,20 @@
 .btnDanger { background: #ef4444; color: #fff; border: none; }
 .btnDanger:hover { background: #dc2626; }
 .btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
   background: transparent;
   color: #1B1843;
   border: 1.5px solid #d4d0cc;
-  font-weight: 600;
 }
 .btnGhost:hover { background: rgba(27, 24, 67, 0.05); border-color: #1B1843; }
 
