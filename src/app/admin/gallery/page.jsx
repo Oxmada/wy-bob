@@ -267,8 +267,7 @@ export default function AdminGalleryPage() {
           href="https://squoosh.app"
           target="_blank"
           rel="noopener noreferrer nofollow"
-          className={styles.backBtn}
-          style={{ marginTop: "10px", display: "inline-flex" }}
+          className={styles.squooshBtn}
         >
           🗜 Compresser une image
         </a>

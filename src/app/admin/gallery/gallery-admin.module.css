@@ -129,6 +129,26 @@
   color: #a8a29e;
 }
 
+.squooshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 7px 14px;
+  background: #F9C464;
+  color: #1B1843;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.squooshBtn:hover { background: #e6af4e; }
+
 /* ── Grille photos ── */
 .photosGrid {
   display: grid;
