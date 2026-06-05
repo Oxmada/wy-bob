@@ -2,12 +2,14 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { useCart } from '@/components/panier-context'
 import { useLanguage } from '@/contexts/LanguageContext'
 import './Navbar.css'
 
 export default function Navbar() {
+  const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
@@ -89,7 +91,7 @@ export default function Navbar() {
                   <Link href="/dashboard" onClick={() => setProfileOpen(false)}>
                     {t.nav.dashboard}
                   </Link>
-                  <button onClick={() => { setProfileOpen(false); signOut({ callbackUrl: window.location.origin + '/' }) }}>
+                  <button onClick={() => { setProfileOpen(false); signOut({ redirect: false }).then(() => router.push('/')) }}>
                     {t.nav.logout}
                   </button>
                 </>
@@ -147,7 +149,7 @@ export default function Navbar() {
               <Link href="/dashboard" className="mobileLink" onClick={() => setMenuOpen(false)}>
                 {t.nav.dashboard}
               </Link>
-              <button className="mobileLink" onClick={() => { setMenuOpen(false); signOut({ callbackUrl: window.location.origin + '/' }) }}>
+              <button className="mobileLink" onClick={() => { setMenuOpen(false); signOut({ redirect: false }).then(() => router.push('/')) }}>
                 {t.nav.logout}
               </button>
             </>
