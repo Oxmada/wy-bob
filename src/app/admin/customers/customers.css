@@ -605,6 +605,27 @@
 }
 
 @media (max-width: 640px) {
-  .ap-topbar  { flex-wrap: wrap; }
-  .ap-btn-add { width: 100%; justify-content: center; order: 3; }
+  .ap-topbar { flex-wrap: wrap; row-gap: 10px; }
+
+  .ap-topbar-title-group {
+    order: 3;
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  .ap-back-btn {
+    order: 1;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .ac-btn-export {
+    order: 2;
+    flex: 1;
+    justify-content: center;
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+
+  .ap-btn-add { width: 100%; justify-content: center; order: 4; }
 }
