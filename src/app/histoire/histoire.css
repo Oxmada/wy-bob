@@ -133,7 +133,7 @@
 @media (max-width: 767px) {
 
   .container {
-   width: calc(100% - 40px);
+    width: 100%;
     height: auto;
     min-height: 95dvh;
     border-radius: 24px;
