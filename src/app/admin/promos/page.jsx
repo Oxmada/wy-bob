@@ -137,7 +137,7 @@ export default function PromosPage() {
       {/* Confirm modal */}
       {confirmModal && (
         <div className={styles.overlay}>
-          <div className={styles.modal}>
+          <div className={`${styles.modal} ${styles.modalCompact}`}>
             <p className={styles.modalMsg}>{confirmModal.message}</p>
             <div className={styles.modalActions}>
               <button className={styles.btnGhost} onClick={() => setConfirmModal(null)}>Annuler</button>
@@ -154,93 +154,133 @@ export default function PromosPage() {
 
       {/* Create modal */}
       {showCreateModal && (
-        <div className={styles.overlay}>
+        <div
+          className={styles.overlay}
+          onClick={(e) => { if (e.target === e.currentTarget) { setShowCreateModal(false); setFormError(""); } }}
+        >
           <div className={styles.modal}>
-            <h3 className={styles.modalTitle}>Nouveau code promo</h3>
-            <form onSubmit={handleCreate} className={styles.form}>
-              <div className={styles.formRow}>
-                <label className={styles.label}>Code *</label>
-                <input
-                  className={styles.input}
-                  placeholder="ex : SUMMER20"
-                  value={form.code}
-                  onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
-                  required
-                />
+
+            {/* Header */}
+            <div className={styles.modalHeader}>
+              <div className={styles.modalHeaderIcon}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+                  <line x1="7" y1="7" x2="7.01" y2="7"/>
+                </svg>
               </div>
-              <div className={styles.formRow}>
-                <label className={styles.label}>Type *</label>
-                <select
-                  className={styles.input}
-                  value={form.type}
-                  onChange={(e) => setForm({ ...form, type: e.target.value })}
-                >
-                  <option value="percent">Pourcentage (%)</option>
-                  <option value="fixed">Montant fixe (€)</option>
-                </select>
+              <div className={styles.modalHeaderText}>
+                <h3 className={styles.modalTitle}>Nouveau code promo</h3>
+                <p className={styles.modalSubtitle}>Créez un code de réduction personnalisé</p>
               </div>
-              <div className={styles.formRow}>
-                <label className={styles.label}>
-                  Valeur * {form.type === "percent" ? "(entre 1 et 100)" : "(€)"}
-                </label>
-                <input
-                  className={styles.input}
-                  type="number"
-                  min="1"
-                  max={form.type === "percent" ? 100 : undefined}
-                  step="0.01"
-                  placeholder={form.type === "percent" ? "20" : "10"}
-                  value={form.value}
-                  onChange={(e) => setForm({ ...form, value: e.target.value })}
-                  required
-                />
-              </div>
-              <div className={styles.formRow}>
-                <label className={styles.label}>Montant minimum de commande (€)</label>
-                <input
-                  className={styles.input}
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0"
-                  value={form.minOrderAmount}
-                  onChange={(e) => setForm({ ...form, minOrderAmount: e.target.value })}
-                />
-              </div>
-              <div className={styles.formRow}>
-                <label className={styles.label}>Limite d'utilisation</label>
-                <input
-                  className={styles.input}
-                  type="number"
-                  min="1"
-                  placeholder="Illimitée"
-                  value={form.maxUses}
-                  onChange={(e) => setForm({ ...form, maxUses: e.target.value })}
-                />
-              </div>
-              <div className={styles.formRow}>
-                <label className={styles.label}>Date d'expiration</label>
-                <input
-                  className={styles.input}
-                  type="date"
-                  value={form.expiresAt}
-                  onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
-                />
-              </div>
-              {formError && <p className={styles.formError}>{formError}</p>}
-              <div className={styles.modalActions}>
-                <button
-                  type="button"
-                  className={styles.btnGhost}
-                  onClick={() => { setShowCreateModal(false); setFormError(""); }}
-                >
-                  Annuler
-                </button>
-                <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`} disabled={creating}>
-                  {creating ? "Création..." : "Créer le code"}
-                </button>
-              </div>
-            </form>
+              <button
+                className={styles.modalClose}
+                onClick={() => { setShowCreateModal(false); setFormError(""); }}
+                aria-label="Fermer"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className={styles.modalBody}>
+              <form onSubmit={handleCreate}>
+                <div className={styles.formGrid}>
+
+                  <div className={styles.formRowFull}>
+                    <label className={styles.label}>Code *</label>
+                    <input
+                      className={styles.input}
+                      placeholder="ex : SUMMER20"
+                      value={form.code}
+                      onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
+                      required
+                    />
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <label className={styles.label}>Type *</label>
+                    <select
+                      className={styles.input}
+                      value={form.type}
+                      onChange={(e) => setForm({ ...form, type: e.target.value })}
+                    >
+                      <option value="percent">Pourcentage (%)</option>
+                      <option value="fixed">Montant fixe (€)</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <label className={styles.label}>
+                      Valeur * {form.type === "percent" ? "(1–100)" : "(€)"}
+                    </label>
+                    <input
+                      className={styles.input}
+                      type="number"
+                      min="1"
+                      max={form.type === "percent" ? 100 : undefined}
+                      step="0.01"
+                      placeholder={form.type === "percent" ? "20" : "10"}
+                      value={form.value}
+                      onChange={(e) => setForm({ ...form, value: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <label className={styles.label}>Min. commande (€)</label>
+                    <input
+                      className={styles.input}
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0"
+                      value={form.minOrderAmount}
+                      onChange={(e) => setForm({ ...form, minOrderAmount: e.target.value })}
+                    />
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <label className={styles.label}>Limite d'utilisation</label>
+                    <input
+                      className={styles.input}
+                      type="number"
+                      min="1"
+                      placeholder="Illimitée"
+                      value={form.maxUses}
+                      onChange={(e) => setForm({ ...form, maxUses: e.target.value })}
+                    />
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <label className={styles.label}>Date d'expiration</label>
+                    <input
+                      className={styles.input}
+                      type="date"
+                      value={form.expiresAt}
+                      onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
+                    />
+                  </div>
+
+                  {formError && <p className={styles.formError}>{formError}</p>}
+
+                </div>
+                <div className={styles.modalActions}>
+                  <button
+                    type="button"
+                    className={styles.btnGhost}
+                    onClick={() => { setShowCreateModal(false); setFormError(""); }}
+                  >
+                    Annuler
+                  </button>
+                  <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`} disabled={creating}>
+                    {creating ? "Création…" : "Créer le code"}
+                  </button>
+                </div>
+              </form>
+            </div>
+
           </div>
         </div>
       )}
