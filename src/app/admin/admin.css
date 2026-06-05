@@ -87,3 +87,18 @@ body:has(.admin-root) {
 .admin-root .db-footer-right a:hover {
   color: rgba(255, 255, 255, 0.7);
 }
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .admin-main {
+    padding-bottom: 56px;
+  }
+
+  .admin-root .db-header-links {
+    display: none;
+  }
+
+  .admin-root .db-footer {
+    display: none;
+  }
+}

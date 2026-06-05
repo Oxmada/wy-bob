@@ -161,52 +161,79 @@ const externalTools = [
   },
 ];
 
+const bottomNavLinks = [
+  internalLinks[0], // Dashboard
+  internalLinks[2], // Commandes
+  internalLinks[1], // Produits & Stock
+  internalLinks[3], // Clients
+  internalLinks[5], // Codes promo
+];
+
 export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className={styles.sidebar}>
+    <>
+      <aside className={styles.sidebar}>
 
-      {/* ── Logo / Brand ── */}
-      <div className={styles.brand}>
-        <div className={styles.brandMark}>W</div>
-        <div className={styles.brandInfo}>
-          <span className={styles.brandName}>Wybob</span>
-          <span className={styles.brandRole}>Administration</span>
+        {/* ── Logo / Brand ── */}
+        <div className={styles.brand}>
+          <div className={styles.brandMark}>W</div>
+          <div className={styles.brandInfo}>
+            <span className={styles.brandName}>Wybob</span>
+            <span className={styles.brandRole}>Administration</span>
+          </div>
         </div>
-      </div>
 
-      <nav className={styles.nav}>
-        <p className={styles.section}>Gestion du site</p>
-        {internalLinks.map((link) => {
+        <nav className={styles.nav}>
+          <p className={styles.section}>Gestion du site</p>
+          {internalLinks.map((link) => {
+            const isActive = pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`${styles.link} ${isActive ? styles.active : ''}`}
+              >
+                <span className={styles.linkIcon}>{link.icon}</span>
+                <span className={styles.linkLabel}>{link.label}</span>
+              </Link>
+            );
+          })}
+
+          <p className={styles.section}>Outils</p>
+          {externalTools.map((tool) => (
+            <a
+              key={tool.href}
+              href={tool.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.link}
+            >
+              <span className={styles.linkIcon}>{tool.icon}</span>
+              <span className={styles.linkLabel}>{tool.label}</span>
+              <span className={styles.externalIcon} aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </nav>
+      </aside>
+
+      {/* ── Bottom nav mobile ── */}
+      <nav className={styles.bottomNav}>
+        {bottomNavLinks.map((link) => {
           const isActive = pathname.startsWith(link.href);
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`${styles.link} ${isActive ? styles.active : ''}`}
+              className={`${styles.bottomNavItem} ${isActive ? styles.bottomNavItemActive : ''}`}
             >
-              <span className={styles.linkIcon}>{link.icon}</span>
-              <span className={styles.linkLabel}>{link.label}</span>
+              <span className={styles.bottomNavIcon}>{link.icon}</span>
+              <span>{link.label.split(' ')[0]}</span>
             </Link>
           );
         })}
-
-        <p className={styles.section}>Outils</p>
-        {externalTools.map((tool) => (
-          <a
-            key={tool.href}
-            href={tool.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.link}
-          >
-            <span className={styles.linkIcon}>{tool.icon}</span>
-            <span className={styles.linkLabel}>{tool.label}</span>
-            <span className={styles.externalIcon} aria-hidden="true">↗</span>
-          </a>
-        ))}
       </nav>
-    </aside>
+    </>
   );
 }

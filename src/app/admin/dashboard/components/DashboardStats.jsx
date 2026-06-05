@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import styles from '../dashboard.module.css';
 import {
   AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
@@ -142,7 +143,7 @@ export default function DashboardStats() {
     <div style={{ display: "flex", flexDirection: "column", gap: "16px", fontFamily: font }}>
 
       {/* ── Header row ── */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div className={styles.headerRow}>
         <div>
           <div style={{ fontSize: "11px", fontWeight: "600", color: N.muted, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "2px" }}>
             Vue d'ensemble
@@ -155,14 +156,14 @@ export default function DashboardStats() {
       </div>
 
       {/* ── KPI Row 1 ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+      <div className={styles.kpiGrid}>
         {kpi1Values.map((kpi) => (
           <KPICard key={kpi.key} {...kpi} large />
         ))}
       </div>
 
       {/* ── KPI Row 2 ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+      <div className={styles.kpiGrid}>
         {kpi2Values.map((kpi) => (
           <KPICard key={kpi.key} {...kpi} />
         ))}
@@ -189,7 +190,7 @@ export default function DashboardStats() {
       )}
 
       {/* ── Charts : évolution + modes de paiement ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "12px" }}>
+      <div className={styles.chartsGrid}>
 
         <div style={{ ...card, padding: "18px 22px" }}>
           <SectionHeader label="Évolution des ventes" />
@@ -280,7 +281,7 @@ export default function DashboardStats() {
       </div>
 
       {/* ── Dernières commandes + Top clients ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: "12px", paddingBottom: "4px" }}>
+      <div className={styles.tablesGrid}>
 
         <div style={{ ...card, overflow: "hidden" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 18px", borderBottom: `1px solid ${N.border}` }}>
