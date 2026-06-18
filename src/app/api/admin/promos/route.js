@@ -14,7 +14,7 @@ export async function GET(request) {
 
     await connectDB();
 
-    const promos = await PromoCode.find({}).sort({ createdAt: -1 });
+    const promos = await PromoCode.find({ isReferral: { $ne: true } }).sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, promos });
   } catch (error) {

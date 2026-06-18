@@ -11,6 +11,9 @@ export default function ReferralAdminPage() {
   const [saving, setSaving]   = useState(false);
   const [toast, setToast]     = useState(null);
 
+  const [referralCodes, setReferralCodes]       = useState([]);
+  const [loadingCodes, setLoadingCodes]         = useState(true);
+
   const [form, setForm] = useState({
     totalPercent: 10,
     rewardValidityDays: 30,
@@ -40,6 +43,16 @@ export default function ReferralAdminPage() {
         setLoading(false);
       }
     })();
+
+    (async () => {
+      try {
+        const res  = await fetch("/api/admin/referral/codes");
+        const data = await res.json();
+        if (data.success) setReferralCodes(data.codes);
+      } finally {
+        setLoadingCodes(false);
+      }
+    })();
   }, []);
 
   const handleSave = async () => {
@@ -64,6 +77,9 @@ export default function ReferralAdminPage() {
       setSaving(false);
     }
   };
+
+  const formatDate = (d) =>
+    d ? new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }) : "—";
 
   return (
     <div className={styles.page}>
@@ -167,7 +183,7 @@ export default function ReferralAdminPage() {
           </div>
 
           {/* Info */}
-          <div className={styles.card} style={{ maxWidth: 700 }}>
+          <div className={styles.card} style={{ maxWidth: 700, marginBottom: 28 }}>
             <p className={styles.cardTitle}>Comment ça fonctionne</p>
             <p style={{ fontSize: 13.5, color: "#44403c", lineHeight: 1.7, margin: 0 }}>
               Chaque client connecté dispose d'un code de parrainage unique. Il peut choisir de garder tout le pourcentage pour lui-même
@@ -176,6 +192,49 @@ export default function ReferralAdminPage() {
               L'enveloppe totale définit le plafond que vous accordez — ex: {form.totalPercent}% signifie que parrain + filleul ne peuvent pas dépasser {form.totalPercent}% au total.
             </p>
           </div>
+
+          {/* Codes de parrainage */}
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Codes de parrainage</h2>
+            <p className={styles.sectionSub}>{referralCodes.length} code{referralCodes.length !== 1 ? "s" : ""} généré{referralCodes.length !== 1 ? "s" : ""} par les utilisateurs</p>
+          </div>
+
+          {loadingCodes ? (
+            <p style={{ color: "#78716c", fontSize: 13.5 }}>Chargement des codes…</p>
+          ) : referralCodes.length === 0 ? (
+            <div className={styles.emptyState}>
+              <p>Aucun code de parrainage généré pour l'instant.</p>
+            </div>
+          ) : (
+            <div className={styles.tableWrap}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Utilisateur</th>
+                    <th>Email</th>
+                    <th>% Parrain</th>
+                    <th>% Filleul</th>
+                    <th>Utilisations</th>
+                    <th>Créé le</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {referralCodes.map((c) => (
+                    <tr key={c._id}>
+                      <td><span className={styles.codeBadge}>{c.code}</span></td>
+                      <td className={styles.userName}>{c.referrerId?.name ?? <span className={styles.noUser}>—</span>}</td>
+                      <td className={styles.userEmail}>{c.referrerId?.email ?? <span className={styles.noUser}>—</span>}</td>
+                      <td className={styles.pctCell}>{c.parrainPercent ?? 0}%</td>
+                      <td className={styles.pctCell}>{c.filleulPercent ?? 0}%</td>
+                      <td>{c.usedCount}</td>
+                      <td>{formatDate(c.createdAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </>
       )}
     </div>
