@@ -212,8 +212,8 @@
   .icons { display: none; }
 
   .hamburgerBtn {
-    width: 44px;
-    height: 44px;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
