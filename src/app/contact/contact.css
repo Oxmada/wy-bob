@@ -50,6 +50,16 @@
   margin: 0;
 }
 
+.contactRow {
+  display: flex;
+  gap: 12px;
+}
+
+.contactRow .contactInput {
+  flex: 1;
+  min-width: 0;
+}
+
 .contactInput {
   width: 100%;
   height: 50px;

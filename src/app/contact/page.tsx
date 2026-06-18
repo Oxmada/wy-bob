@@ -21,16 +21,18 @@ export default function Contact() {
           {/* GAUCHE — Formulaire */}
           <div className="contactBloc">
             <h1 className="contactTitre">{t.contact.title}</h1>
-            <input
-              className="contactInput"
-              type="text"
-              placeholder={t.contact.name}
-            />
-            <input
-              className="contactInput"
-              type="email"
-              placeholder={t.contact.email}
-            />
+            <div className="contactRow">
+              <input
+                className="contactInput"
+                type="text"
+                placeholder={t.contact.name}
+              />
+              <input
+                className="contactInput"
+                type="email"
+                placeholder={t.contact.email}
+              />
+            </div>
             <input
               className="contactInput"
               type="tel"
