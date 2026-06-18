@@ -2,6 +2,24 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import styles from "./products.module.css";
 
 const CLOUD_NAME = "dnm9txjhm";
@@ -171,6 +189,72 @@ function VariantModal({ variant, onClose, onSave }) {
   );
 }
 
+/* ── Carte variante draggable ── */
+function SortableVariantCard({ variant, index, onEdit, onDelete }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: variant._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.35 : 1,
+    zIndex:  isDragging ? 10 : "auto",
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className={styles.variantCard}>
+      <div className={styles.dragHandle} {...attributes} {...listeners} title="Déplacer">
+        <span className={styles.dragDots}>⠿</span>
+        {index === 0 && <span className={styles.firstBadge}>Affiché en 1er</span>}
+      </div>
+
+      <div className={styles.variantImgWrap}>
+        {variant.image
+          ? <img src={variant.image} alt={variant.colorName} className={styles.variantImg} />
+          : <div className={styles.variantImgPlaceholder} style={{ backgroundColor: variant.colorCode }} />
+        }
+      </div>
+
+      <div className={styles.variantInfo}>
+        <span className={styles.variantName}>{variant.colorName}</span>
+        <div className={styles.variantSwatch} style={{ backgroundColor: variant.colorCode }} title={variant.colorCode} />
+      </div>
+
+      <div className={styles.previewBtnWrap}>
+        <button
+          className={styles.previewBtnSmall}
+          style={{ backgroundColor: variant.colorCode, color: variant.textColor }}
+        >
+          Commander
+        </button>
+      </div>
+
+      <div className={styles.variantActions}>
+        <button
+          className={styles.btnEdit}
+          onPointerDown={e => e.stopPropagation()}
+          onClick={() => onEdit(variant)}
+        >
+          Modifier
+        </button>
+        <button
+          className={styles.btnDelete}
+          onPointerDown={e => e.stopPropagation()}
+          onClick={() => onDelete(variant._id, variant.colorName)}
+        >
+          Supprimer
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ── Page principale ── */
 export default function AdminProductsPage() {
   const [product,       setProduct]       = useState(null);
@@ -178,9 +262,16 @@ export default function AdminProductsPage() {
   const [saving,        setSaving]        = useState(false);
   const [toast,         setToast]         = useState(null);
   const [confirmModal,  setConfirmModal]  = useState(null);
-  const [variantModal,  setVariantModal]  = useState(null); // null | { variant } | { variant: null } pour ajout
+  const [variantModal,  setVariantModal]  = useState(null);
+  const [activeId,      setActiveId]      = useState(null);
 
   const [fields, setFields] = useState({ name: "", price: "", pricePromo: "", stock: "" });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor,   { activationConstraint: { delay: 200, tolerance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   const showToast = (msg, type = "success") => {
     setToast({ message: msg, type });
@@ -296,6 +387,24 @@ export default function AdminProductsPage() {
       "Supprimer"
     );
   };
+
+  const handleDragStart = ({ active }) => setActiveId(active.id);
+
+  const handleDragEnd = async ({ active, over }) => {
+    setActiveId(null);
+    if (!over || active.id === over.id || !product) return;
+
+    const oldIndex = product.variants.findIndex(v => v._id === active.id);
+    const newIndex = product.variants.findIndex(v => v._id === over.id);
+    const reordered = arrayMove(product.variants, oldIndex, newIndex);
+
+    setProduct(prev => ({ ...prev, variants: reordered }));
+    const ok = await saveVariants(reordered);
+    if (ok) showToast("Ordre des variantes sauvegardé");
+    else    showToast("Erreur lors de la sauvegarde", "error");
+  };
+
+  const activeVariant = product?.variants?.find(v => v._id === activeId);
 
   return (
     <div className={styles.page}>
@@ -427,7 +536,10 @@ export default function AdminProductsPage() {
           {/* ── Variantes couleur ── */}
           <section className={styles.section}>
             <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Variantes de couleur</h2>
+              <div>
+                <h2 className={styles.sectionTitle}>Variantes de couleur</h2>
+                <p className={styles.sectionHint}>Glissez pour réordonner · la 1ère variante s'affiche par défaut</p>
+              </div>
               <button
                 className={styles.btnAdd}
                 onClick={() => setVariantModal({ variant: null })}
@@ -439,44 +551,46 @@ export default function AdminProductsPage() {
             {product.variants.length === 0 ? (
               <p className={styles.emptyVariants}>Aucune variante — ajoutez des couleurs.</p>
             ) : (
-              <div className={styles.variantsGrid}>
-                {product.variants.map(v => (
-                  <div key={v._id} className={styles.variantCard}>
-                    <div className={styles.variantImgWrap}>
-                      {v.image
-                        ? <img src={v.image} alt={v.colorName} className={styles.variantImg} />
-                        : <div className={styles.variantImgPlaceholder} style={{ backgroundColor: v.colorCode }} />
-                      }
-                    </div>
-                    <div className={styles.variantInfo}>
-                      <span className={styles.variantName}>{v.colorName}</span>
-                      <div className={styles.variantSwatch} style={{ backgroundColor: v.colorCode }} title={v.colorCode} />
-                    </div>
-                    <div className={styles.previewBtnWrap}>
-                      <button
-                        className={styles.previewBtnSmall}
-                        style={{ backgroundColor: v.colorCode, color: v.textColor }}
-                      >
-                        Commander
-                      </button>
-                    </div>
-                    <div className={styles.variantActions}>
-                      <button
-                        className={styles.btnEdit}
-                        onClick={() => setVariantModal({ variant: v })}
-                      >
-                        Modifier
-                      </button>
-                      <button
-                        className={styles.btnDelete}
-                        onClick={() => handleVariantDelete(v._id, v.colorName)}
-                      >
-                        Supprimer
-                      </button>
-                    </div>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={product.variants.map(v => v._id)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className={styles.variantsGrid}>
+                    {product.variants.map((v, i) => (
+                      <SortableVariantCard
+                        key={v._id}
+                        variant={v}
+                        index={i}
+                        onEdit={(variant) => setVariantModal({ variant })}
+                        onDelete={handleVariantDelete}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </SortableContext>
+
+                <DragOverlay>
+                  {activeVariant && (
+                    <div className={`${styles.variantCard} ${styles.draggingOverlay}`}>
+                      <div className={styles.variantImgWrap}>
+                        {activeVariant.image
+                          ? <img src={activeVariant.image} alt={activeVariant.colorName} className={styles.variantImg} />
+                          : <div className={styles.variantImgPlaceholder} style={{ backgroundColor: activeVariant.colorCode }} />
+                        }
+                      </div>
+                      <div className={styles.variantInfo}>
+                        <span className={styles.variantName}>{activeVariant.colorName}</span>
+                        <div className={styles.variantSwatch} style={{ backgroundColor: activeVariant.colorCode }} />
+                      </div>
+                    </div>
+                  )}
+                </DragOverlay>
+              </DndContext>
             )}
           </section>
         </>

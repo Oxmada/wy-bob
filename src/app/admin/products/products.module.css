@@ -142,6 +142,14 @@
 .btnAdd:hover  { background: #e6af4e; }
 .btnAdd:active { transform: scale(0.98); }
 
+/* ── Hint section ── */
+.sectionHint {
+  font-size: 12px;
+  color: #a8a29e;
+  margin: 2px 0 0;
+  font-weight: 400;
+}
+
 /* ── Variantes ── */
 .emptyVariants {
   font-size: 14px;
@@ -165,8 +173,46 @@
   display: flex;
   flex-direction: column;
   transition: box-shadow 0.15s;
+  touch-action: none;
 }
 .variantCard:hover { box-shadow: 0 4px 16px rgba(15,23,42,0.08); }
+
+.draggingOverlay {
+  box-shadow: 0 12px 36px rgba(15,23,42,0.2);
+  cursor: grabbing;
+}
+
+/* ── Drag handle ── */
+.dragHandle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 6px;
+  cursor: grab;
+  user-select: none;
+  border-bottom: 1px solid #f0eeec;
+  background: #fafaf9;
+}
+.dragHandle:active { cursor: grabbing; }
+
+.dragDots {
+  font-size: 18px;
+  color: #c4c0bc;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.firstBadge {
+  display: inline-block;
+  background: #F9C464;
+  color: #0f172a;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
 
 .variantImgWrap {
   width: 100%;
