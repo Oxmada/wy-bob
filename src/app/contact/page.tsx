@@ -48,9 +48,9 @@ export default function Contact() {
             <Image
               src="https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto/v1780486949/wybov-portee-bob-noir-crochet-lookbook_ybglrr.jpg"
               alt="Contact WYBOB"
-              width={456}
-              height={431}
-              style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+              fill
+              sizes="(max-width: 767px) 100vw, 50vw"
+              style={{ objectFit: 'cover' }}
             />
           </div>
 

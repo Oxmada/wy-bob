@@ -6,9 +6,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(20px, 5vh, 60px) 40px;
+  padding: 60px 40px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: clip;
 }
 
 .contactInner {
@@ -126,6 +126,7 @@
 .contactImage {
   flex: 1;
   min-width: 0;
+  position: relative;
   border-radius: 20px;
   overflow: hidden;
 }
@@ -134,8 +135,8 @@
 
   .contactZone {
     min-height: 0;
-    overflow: hidden;
-    padding: clamp(16px, 4vh, 40px) 20px;
+    overflow: clip;
+    padding: 40px 20px;
   }
 
   .contactInner {
@@ -179,6 +180,7 @@
   .contactImage {
     flex: 1;
     min-width: 0;
+    position: relative;
     border-radius: 16px;
   }
 }
@@ -188,8 +190,8 @@
 
   .contactZone {
     min-height: 0;
-    overflow: hidden;
-    padding: clamp(16px, 4vh, 40px) 20px;
+    overflow: clip;
+    padding: 40px 20px;
   }
 
  .contactInner {
@@ -233,6 +235,7 @@
    .contactImage {
     flex: 1;
     min-width: 0;
+    position: relative;
     border-radius: 16px;
   }
 }
