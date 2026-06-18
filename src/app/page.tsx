@@ -38,7 +38,7 @@ const productReviews = 12
 
 export default function Home() {
   const [product,           setProduct]           = useState<ProductData | null>(null)
-  const [selectedVariant,   setSelectedVariant]   = useState<Variant>(FALLBACK_VARIANTS[0])
+  const [selectedVariant,   setSelectedVariant]   = useState<Variant | null>(null)
   const [openSection,       setOpenSection]       = useState<string | null>(null)
   const [quantity,          setQuantity]          = useState(1)
   const [isFading,          setIsFading]          = useState(false)
@@ -53,12 +53,12 @@ export default function Home() {
       .then(data => {
         if (data.success && data.product) {
           setProduct(data.product)
-          if (data.product.variants?.length > 0) {
-            setSelectedVariant(data.product.variants[0])
-          }
+          setSelectedVariant(data.product.variants?.[0] ?? FALLBACK_VARIANTS[0])
+        } else {
+          setSelectedVariant(FALLBACK_VARIANTS[0])
         }
       })
-      .catch(() => {})
+      .catch(() => { setSelectedVariant(FALLBACK_VARIANTS[0]) })
   }, [])
 
   useEffect(() => {
@@ -102,11 +102,13 @@ export default function Home() {
 
         {/* GAUCHE — image */}
         <div className="imageCol">
-          <img
-            src={selectedVariant.image}
-            alt="Chapeau WYBOB"
-            className={`hatImage${isFading ? ' fading' : ''}`}
-          />
+          {selectedVariant && (
+            <img
+              src={selectedVariant.image}
+              alt="Chapeau WYBOB"
+              className={`hatImage${isFading ? ' fading' : ''}`}
+            />
+          )}
         </div>
 
         {/* DROITE — fiche produit */}
@@ -147,7 +149,7 @@ export default function Home() {
 
           {/* Couleur */}
           <div className="productFeature" onClick={() => toggleSection('color')}>
-            <span>{t.home.colorLabel} <span className="colorNameInline">{selectedVariant.colorName}</span></span>
+            <span>{t.home.colorLabel} <span className="colorNameInline">{selectedVariant?.colorName}</span></span>
             <span className={`featureToggle ${openSection === 'color' ? 'open' : ''}`}>+</span>
           </div>
           {openSection === 'color' && (
@@ -155,12 +157,12 @@ export default function Home() {
               {variants.map((v) => (
                 <button
                   key={v._id}
-                  className={`swatchDot ${selectedVariant._id === v._id ? 'active' : ''}`}
+                  className={`swatchDot ${selectedVariant?._id === v._id ? 'active' : ''}`}
                   onClick={(e) => { e.stopPropagation(); handleVariantChange(v) }}
                   aria-label={v.colorName}
                   style={{
                     backgroundColor: v.colorCode,
-                    boxShadow: selectedVariant._id === v._id
+                    boxShadow: selectedVariant?._id === v._id
                       ? `0 0 0 1.5px rgba(255,255,255,0.9), 0 0 0 3.5px ${v.colorCode}`
                       : '0 2px 6px rgba(0,0,0,0.18)'
                   }}
@@ -202,7 +204,7 @@ export default function Home() {
           <button
             className="commanderBtn"
             onClick={handleCommander}
-            style={{ backgroundColor: selectedVariant.colorCode, color: selectedVariant.textColor }}
+            style={{ backgroundColor: selectedVariant?.colorCode, color: selectedVariant?.textColor }}
           >{t.home.order}</button>
           </div>
 
