@@ -244,18 +244,18 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0;              /* ✅ retire le padding ici */
+    padding: 0;
     box-sizing: border-box;
-    gap: 40px;
+    gap: 20px;
   }
 
   .contactInner {
-    width: calc(100% - 40px);  /* ✅ 20px de chaque côté */
+    width: 100%;
     height: auto;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 40px;
+    gap: 20px;
     box-sizing: border-box;
   }
 

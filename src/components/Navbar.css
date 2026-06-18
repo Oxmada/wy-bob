@@ -198,7 +198,7 @@
 /* MOBILE */
 @media (max-width: 767px) {
   .navbar {
-    padding: 0;
+    padding: 0 16px;
     height: 60px;
   }
 

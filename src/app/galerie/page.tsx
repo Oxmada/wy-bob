@@ -76,7 +76,8 @@ export default function Galerie() {
           <div className="galerieTitreContent">
             <h1 className="galerieTitre">{t.galerie.title}</h1>
           </div>
-          <div className="galeriePagination">
+          {/* Pagination desktop uniquement */}
+          <div className="galeriePagination galerieDesktopPagination">
             <div className="galerieDots">
               {pages.map((_, i) => (
                 <div
@@ -107,6 +108,27 @@ export default function Galerie() {
               <img src={src} alt={`WYBOB — photo ${currentPage * 6 + i + 1}`} />
             </div>
           ))}
+        </div>
+
+        {/* Pagination mobile uniquement — sous la grille */}
+        <div className="galeriePagination galerieMobilePagination">
+          <div className="galerieDots">
+            {pages.map((_, i) => (
+              <div
+                key={i}
+                className={`galerieDot ${currentPage === i ? 'active' : ''}`}
+                onClick={() => setCurrentPage(i)}
+              />
+            ))}
+          </div>
+          <div className="galerieNav">
+            <button className="galerieNavBtn" onClick={goPrev} aria-label={t.galerie.prevPage}>
+              <img src={`${CDN}/v1780172685/chevron_left_qr2oga.png`} alt="" width={24} height={24} />
+            </button>
+            <button className="galerieNavBtn" onClick={goNext} aria-label={t.galerie.nextPage}>
+              <img src={`${CDN}/v1780172686/chevron_right_vlhter.png`} alt="" width={24} height={24} />
+            </button>
+          </div>
         </div>
 
       </div>

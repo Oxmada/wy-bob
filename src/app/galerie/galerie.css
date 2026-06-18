@@ -46,6 +46,10 @@
   padding-bottom: 4px;
 }
 
+.galerieMobilePagination {
+  display: none;
+}
+
 .galerieDots {
   display: flex;
   flex-direction: row;
@@ -264,7 +268,6 @@
     width: 100%;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
   }
 
   .galerieTitreContent {
@@ -291,8 +294,14 @@
     display: none;
   }
 
-  .galeriePagination {
-    padding-bottom: 0;
+  .galerieDesktopPagination {
+    display: none;
+  }
+
+  .galerieMobilePagination {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 8px;
   }
 
   .galerieGrid {

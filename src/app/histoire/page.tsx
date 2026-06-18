@@ -23,7 +23,6 @@ export default function Histoire() {
           <div className="histoireTexte">
             <p>{t.histoire.p1}</p>
             <p>{t.histoire.p2}</p>
-            <p>{t.histoire.p3}</p>
           </div>
         </div>
 
