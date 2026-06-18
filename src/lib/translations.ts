@@ -230,7 +230,7 @@ export const translations = {
   },
   en: {
     nav: {
-      home: 'Notre bob',
+      home: 'Our Bob',
       histoire: 'Our Story',
       galerie: 'Gallery',
       contact: 'Contact',

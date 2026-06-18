@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -89,10 +90,10 @@ export default function Galerie() {
             </div>
             <div className="galerieNav">
               <button className="galerieNavBtn" onClick={goPrev} aria-label={t.galerie.prevPage}>
-                <img src={`${CDN}/v1780172685/chevron_left_qr2oga.png`} alt="" width={24} height={24} />
+                <Image src={`${CDN}/v1780172685/chevron_left_qr2oga.png`} alt="" width={24} height={24} />
               </button>
               <button className="galerieNavBtn" onClick={goNext} aria-label={t.galerie.nextPage}>
-                <img src={`${CDN}/v1780172686/chevron_right_vlhter.png`} alt="" width={24} height={24} />
+                <Image src={`${CDN}/v1780172686/chevron_right_vlhter.png`} alt="" width={24} height={24} />
               </button>
             </div>
           </div>
@@ -104,8 +105,14 @@ export default function Galerie() {
           style={{ gridTemplateRows: `repeat(${Math.ceil(images.length / 3)}, 1fr)` }}
         >
           {images.map((src, i) => (
-            <div key={i} className="galeriePhoto" onClick={() => openLightbox(i)}>
-              <img src={src} alt={`WYBOB — photo ${currentPage * 6 + i + 1}`} />
+            <div key={i} className="galeriePhoto" style={{ position: 'relative' }} onClick={() => openLightbox(i)}>
+              <Image
+                src={src}
+                alt={`WYBOB — photo ${currentPage * 6 + i + 1}`}
+                fill
+                style={{ objectFit: 'cover', objectPosition: 'center center' }}
+                sizes="(max-width: 767px) 50vw, (max-width: 1024px) 30vw, 25vw"
+              />
             </div>
           ))}
         </div>
@@ -123,10 +130,10 @@ export default function Galerie() {
           </div>
           <div className="galerieNav">
             <button className="galerieNavBtn" onClick={goPrev} aria-label={t.galerie.prevPage}>
-              <img src={`${CDN}/v1780172685/chevron_left_qr2oga.png`} alt="" width={24} height={24} />
+              <Image src={`${CDN}/v1780172685/chevron_left_qr2oga.png`} alt="" width={24} height={24} />
             </button>
             <button className="galerieNavBtn" onClick={goNext} aria-label={t.galerie.nextPage}>
-              <img src={`${CDN}/v1780172686/chevron_right_vlhter.png`} alt="" width={24} height={24} />
+              <Image src={`${CDN}/v1780172686/chevron_right_vlhter.png`} alt="" width={24} height={24} />
             </button>
           </div>
         </div>
@@ -138,13 +145,19 @@ export default function Galerie() {
         <div className="lightboxOverlay" onClick={closeLightbox}>
           <button className="lightboxClose" onClick={closeLightbox} aria-label="Fermer la galerie">×</button>
           <button className="lightboxPrev" onClick={(e) => { e.stopPropagation(); goPrevLightbox() }}>
-            <img src={`${CDN}/v1780172685/chevron_left_qr2oga.png`} alt={t.galerie.prev} width={24} height={24} />
+            <Image src={`${CDN}/v1780172685/chevron_left_qr2oga.png`} alt={t.galerie.prev} width={24} height={24} />
           </button>
           <div className="lightboxContent" onClick={(e) => e.stopPropagation()}>
-            <img src={images[lightboxIndex]} alt="Photo galerie WYBOB" />
+            <Image
+              src={images[lightboxIndex]}
+              alt="Photo galerie WYBOB"
+              width={1200}
+              height={800}
+              style={{ objectFit: 'contain', width: 'auto', height: 'auto', maxWidth: '88vw', maxHeight: '82vh' }}
+            />
           </div>
           <button className="lightboxNext" onClick={(e) => { e.stopPropagation(); goNextLightbox() }}>
-            <img src={`${CDN}/v1780172686/chevron_right_vlhter.png`} alt={t.galerie.next} width={24} height={24} />
+            <Image src={`${CDN}/v1780172686/chevron_right_vlhter.png`} alt={t.galerie.next} width={24} height={24} />
           </button>
         </div>
       )}

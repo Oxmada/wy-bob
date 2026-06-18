@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useCart } from '@/components/panier-context'
@@ -120,9 +121,12 @@ export default function Home() {
         {/* GAUCHE — image */}
         <div className="imageCol">
           {selectedVariant && (
-            <img
+            <Image
               src={selectedVariant.image}
               alt="Chapeau WYBOB"
+              width={500}
+              height={500}
+              priority
               className={`hatImage${isFading ? ' fading' : ''}`}
               onClick={() => setLightboxIndex(variants.findIndex(v => v._id === selectedVariant._id))}
               style={{ cursor: 'zoom-in' }}
@@ -237,13 +241,19 @@ export default function Home() {
         <div className="lightboxOverlay" onClick={closeLightbox}>
           <button className="lightboxClose" onClick={closeLightbox} aria-label="Fermer">×</button>
           <button className="lightboxPrev" onClick={(e) => { e.stopPropagation(); goPrevLightbox() }}>
-            <img src="https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto/v1780172685/chevron_left_qr2oga.png" alt="Précédent" width={24} height={24} />
+            <Image src="https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto/v1780172685/chevron_left_qr2oga.png" alt="Précédent" width={24} height={24} />
           </button>
           <div className="lightboxContent" onClick={(e) => e.stopPropagation()}>
-            <img src={variants[lightboxIndex].image} alt={`Chapeau WYBOB — ${variants[lightboxIndex].colorName}`} />
+            <Image
+              src={variants[lightboxIndex].image}
+              alt={`Chapeau WYBOB — ${variants[lightboxIndex].colorName}`}
+              width={1200}
+              height={1200}
+              style={{ objectFit: 'contain', width: 'auto', height: 'auto', maxWidth: '88vw', maxHeight: '82vh' }}
+            />
           </div>
           <button className="lightboxNext" onClick={(e) => { e.stopPropagation(); goNextLightbox() }}>
-            <img src="https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto/v1780172686/chevron_right_vlhter.png" alt="Suivant" width={24} height={24} />
+            <Image src="https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto/v1780172686/chevron_right_vlhter.png" alt="Suivant" width={24} height={24} />
           </button>
         </div>
       )}
