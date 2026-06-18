@@ -318,6 +318,86 @@ html:has(.privacyZone) {
 
 
 
+/* ===== LIGHTBOX ===== */
+.lightboxOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.lightboxContent {
+  max-width: 88vw;
+  max-height: 82vh;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+}
+
+.lightboxContent img {
+  max-width: 88vw;
+  max-height: 82vh;
+  object-fit: contain;
+  display: block;
+  border-radius: 14px;
+}
+
+.lightboxClose {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  font-size: 26px;
+  line-height: 1;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 1001;
+}
+
+.lightboxClose:hover { background: rgba(255, 255, 255, 0.3); }
+
+.lightboxPrev,
+.lightboxNext {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 1001;
+}
+
+.lightboxPrev { left: 20px; }
+.lightboxNext { right: 20px; }
+
+.lightboxPrev:hover,
+.lightboxNext:hover { background: rgba(255, 255, 255, 0.3); }
+
+.lightboxPrev img,
+.lightboxNext img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+
 /* ===========================
    TABLETTE (768px - 1024px)
    =========================== */

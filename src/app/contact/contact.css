@@ -5,7 +5,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 40px;
+  padding: 60px 40px;
   box-sizing: border-box;
 }
 
@@ -20,8 +20,9 @@
 }
 
 .contactBloc {
-  width: 456px;
-  height: 431px;
+  flex: 1;
+  min-width: 0;
+  height: auto;
   backdrop-filter: blur(40px) brightness(1.06);
   -webkit-backdrop-filter: blur(40px) brightness(1.06);
   background: rgba(255, 255, 255, 0.55);
@@ -32,7 +33,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  flex-shrink: 0;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
     0 20px 60px rgba(0, 0, 0, 0.15);
@@ -118,11 +118,11 @@
 .contactBtn:active { transform: translateY(0); }
 
 .contactImage {
-  width: 456px;
-  height: 431px;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
   border-radius: 20px;
   overflow: hidden;
-  flex-shrink: 0;
 }
 /* TABLETTE PORTRAIT */
 @media (max-width: 1024px) and (min-width: 768px) and (orientation: portrait) {
@@ -145,12 +145,11 @@
   }
 
   .contactBloc {
-    width: 303px;
+    flex: 1;
+    min-width: 0;
     height: auto;
-    min-height: 320px;
     padding: 24px;
     gap: 12px;
-    flex-shrink: 0;
   }
 
   .contactTitre {
@@ -174,10 +173,10 @@
   }
 
   .contactImage {
-    width: 303px;
-    height: 350px;
+    flex: 1;
+    min-width: 0;
+    align-self: stretch;
     border-radius: 16px;
-    flex-shrink: 0;
   }
 }
 
@@ -203,11 +202,11 @@
     box-sizing: border-box;
   }
  .contactBloc {
-    width: 45%;
+    flex: 1;
+    min-width: 0;
     height: auto;
     padding: 20px;
     gap: 10px;
-    flex-shrink: 1;
   }
   .contactTitre {
     font-size: 22px;
@@ -230,10 +229,10 @@
   }
 
    .contactImage {
-    width: 35%;
-    height: 400px;
+    flex: 1;
+    min-width: 0;
+    align-self: stretch;
     border-radius: 16px;
-    flex-shrink: 0;
   }
 }
 @media (max-width: 767px) {
@@ -252,7 +251,7 @@
   .contactInner {
     width: 100%;
     height: auto;
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: center;
     justify-content: center;
     gap: 20px;

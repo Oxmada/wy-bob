@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -42,6 +42,7 @@ export default function Home() {
   const [openSection,       setOpenSection]       = useState<string | null>(null)
   const [quantity,          setQuantity]          = useState(1)
   const [isFading,          setIsFading]          = useState(false)
+  const [lightboxIndex,     setLightboxIndex]     = useState<number | null>(null)
   const { addToCart } = useCart()
   const { t } = useLanguage()
   const router = useRouter()
@@ -74,6 +75,21 @@ export default function Home() {
   const toggleSection = (section: string) => {
     setOpenSection(prev => prev === section ? null : section)
   }
+
+  const closeLightbox  = useCallback(() => setLightboxIndex(null), [])
+  const goPrevLightbox = useCallback(() => setLightboxIndex(i => i !== null ? (i - 1 + variants.length) % variants.length : null), [variants])
+  const goNextLightbox = useCallback(() => setLightboxIndex(i => i !== null ? (i + 1) % variants.length : null), [variants])
+
+  useEffect(() => {
+    if (lightboxIndex === null) return
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape')       closeLightbox()
+      else if (e.key === 'ArrowLeft')  goPrevLightbox()
+      else if (e.key === 'ArrowRight') goNextLightbox()
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [lightboxIndex, closeLightbox, goPrevLightbox, goNextLightbox])
 
   const handleVariantChange = (variant: Variant) => {
     setIsFading(true)
@@ -108,6 +124,8 @@ export default function Home() {
               src={selectedVariant.image}
               alt="Chapeau WYBOB"
               className={`hatImage${isFading ? ' fading' : ''}`}
+              onClick={() => setLightboxIndex(variants.findIndex(v => v._id === selectedVariant._id))}
+              style={{ cursor: 'zoom-in' }}
             />
           )}
         </div>
@@ -213,6 +231,22 @@ export default function Home() {
         </div>
 
       </div>
+
+      {/* Lightbox */}
+      {lightboxIndex !== null && (
+        <div className="lightboxOverlay" onClick={closeLightbox}>
+          <button className="lightboxClose" onClick={closeLightbox} aria-label="Fermer">×</button>
+          <button className="lightboxPrev" onClick={(e) => { e.stopPropagation(); goPrevLightbox() }}>
+            <img src="https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto/v1780172685/chevron_left_qr2oga.png" alt="Précédent" width={24} height={24} />
+          </button>
+          <div className="lightboxContent" onClick={(e) => e.stopPropagation()}>
+            <img src={variants[lightboxIndex].image} alt={`Chapeau WYBOB — ${variants[lightboxIndex].colorName}`} />
+          </div>
+          <button className="lightboxNext" onClick={(e) => { e.stopPropagation(); goNextLightbox() }}>
+            <img src="https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto/v1780172686/chevron_right_vlhter.png" alt="Suivant" width={24} height={24} />
+          </button>
+        </div>
+      )}
 
       <Footer />
     </div>
