@@ -17,11 +17,10 @@
   flex-direction: row;
   align-items: stretch;
   justify-content: center;
-  gap: 5%;
-  padding: 50px 40px;
+  gap: 40px;
+  padding: 28px 40px;
   box-sizing: border-box;
   overflow: hidden;
-  max-height: calc(100% - 41px);
 }
 
 
@@ -34,7 +33,6 @@
   padding: 24px 32px;
   box-sizing: border-box;
   overflow: hidden;
-  max-height: 60vh;
 }
 
 
@@ -72,8 +70,8 @@
 
 /* Image droite */
 .histoireImage {
-  flex: 1;
-  max-height: 60vh;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
   border-radius: 16px;
   overflow: hidden;
 }
