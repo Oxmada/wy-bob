@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import "./customer-detail.css";
+import { TOAST_DURATION } from "../../_constants";
 
 const ORDER_STATUS = {
   pending:    { label: "En attente",  cls: "s-pending"    },
@@ -35,7 +36,7 @@ export default function CustomerDetailPage() {
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), TOAST_DURATION);
   };
 
   const askConfirm = (message, onConfirm, confirmLabel = "Confirmer") =>

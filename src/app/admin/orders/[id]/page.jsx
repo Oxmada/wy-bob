@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import "./order-detail.css";
+import { TOAST_DURATION } from "../../_constants";
 
 const STATUS_OPTIONS = [
   { value: "pending",    label: "En attente"     },
@@ -32,7 +33,7 @@ export default function AdminOrderDetailPage() {
 
   const showToast = (msg, type = "success") => {
     setToast({ message: msg, type });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), TOAST_DURATION);
   };
 
   useEffect(() => {

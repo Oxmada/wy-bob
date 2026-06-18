@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "./referral-admin.module.css";
+import { TOAST_DURATION } from "../_constants";
 
 export default function ReferralAdminPage() {
   const [config, setConfig]   = useState(null);
@@ -23,7 +24,7 @@ export default function ReferralAdminPage() {
 
   const showToast = (msg, type = "success") => {
     setToast({ message: msg, type });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), TOAST_DURATION);
   };
 
   useEffect(() => {

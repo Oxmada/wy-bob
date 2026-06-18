@@ -1,5 +1,10 @@
-import DashboardStats from "./components/DashboardStats";
+import dynamic from "next/dynamic";
 import styles from "./dashboard.module.css";
+
+const DashboardStats = dynamic(() => import("./components/DashboardStats"), {
+  loading: () => <p style={{ padding: "2rem", color: "#9b9b9b" }}>Chargement du tableau de bord…</p>,
+  ssr: false,
+});
 
 export default function AdminDashboard() {
   return (

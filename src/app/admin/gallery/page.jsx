@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import { TOAST_DURATION } from "../_constants";
 import {
   DndContext,
   closestCenter,
@@ -84,7 +85,7 @@ export default function AdminGalleryPage() {
 
   const showToast = (msg, type = "success") => {
     setToast({ msg, type });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), TOAST_DURATION);
   };
 
   useEffect(() => { loadPhotos(); }, []);

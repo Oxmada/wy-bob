@@ -2,6 +2,8 @@ import { connectDB } from '@/app/lib/db'
 import Product from '@/app/models/Product'
 import HomeClient from './HomeClient'
 
+export const revalidate = 60
+
 export default async function Home() {
   let productData = null
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import "./promos-admin.module.css";
+import { TOAST_DURATION } from "../_constants";
 import styles from "./promos-admin.module.css";
 
 export default function PromosPage() {
@@ -25,7 +26,7 @@ export default function PromosPage() {
 
   const showToast = (msg, type = "success") => {
     setToast({ message: msg, type });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), TOAST_DURATION);
   };
 
   const askConfirm = (message, onConfirm, confirmLabel = "Confirmer") =>

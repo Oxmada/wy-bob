@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
 import { translations, type Locale } from '@/lib/translations'
 
 export type Translation = typeof translations[Locale]
@@ -25,16 +25,21 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (saved === 'fr' || saved === 'en') setLocale(saved)
   }, [])
 
-  const toggleLocale = () => {
+  const toggleLocale = useCallback(() => {
     setLocale(prev => {
       const next: Locale = prev === 'fr' ? 'en' : 'fr'
       localStorage.setItem('wybob-locale', next)
       return next
     })
-  }
+  }, [])
+
+  const value = useMemo(
+    () => ({ locale, t: translations[locale], toggleLocale }),
+    [locale, toggleLocale]
+  )
 
   return (
-    <LanguageContext.Provider value={{ locale, t: translations[locale], toggleLocale }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   )

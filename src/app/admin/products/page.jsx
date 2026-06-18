@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -23,6 +23,7 @@ import { CSS } from "@dnd-kit/utilities";
 import styles from "./products.module.css";
 
 const CLOUD_NAME = "dnm9txjhm";
+const TOAST_DURATION = 3000;
 
 /* ── Modal ajout / édition d'une variante ── */
 function VariantModal({ variant, onClose, onSave }) {
@@ -190,7 +191,7 @@ function VariantModal({ variant, onClose, onSave }) {
 }
 
 /* ── Carte variante draggable ── */
-function SortableVariantCard({ variant, index, onEdit, onDelete }) {
+const SortableVariantCard = memo(function SortableVariantCard({ variant, index, onEdit, onDelete }) {
   const {
     attributes,
     listeners,
@@ -253,7 +254,7 @@ function SortableVariantCard({ variant, index, onEdit, onDelete }) {
       </div>
     </div>
   );
-}
+});
 
 /* ── Page principale ── */
 export default function AdminProductsPage() {
@@ -273,13 +274,19 @@ export default function AdminProductsPage() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  const showToast = (msg, type = "success") => {
+  const showToast = useCallback((msg, type = "success") => {
     setToast({ message: msg, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+    setTimeout(() => setToast(null), TOAST_DURATION);
+  }, []);
 
-  const askConfirm = (message, onConfirm, confirmLabel = "Confirmer") =>
-    setConfirmModal({ message, onConfirm, confirmLabel });
+  const askConfirm = useCallback((message, onConfirm, confirmLabel = "Confirmer") =>
+    setConfirmModal({ message, onConfirm, confirmLabel }),
+  []);
+
+  const handleVariantEdit = useCallback(
+    (variant) => setVariantModal({ variant }),
+    []
+  );
 
   useEffect(() => { loadProduct(); }, []);
 
@@ -343,7 +350,7 @@ export default function AdminProductsPage() {
     if (data.success) setProduct(data.product);
   };
 
-  const saveVariants = async (variants) => {
+  const saveVariants = useCallback(async (variants) => {
     if (!product) return;
     const res = await fetch(`/api/admin/products/${product._id}`, {
       method:  "PATCH",
@@ -356,7 +363,7 @@ export default function AdminProductsPage() {
       return true;
     }
     return false;
-  };
+  }, [product]);
 
   const handleVariantSave = async (saved) => {
     if (!product) return;
@@ -375,7 +382,7 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleVariantDelete = (variantId, colorName) => {
+  const handleVariantDelete = useCallback((variantId, colorName) => {
     askConfirm(
       `Supprimer la variante "${colorName}" ?`,
       async () => {
@@ -386,7 +393,7 @@ export default function AdminProductsPage() {
       },
       "Supprimer"
     );
-  };
+  }, [product, saveVariants, askConfirm, showToast]);
 
   const handleDragStart = ({ active }) => setActiveId(active.id);
 
@@ -567,7 +574,7 @@ export default function AdminProductsPage() {
                         key={v._id}
                         variant={v}
                         index={i}
-                        onEdit={(variant) => setVariantModal({ variant })}
+                        onEdit={handleVariantEdit}
                         onDelete={handleVariantDelete}
                       />
                     ))}

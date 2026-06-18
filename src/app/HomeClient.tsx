@@ -114,6 +114,7 @@ export default function HomeClient({ product }: Props) {
             width={500}
             height={500}
             priority
+            sizes="(max-width: 767px) 100vw, 50vw"
             className={`hatImage${isFading ? ' fading' : ''}`}
             onClick={() => setLightboxIndex(variants.findIndex(v => v._id === selectedVariant._id))}
             style={{ cursor: 'zoom-in' }}
@@ -230,6 +231,7 @@ export default function HomeClient({ product }: Props) {
               alt={`Chapeau WYBOB — ${variants[lightboxIndex].colorName}`}
               width={1200}
               height={1200}
+              sizes="88vw"
               style={{ objectFit: 'contain', width: 'auto', height: 'auto', maxWidth: '88vw', maxHeight: '82vh' }}
             />
           </div>

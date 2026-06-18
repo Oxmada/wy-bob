@@ -6,6 +6,10 @@ import Order    from "@/app/models/Order";
 import Customer from "@/app/models/Customer";
 import Product  from "@/app/models/Product";
 
+// Cache in-memory par période, TTL 5 minutes
+const statsCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000;
+
 export async function GET(request) {
   try {
     await connectDB();
@@ -13,6 +17,13 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const period  = searchParams.get("period") || "7";
     const daysAgo = parseInt(period);
+
+    // Retourne le cache si encore frais
+    const cacheKey = `stats:${daysAgo}`;
+    const cached = statsCache.get(cacheKey);
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      return NextResponse.json(cached.data);
+    }
 
     const periodStart = new Date();
     periodStart.setDate(periodStart.getDate() - daysAgo);
@@ -171,7 +182,7 @@ export async function GET(request) {
       value: item.count,
     }));
 
-    return NextResponse.json({
+    const responseData = {
       success: true,
       stats: {
         customersCount,
@@ -201,7 +212,10 @@ export async function GET(request) {
       recentOrders,
       statusDistribution,
       paymentDistribution,
-    });
+    };
+
+    statsCache.set(cacheKey, { data: responseData, ts: Date.now() });
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("STATS ERROR:", error);
     return NextResponse.json(

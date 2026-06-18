@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import "./orders-admin.css";
+import { TOAST_DURATION } from "../_constants";
 
 const PER_PAGE = 20;
 
@@ -65,7 +66,7 @@ export default function AdminOrdersPage() {
 
   const showToast = (msg, type = "success") => {
     setToast({ message: msg, type });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), TOAST_DURATION);
   };
 
   const askConfirm = (message, onConfirm, confirmLabel = "Confirmer") =>

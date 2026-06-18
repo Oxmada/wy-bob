@@ -4,6 +4,11 @@ import Customer from "@/app/models/Customer";
 import Order from "@/app/models/Order";
 import User from "@/app/models/User";
 
+const ALLOWED_SORT_FIELDS = new Set([
+  "createdAt", "updatedAt", "totalOrders", "totalSpent",
+  "lastOrderAt", "firstname", "lastname", "email",
+]);
+
 /* =========================
    GET - Liste des clients
 ========================= */
@@ -12,78 +17,100 @@ export async function GET(req) {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
-    const search = searchParams.get("search") || "";
-    const status = searchParams.get("status") || "";
-    const sort   = searchParams.get("sort") || "createdAt";
-    const order  = searchParams.get("order") || "desc";
-    const page   = parseInt(searchParams.get("page")) || 1;
-    const limit  = parseInt(searchParams.get("limit")) || 20;
+    const search    = searchParams.get("search") || "";
+    const status    = searchParams.get("status") || "";
+    const sortField = ALLOWED_SORT_FIELDS.has(searchParams.get("sort"))
+      ? searchParams.get("sort")
+      : "createdAt";
+    const sortDir = searchParams.get("order") === "asc" ? 1 : -1;
+    const page    = Math.max(1, parseInt(searchParams.get("page"))  || 1);
+    const limit   = Math.min(100, parseInt(searchParams.get("limit")) || 20);
 
-    // Charge tous les Users et tous les Customers
-    const [allUsers, allCustomers] = await Promise.all([
-      User.find({}, { name: 1, email: 1, phone: 1, address: 1, createdAt: 1, role: 1 }),
-      Customer.find({}),
-    ]);
+    // Pipeline : join User ← Customer par email, merge des champs, filtre, tri, pagination
+    const pipeline = [
+      // Join avec la collection customers (emails déjà en minuscules dans les deux schémas)
+      {
+        $lookup: {
+          from: "customers",
+          localField: "email",
+          foreignField: "email",
+          as: "_customer",
+        },
+      },
+      {
+        $addFields: {
+          _c: { $arrayElemAt: ["$_customer", 0] },
+          _nameParts: {
+            $split: [{ $trim: { input: { $ifNull: ["$name", ""] } } }, " "],
+          },
+        },
+      },
+      {
+        $project: {
+          _id: { $ifNull: ["$_c._id", "$_id"] },
+          firstname: {
+            $ifNull: ["$_c.firstname", { $arrayElemAt: ["$_nameParts", 0] }],
+          },
+          lastname: {
+            $ifNull: [
+              "$_c.lastname",
+              {
+                $trim: {
+                  input: {
+                    $reduce: {
+                      input: { $slice: ["$_nameParts", 1, 100] },
+                      initialValue: "",
+                      in: { $concat: ["$$value", " ", "$$this"] },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          email: 1,
+          phone:       { $ifNull: ["$_c.phone",       { $ifNull: ["$phone", ""] }] },
+          city:        { $ifNull: ["$_c.city",        { $ifNull: ["$address.city", ""] }] },
+          address:     { $ifNull: ["$_c.address",     { $ifNull: ["$address.street", ""] }] },
+          totalOrders: { $ifNull: ["$_c.totalOrders", 0] },
+          totalSpent:  { $ifNull: ["$_c.totalSpent",  0] },
+          lastOrderAt: { $ifNull: ["$_c.lastOrderAt", null] },
+          status:      { $ifNull: ["$_c.status",      "active"] },
+          role:        { $ifNull: ["$role",            "customer"] },
+          createdAt:   { $ifNull: ["$_c.createdAt",   "$createdAt"] },
+          updatedAt:   { $ifNull: ["$_c.updatedAt",   "$createdAt"] },
+        },
+      },
+    ];
 
-    // Index des Customers par email pour le merge
-    const customerByEmail = {};
-    for (const c of allCustomers) {
-      customerByEmail[c.email.toLowerCase()] = c;
-    }
-
-    // Merge : un enregistrement par email
-    const merged = allUsers.map((user) => {
-      const email = user.email.toLowerCase();
-      const customer = customerByEmail[email];
-
-      const nameParts = (user.name || "").trim().split(" ");
-      const firstname = nameParts[0] || "";
-      const lastname  = nameParts.slice(1).join(" ") || "";
-
-      return {
-        _id:          customer?._id  ?? user._id,
-        firstname:    customer?.firstname || firstname,
-        lastname:     customer?.lastname  || lastname,
-        email,
-        phone:        customer?.phone || user.phone || "",
-        city:         customer?.city  || user.address?.city || "",
-        address:      customer?.address || user.address?.street || "",
-        totalOrders:  customer?.totalOrders ?? 0,
-        totalSpent:   customer?.totalSpent  ?? 0,
-        lastOrderAt:  customer?.lastOrderAt ?? null,
-        status:       customer?.status ?? "active",
-        role:         user.role ?? "customer",
-        createdAt:    customer?.createdAt ?? user.createdAt,
-        updatedAt:    customer?.updatedAt ?? user.createdAt,
-      };
-    });
-
-    // Filtre recherche
-    let filtered = merged;
+    // Filtre recherche (regex échappée)
     if (search) {
-      const re = new RegExp(search, "i");
-      filtered = filtered.filter(c =>
-        re.test(c.firstname) || re.test(c.lastname) ||
-        re.test(c.email)     || re.test(c.phone)
-      );
+      const re = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      pipeline.push({
+        $match: {
+          $or: [
+            { firstname: { $regex: re, $options: "i" } },
+            { lastname:  { $regex: re, $options: "i" } },
+            { email:     { $regex: re, $options: "i" } },
+            { phone:     { $regex: re, $options: "i" } },
+          ],
+        },
+      });
     }
-    if (status) {
-      filtered = filtered.filter(c => c.status === status);
-    }
-    // Tri
-    const dir = order === "desc" ? -1 : 1;
-    filtered.sort((a, b) => {
-      const av = a[sort] ?? 0;
-      const bv = b[sort] ?? 0;
-      if (av < bv) return -dir;
-      if (av > bv) return dir;
-      return 0;
+    if (status) pipeline.push({ $match: { status } });
+
+    // Tri + pagination atomique via $facet
+    pipeline.push({ $sort: { [sortField]: sortDir } });
+    pipeline.push({
+      $facet: {
+        data:  [{ $skip: (page - 1) * limit }, { $limit: limit }],
+        total: [{ $count: "count" }],
+      },
     });
 
-    // Pagination
-    const total      = filtered.length;
+    const [result]   = await User.aggregate(pipeline);
+    const customers  = result?.data || [];
+    const total      = result?.total?.[0]?.count || 0;
     const totalPages = Math.max(1, Math.ceil(total / limit));
-    const customers  = filtered.slice((page - 1) * limit, page * limit);
 
     return NextResponse.json({
       success: true,

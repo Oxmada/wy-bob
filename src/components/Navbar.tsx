@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -16,7 +16,10 @@ export default function Navbar() {
   const { cartItems } = useCart()
   const { t, locale, toggleLocale } = useLanguage()
   const { data: session } = useSession()
-  const totalArticles = cartItems.reduce((acc, item) => acc + item.quantity, 0)
+  const totalArticles = useMemo(
+    () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
+    [cartItems]
+  )
 
   const links = [
     { label: t.nav.home, href: '/' },

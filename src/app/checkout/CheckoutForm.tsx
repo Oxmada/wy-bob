@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
@@ -27,9 +27,15 @@ export default function CheckoutForm({ total }: { total: number }) {
   const [loading, setLoading] = useState(false);
 
   const TVA_RATE = 0.20;
-  const tva = Math.round(finalTotal * TVA_RATE);
   const livraison = 25;
-  const totalQty = cartItems.reduce((acc, i) => acc + i.quantity, 0);
+  const totalQty = useMemo(
+    () => cartItems.reduce((acc, i) => acc + i.quantity, 0),
+    [cartItems]
+  );
+  const tva = useMemo(
+    () => Math.round(finalTotal * TVA_RATE),
+    [finalTotal]
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();

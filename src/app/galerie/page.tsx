@@ -2,6 +2,8 @@ import { connectDB } from '@/app/lib/db'
 import GalleryPhoto from '@/app/models/GalleryPhoto'
 import GalerieClient from './GalerieClient'
 
+export const revalidate = 3600
+
 const CDN = 'https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto'
 
 const FALLBACK_IMAGES = [

@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useMemo,
   ReactNode,
 } from "react";
 import { useSession } from "next-auth/react";
@@ -132,15 +133,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   /* 💰 Sous-total */
-  const cartTotal = cartItems.reduce((total, item) => {
-    const price = Number(item.promoPrice ?? item.price);
-    return total + price * item.quantity;
-  }, 0);
+  const cartTotal = useMemo(
+    () => cartItems.reduce((total, item) => {
+      const price = Number(item.promoPrice ?? item.price);
+      return total + price * item.quantity;
+    }, 0),
+    [cartItems]
+  );
 
   /* 💰 Total après réduction promo */
-  const finalTotal = appliedPromo
-    ? Math.max(0, Math.round((cartTotal - appliedPromo.discount) * 100) / 100)
-    : cartTotal;
+  const finalTotal = useMemo(
+    () => appliedPromo
+      ? Math.max(0, Math.round((cartTotal - appliedPromo.discount) * 100) / 100)
+      : cartTotal,
+    [cartTotal, appliedPromo]
+  );
 
   return (
     <PanierContext.Provider
