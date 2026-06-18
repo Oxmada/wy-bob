@@ -18,7 +18,7 @@
   align-items: stretch;
   justify-content: center;
   gap: 5%;
-  padding: 30px 40px;
+  padding: 50px 40px;
   box-sizing: border-box;
   overflow: hidden;
   max-height: calc(100% - 41px);
@@ -30,6 +30,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding: 24px 32px;
   box-sizing: border-box;
   overflow: hidden;
@@ -48,13 +49,28 @@
 
 /* Div texte */
 .histoireTexte {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 28px;
   overflow-y: auto;
-  scrollbar-width: thin; /* ✅ visible mais fine */
-  scrollbar-color: #1e3a5f transparent; /* ✅ couleur du scrollbar et de la track */
+  scrollbar-width: thin;
+  scrollbar-color: #1B1843 transparent;
+}
+
+.histoireSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.histoireSousTitre {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #F9C464;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 
