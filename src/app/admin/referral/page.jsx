@@ -13,6 +13,7 @@ export default function ReferralAdminPage() {
 
   const [referralCodes, setReferralCodes]       = useState([]);
   const [loadingCodes, setLoadingCodes]         = useState(true);
+  const [showInfoModal, setShowInfoModal]       = useState(false);
 
   const [form, setForm] = useState({
     totalPercent: 10,
@@ -106,7 +107,68 @@ export default function ReferralAdminPage() {
             </span>
           </p>
         </div>
+        <button className={styles.infoBtn} onClick={() => setShowInfoModal(true)} style={{ marginLeft: "auto" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Comment ça fonctionne
+        </button>
       </div>
+
+      {/* Info modal */}
+      {showInfoModal && (
+        <div className={styles.overlay} onClick={(e) => { if (e.target === e.currentTarget) setShowInfoModal(false); }}>
+          <div className={styles.infoModal}>
+            <div className={styles.infoModalHeader}>
+              <div className={styles.infoModalIcon}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
+              <h3 className={styles.infoModalTitle}>Comment ça fonctionne</h3>
+              <button className={styles.infoModalClose} onClick={() => setShowInfoModal(false)} aria-label="Fermer">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <div className={styles.infoModalBody}>
+              <div className={styles.infoStep}>
+                <div className={styles.infoStepNum}>1</div>
+                <div>
+                  <p className={styles.infoStepTitle}>Code unique par client</p>
+                  <p className={styles.infoStepText}>Chaque client connecté dispose d'un code de parrainage unique généré automatiquement à sa première visite.</p>
+                </div>
+              </div>
+              <div className={styles.infoStep}>
+                <div className={styles.infoStepNum}>2</div>
+                <div>
+                  <p className={styles.infoStepTitle}>Répartition au choix</p>
+                  <p className={styles.infoStepText}>Le parrain choisit de garder tout le pourcentage pour lui (récompense différée) ou d'en offrir une partie à son filleul (réduction immédiate au checkout).</p>
+                </div>
+              </div>
+              <div className={styles.infoStep}>
+                <div className={styles.infoStepNum}>3</div>
+                <div>
+                  <p className={styles.infoStepTitle}>Récompense automatique</p>
+                  <p className={styles.infoStepText}>Quand un filleul commande avec le code, le parrain reçoit automatiquement un bon de réduction à usage unique par email.</p>
+                </div>
+              </div>
+              <div className={styles.infoStep}>
+                <div className={styles.infoStepNum}>4</div>
+                <div>
+                  <p className={styles.infoStepTitle}>Enveloppe totale</p>
+                  <p className={styles.infoStepText}>L'enveloppe totale définit le plafond accordé — ex : {form.totalPercent}% signifie que parrain + filleul ne peuvent pas dépasser {form.totalPercent}% au total.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <p style={{ color: "#78716c" }}>Chargement…</p>
@@ -180,17 +242,6 @@ export default function ReferralAdminPage() {
                 </button>
               </div>
             </div>
-          </div>
-
-          {/* Info */}
-          <div className={styles.card} style={{ maxWidth: 700, marginBottom: 28 }}>
-            <p className={styles.cardTitle}>Comment ça fonctionne</p>
-            <p style={{ fontSize: 13.5, color: "#44403c", lineHeight: 1.7, margin: 0 }}>
-              Chaque client connecté dispose d'un code de parrainage unique. Il peut choisir de garder tout le pourcentage pour lui-même
-              (récompense différée) ou d'en offrir une partie à son filleul (réduction immédiate au checkout).
-              Quand un filleul commande avec le code, le parrain reçoit automatiquement un bon de réduction à usage unique par email.
-              L'enveloppe totale définit le plafond que vous accordez — ex: {form.totalPercent}% signifie que parrain + filleul ne peuvent pas dépasser {form.totalPercent}% au total.
-            </p>
           </div>
 
           {/* Codes de parrainage */}
