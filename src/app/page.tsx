@@ -28,10 +28,10 @@ interface ProductData {
 }
 
 const FALLBACK_VARIANTS: Variant[] = [
+  { _id: '4', colorName: 'Rouge', colorCode: '#c0392b', textColor: '#ffffff', image: '/images/wybob_rouge.webp' },
   { _id: '1', colorName: 'Bleu',  colorCode: '#1B2D5E', textColor: '#ffffff', image: '/images/wybob_bleu.webp'  },
   { _id: '2', colorName: 'Blanc', colorCode: '#f5f5f0', textColor: '#1B1843', image: '/images/wybob_blanc.webp' },
   { _id: '3', colorName: 'Jaune', colorCode: '#e6a817', textColor: '#1B1843', image: '/images/wybob_jaune.webp' },
-  { _id: '4', colorName: 'Rouge', colorCode: '#c0392b', textColor: '#ffffff', image: '/images/wybob_rouge.webp' },
 ]
 
 const productRating  = 4.8
@@ -120,7 +120,7 @@ export default function Home() {
 
         {/* GAUCHE — image */}
         <div className="imageCol">
-          {selectedVariant && (
+          {selectedVariant ? (
             <Image
               src={selectedVariant.image}
               alt="Chapeau WYBOB"
@@ -131,6 +131,8 @@ export default function Home() {
               onClick={() => setLightboxIndex(variants.findIndex(v => v._id === selectedVariant._id))}
               style={{ cursor: 'zoom-in' }}
             />
+          ) : (
+            <div className="hatSkeleton" />
           )}
         </div>
 
@@ -227,7 +229,11 @@ export default function Home() {
           <button
             className="commanderBtn"
             onClick={handleCommander}
-            style={{ backgroundColor: selectedVariant?.colorCode, color: selectedVariant?.textColor }}
+            disabled={!selectedVariant}
+            style={selectedVariant
+              ? { backgroundColor: selectedVariant.colorCode, color: selectedVariant.textColor }
+              : { opacity: 0.35 }
+            }
           >{t.home.order}</button>
           </div>
 
