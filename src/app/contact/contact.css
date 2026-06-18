@@ -2,18 +2,17 @@
   width: 100%;
   flex: 1;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 40px;
+  display: grid;
+  place-items: center;
+  padding: 0 40px;
   box-sizing: border-box;
 }
 
 .contactInner {
   width: 100%;
-  flex: 1;
-  max-height: 520px;
+  height: auto;
+  /* garantit 60px en haut et en bas quelle que soit la hauteur de l'écran */
+  max-height: min(520px, calc(100% - 120px));
   display: flex;
   flex-direction: row;
   align-items: stretch;
@@ -133,13 +132,15 @@
 
   .contactZone {
     min-height: 0;
-    padding: 40px 20px;
+    display: grid;
+    place-items: center;
+    padding: 0 20px;
   }
 
   .contactInner {
     width: 100%;
-    flex: 1;
-    max-height: 420px;
+    height: auto;
+    max-height: min(420px, calc(100% - 80px));
     flex-direction: row;
     align-items: stretch;
     gap: 32px;
@@ -187,13 +188,15 @@
 
   .contactZone {
     min-height: 0;
-    padding: 40px 20px;
+    display: grid;
+    place-items: center;
+    padding: 0 20px;
   }
 
  .contactInner {
     width: 100%;
-    flex: 1;
-    max-height: 420px;
+    height: auto;
+    max-height: min(420px, calc(100% - 80px));
     flex-direction: row;
     align-items: stretch;
     gap: 40px;
