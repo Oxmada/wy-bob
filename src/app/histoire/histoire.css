@@ -27,6 +27,7 @@
 /* Bloc texte gauche */
 .histoireBloc {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -70,8 +71,11 @@
 
 /* Image droite */
 .histoireImage {
+  flex: 1;
+  min-width: 0;
   aspect-ratio: 1 / 1;
-  flex-shrink: 0;
+  align-self: center;
+  max-height: 100%;
   border-radius: 16px;
   overflow: hidden;
 }
