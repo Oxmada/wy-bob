@@ -84,6 +84,7 @@ export default function Home() {
   }
 
   const handleCommander = () => {
+    if (!selectedVariant) return
     addToCart({
       _id:   'wybob-' + selectedVariant._id,
       name:  productName,
