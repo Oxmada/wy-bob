@@ -32,6 +32,7 @@ export default function Histoire() {
             alt="Notre histoire"
             width={451}
             height={457}
+            priority
             style={{ objectFit: 'cover', width: '100%', height: '100%' }}
           />
         </div>

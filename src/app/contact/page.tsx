@@ -51,6 +51,7 @@ export default function Contact() {
               src="https://res.cloudinary.com/dnm9txjhm/image/upload/q_auto/f_auto/v1780486949/wybov-portee-bob-noir-crochet-lookbook_ybglrr.jpg"
               alt="Contact WYBOB"
               fill
+              priority
               sizes="(max-width: 767px) 100vw, 50vw"
               style={{ objectFit: 'cover' }}
             />
