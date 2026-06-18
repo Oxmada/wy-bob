@@ -380,7 +380,7 @@ html:has(.privacyZone) {
   }
 
   .hatImage {
-    max-height: 220px;
+    max-height: 45vw;
     width: auto;
     max-width: 100%;
   }
