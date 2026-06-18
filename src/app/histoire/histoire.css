@@ -51,26 +51,9 @@
 .histoireTexte {
   display: flex;
   flex-direction: column;
-  gap: 28px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #1B1843 transparent;
-}
-
-.histoireSection {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.histoireSousTitre {
-  font-family: 'Quicksand', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: #F9C464;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin: 0;
 }
 
 

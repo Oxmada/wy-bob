@@ -50,10 +50,7 @@ export const translations = {
     },
     histoire: {
       title: 'Notre histoire',
-      sub1: 'Notre origine',
-      p1: "WYBOB est née d'une envie simple : créer des pièces intemporelles porteuses de sens, de soleil et d'âme. Fondée autour de l'amour de l'été, du voyage et de l'élégance naturelle, WYBOB est bien plus qu'une marque de chapeaux. C'est un lien entre le style et l'artisanat, entre un mode de vie moderne et des racines authentiques.",
-      sub2: 'Notre savoir-faire',
-      p2: "Chaque pièce est fabriquée à la main à Madagascar, une île riche de culture, de créativité et d'un savoir-faire exceptionnel. À travers WYBOB, nous souhaitons mettre en lumière ces talents et valoriser les mains derrière chaque création. Nous croyons que le luxe n'est pas l'excès. Le luxe, c'est le temps, le soin, la qualité et l'histoire.",
+      p1: "WYBOB est née d'une envie simple : créer des pièces intemporelles porteuses de sens, de soleil et d'âme. Fondée autour de l'amour de l'été, du voyage et de l'élégance naturelle, c'est bien plus qu'une marque de chapeaux — c'est un lien entre le style et l'artisanat, entre un mode de vie moderne et des racines authentiques. Chaque pièce est fabriquée à la main à Madagascar, une île riche de culture, de créativité et d'un savoir-faire exceptionnel. Nous croyons que le luxe n'est pas l'excès : c'est le temps, le soin, la qualité et l'histoire.",
     },
     galerie: {
       title: 'Notre Galerie',
@@ -280,10 +277,7 @@ export const translations = {
     },
     histoire: {
       title: 'Our story',
-      sub1: 'Our origins',
-      p1: "WYBOB was born from a simple desire: to create timeless pieces full of meaning, sunshine, and soul. Built around a love of summer, travel, and natural elegance, WYBOB is far more than a hat brand. It's a link between style and craftsmanship, between a modern lifestyle and authentic roots.",
-      sub2: 'Our craftsmanship',
-      p2: "Every piece is handcrafted in Madagascar, an island rich in culture, creativity, and exceptional know-how. Through WYBOB, we want to shine a light on these talents and celebrate the hands behind each creation. We believe luxury is not excess. Luxury is time, care, quality, and story.",
+      p1: "WYBOB was born from a simple desire: to create timeless pieces full of meaning, sunshine, and soul. Built around a love of summer, travel, and natural elegance, it's far more than a hat brand — it's a link between style and craftsmanship, between a modern lifestyle and authentic roots. Every piece is handcrafted in Madagascar, an island rich in culture, creativity, and exceptional know-how. We believe luxury is not excess: it's time, care, quality, and story.",
     },
     galerie: {
       title: 'Our Gallery',

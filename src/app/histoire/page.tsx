@@ -21,14 +21,7 @@ export default function Histoire() {
         <div className="histoireBloc">
           <h1 className="histoireTitre">{t.histoire.title}</h1>
           <div className="histoireTexte">
-            <div className="histoireSection">
-              <h2 className="histoireSousTitre">{t.histoire.sub1}</h2>
-              <p>{t.histoire.p1}</p>
-            </div>
-            <div className="histoireSection">
-              <h2 className="histoireSousTitre">{t.histoire.sub2}</h2>
-              <p>{t.histoire.p2}</p>
-            </div>
+            <p>{t.histoire.p1}</p>
           </div>
         </div>
 
