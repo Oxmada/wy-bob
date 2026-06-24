@@ -236,8 +236,7 @@ export default function CustomersPage() {
 
       {/* Topbar */}
       <div className="ap-topbar">
-        <Link href="/admin/dashboard" className="ap-back-btn">← Dashboard</Link>
-        <div className="ap-topbar-title-group">
+<div className="ap-topbar-title-group">
           <h1 className="ap-topbar-title">Clients</h1>
           <p className="ap-topbar-subtitle">Gérez vos clients et leur historique d'achats</p>
         </div>

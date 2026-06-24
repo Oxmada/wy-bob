@@ -212,8 +212,7 @@ export default function AdminOrdersPage() {
 
       {/* Topbar */}
       <div className="ap-topbar">
-        <Link href="/admin/dashboard" className="ap-back-btn">← Dashboard</Link>
-        <div className="ap-topbar-title-group">
+<div className="ap-topbar-title-group">
           <h1 className="ap-topbar-title">Commandes</h1>
           <p className="ap-topbar-subtitle">Suivez et gérez toutes les commandes</p>
         </div>

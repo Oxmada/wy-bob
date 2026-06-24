@@ -19,25 +19,6 @@
   flex-wrap: wrap;
 }
 
-.backBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  background: #fff;
-  color: #57534e;
-  border: 1.5px solid #e7e5e4;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.backBtn:hover { background: #0f172a; color: #fff; border-color: #0f172a; }
 
 .topbarTitle {
   font-size: 24px;
