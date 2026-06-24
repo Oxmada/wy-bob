@@ -157,15 +157,15 @@ export default function DashboardStats() {
 
       {/* ── KPI Row 1 ── */}
       <div className={styles.kpiGrid}>
-        {kpi1Values.map((kpi) => (
-          <KPICard key={kpi.key} {...kpi} large />
+        {kpi1Values.map(({ key, ...kpi }) => (
+          <KPICard key={key} {...kpi} large />
         ))}
       </div>
 
       {/* ── KPI Row 2 ── */}
       <div className={styles.kpiGrid}>
-        {kpi2Values.map((kpi) => (
-          <KPICard key={kpi.key} {...kpi} />
+        {kpi2Values.map(({ key, ...kpi }) => (
+          <KPICard key={key} {...kpi} />
         ))}
       </div>
 

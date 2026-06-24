@@ -34,6 +34,18 @@ const FALLBACK_VARIANTS: Variant[] = [
   { _id: '3', colorName: 'Jaune', colorCode: '#e6a817', textColor: '#1B1843', image: '/images/wybob_jaune.webp' },
 ]
 
+type ColorKey = 'Red' | 'Blue' | 'White' | 'Yellow'
+const FR_TO_COLOR_KEY: Record<string, ColorKey> = {
+  Rouge: 'Red',
+  Bleu:  'Blue',
+  Blanc: 'White',
+  Jaune: 'Yellow',
+  Red:   'Red',
+  Blue:  'Blue',
+  White: 'White',
+  Yellow:'Yellow',
+}
+
 const productRating = 4.8
 
 interface Props {
@@ -154,7 +166,7 @@ export default function HomeClient({ product }: Props) {
           <hr className="productDivider" />
 
           <div className="productFeature" onClick={() => toggleSection('color')}>
-            <span>{t.home.colorLabel} <span className="colorNameInline">{selectedVariant.colorName}</span></span>
+            <span>{t.home.colorLabel} <span className="colorNameInline">{t.home.colors[FR_TO_COLOR_KEY[selectedVariant.colorName]] ?? selectedVariant.colorName}</span></span>
             <span className={`featureToggle ${openSection === 'color' ? 'open' : ''}`}>+</span>
           </div>
           {openSection === 'color' && (

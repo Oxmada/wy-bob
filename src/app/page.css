@@ -420,29 +420,68 @@ html:has(.privacyZone) {
 
   .container {
     width: calc(100vw - 32px);
-    height: calc(100dvh - 32px);
-    padding: 16px;
+    height: auto;
+    padding: 30px;
     border-radius: 20px;
+    overflow: hidden;
+    justify-content: flex-start;
   }
 
-  /* mainZone garde le layout row du desktop */
+  .mainZone {
+    flex: none;
+    min-height: unset;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    gap: 28px;
+  }
+
+  .imageCol {
+    flex: none;
+    width: 100%;
+    height: auto;
+    padding: 12px 0;
+    justify-content: center;
+  }
 
   .hatImage {
-    max-height: 52vh;
+    width: 100%;
+    max-height: 65vw;
+    object-fit: contain;
+  }
+
+  .hatSkeleton {
+    width: 70%;
+    max-height: 65vw;
   }
 
   .contentCol {
-    flex: none;
-    width: 380px;
-    padding: 20px 8px 20px 24px;
-    margin: 0 20px 0 0;
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 28px 32px;
+    margin: 0 0 32px;
+    overflow: visible;
   }
 
-  .productName { font-size: 24px; }
-  .priceTag { font-size: 28px; }
-  .productDesc { font-size: 12.5px; }
-  .productFeature { font-size: 13px; }
-  .ctaRow { margin-top: 20px; }
+  .contentScrollInner {
+    display: block;
+    height: auto;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .productName { font-size: 36px; margin-bottom: 10px; }
+  .ratingRow { margin-bottom: 10px; }
+  .priceRow { margin-bottom: 14px; }
+  .priceTag { font-size: 24px; }
+  .productDesc { font-size: 14px; line-height: 1.65; margin: 10px 0; }
+  .productDivider { margin: 12px 0; }
+  .productFeature { font-size: 16px; margin-bottom: 10px; }
+  .colorLabel { font-size: 14px; }
+  .ctaRow { margin-top: 24px; }
+  .qtyBtn { width: 48px; height: 52px; }
+  .commanderBtn { font-size: 14px; }
 }
 
 
@@ -455,13 +494,15 @@ html:has(.privacyZone) {
     width: 100%;
     height: auto;
     min-height: calc(100dvh - 40px);
-    padding: 12px;
+    padding: 20px;
     border-radius: 18px;
-    overflow: visible;
+    overflow: hidden;
     justify-content: flex-start;
   }
 
   .mainZone {
+    flex: none;
+    min-height: unset;
     flex-direction: column;
     align-items: center;
     overflow: visible;
@@ -478,30 +519,28 @@ html:has(.privacyZone) {
 
   .hatImage {
     width: 100%;
-    max-height: 360px;
+    max-height: min(80vw, 500px);
     object-fit: contain;
   }
 
   .hatSkeleton {
     width: 70%;
-    max-height: 300px;
+    max-height: min(80vw, 500px);
   }
 
   .contentCol {
-    flex: none;
+    display: block;
     width: 100%;
     height: auto;
-    min-height: unset;
     padding: 16px;
     overflow: visible;
     margin: 0 0 8px;
   }
 
   .contentScrollInner {
-    flex: none;
-    min-height: unset;
+    display: block;
+    height: auto;
     overflow: visible;
-    max-height: none;
     padding-right: 0;
   }
 
@@ -510,9 +549,15 @@ html:has(.privacyZone) {
     letter-spacing: 1.5px;
   }
 
-  .productName { font-size: 22px; }
-  .priceTag { font-size: 28px; }
-  .productDesc { font-size: 12px; line-height: 1.5; }
-  .productFeature { font-size: 14px; }
-  .ctaRow { margin-top: 16px; }
+  .productName { font-size: 24px; margin-bottom: 6px; }
+  .ratingRow   { margin-bottom: 10px; }
+  .priceRow    { margin-bottom: 14px; }
+  .priceTag    { font-size: 20px; }
+  .productDivider { margin: 10px 0; }
+  .productFeature { font-size: 14px; margin-bottom: 4px; }
+  .productDesc { font-size: 12px; line-height: 1.5; margin: 6px 0 4px; }
+  .swatches    { margin: 8px 0 4px; }
+  .featureList { margin: 8px 0 4px; }
+  .ctaRow      { margin-top: 20px; }
+  .commanderBtn { font-size: 12px; }
 }

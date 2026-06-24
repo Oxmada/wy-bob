@@ -82,20 +82,50 @@
 
 @media (max-width: 1024px) and (orientation: portrait) {
 
+  html {
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  body {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 20px 0;
+  }
+
+  .container {
+    width: 100%;
+    height: auto;
+    min-height: calc(100dvh - 20px);
+    border-radius: 24px;
+    padding: 16px;
+    justify-content: space-between;
+    overflow: visible;
+  }
+
   .histoireZone {
     width: 100%;
-    flex: 1;
+    flex: none;
     display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     gap: 60px;
-    padding: 20px;
+    padding: 0 16px;
+    margin-block: 60px;
     box-sizing: border-box;
   }
 
   .histoireBloc {
-    flex: 1;
+    width: 100%;
+    height: auto;
     display: flex;
     flex-direction: column;
     padding: 24px;
@@ -109,12 +139,16 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.6),
       0 4px 30px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    flex-shrink: 0;
   }
 
   .histoireImage {
-    flex: 1;
+    width: 100%;
+    height: 360px;
+    max-height: 600px;
     border-radius: 16px;
     overflow: hidden;
+    flex-shrink: 0;
   }
 
   .histoireImage img {
@@ -124,13 +158,13 @@
   }
 
   .histoireTitre {
-    font-size: 24px;
-    margin-bottom: 16px;
+    font-size: 30px;
+    margin-bottom: 30px;
   }
 
   .histoireTexte p {
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: 16px;
+    line-height: 1.85;
   }
 
 }
@@ -139,22 +173,22 @@
   .container {
     width: 100%;
     height: auto;
-    min-height: 95dvh;
+    min-height: calc(100dvh - 40px);
     border-radius: 24px;
     padding: 12px;
-    justify-content: space-between;
+    justify-content: flex-start;
     overflow: visible;
   }
 
   .histoireZone {
     width: 100%;
-    flex: 1;
+    flex: none;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    gap: 10px;
-    padding: 10px;
+    gap: 20px;
+    padding: 40px 10px;
     box-sizing: border-box;
   }
 
@@ -193,7 +227,7 @@
   }
 
   .histoireTitre {
-    font-size: 20px;
+    font-size: 24px;
     margin-bottom: 10px;
   }
 
@@ -202,7 +236,7 @@
   }
 
   .histoireTexte p {
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.4;
   }
 

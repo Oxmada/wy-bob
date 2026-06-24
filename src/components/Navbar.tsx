@@ -71,7 +71,7 @@ export default function Navbar() {
 
         {/* Sélecteur de langue */}
         <button className="langBtn" onClick={toggleLocale} aria-label="Switch language">
-          {locale === 'fr' ? 'EN' : 'FR'}
+          {locale.toUpperCase()}
         </button>
 
         {/* Panier */}
@@ -142,7 +142,7 @@ export default function Navbar() {
                 alt="WYBOB Logo"
                 width={56}
                 height={56}
-                style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+                style={{ objectFit: 'contain' }}
               />
             </Link>
             <button className="mobileCloseBtn" onClick={() => setMenuOpen(false)} aria-label="Fermer le menu">
@@ -172,29 +172,35 @@ export default function Navbar() {
           {/* Actions secondaires */}
           <div className="mobileActions">
             <Link href="/panier" className="mobileActionLink" onClick={() => setMenuOpen(false)}>
-              🛒 {t.nav.panier}{totalArticles > 0 && ` (${totalArticles})`}
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+              {t.nav.panier}{totalArticles > 0 && ` (${totalArticles})`}
             </Link>
             {session ? (
               <>
                 <Link href="/dashboard" className="mobileActionLink" onClick={() => setMenuOpen(false)}>
-                  👤 {t.nav.dashboard}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                  {t.nav.dashboard}
                 </Link>
                 <button className="mobileActionLink" onClick={() => { setMenuOpen(false); signOut({ redirect: false }).then(() => router.push('/')) }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                   {t.nav.logout}
                 </button>
               </>
             ) : (
               <>
                 <Link href="/auth/login" className="mobileActionLink" onClick={() => setMenuOpen(false)}>
-                  👤 {t.nav.login}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                  {t.nav.login}
                 </Link>
                 <Link href="/auth/register" className="mobileActionLink" onClick={() => setMenuOpen(false)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
                   {t.nav.register}
                 </Link>
               </>
             )}
             <button className="mobileLangBtn" onClick={() => { toggleLocale(); setMenuOpen(false) }}>
-              {locale === 'fr' ? '🇬🇧 English' : '🇫🇷 Français'}
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
+              {locale === 'fr' ? 'Français' : 'English'}
             </button>
           </div>
 

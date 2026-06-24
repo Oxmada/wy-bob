@@ -139,45 +139,55 @@
 /* TABLETTE PORTRAIT */
 @media (max-width: 1024px) and (min-width: 768px) and (orientation: portrait) {
 
+  .container:has(.contactZone) {
+    align-self: stretch;
+  }
+
   .contactZone {
-    padding: 40px 20px;
+    padding: 20px;
   }
 
   .contactInner {
-    gap: 32px;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 30px;
   }
 
   .contactBloc {
     flex: 1;
-    min-width: 0;
     min-height: 0;
+    width: 100%;
     padding: 24px;
     gap: 12px;
     overflow-y: auto;
   }
 
   .contactTitre {
-    font-size: 24px;
+    font-size: 36px;
   }
 
   .contactInput {
     width: 100%;
     height: 44px;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .contactTextarea {
-    width: 100%;
     flex: 1;
     min-height: 0;
-    font-size: 12px;
+    width: 100%;
+    font-size: 14px;
   }
 
   .contactImage {
     flex: 1;
-    min-width: 0;
+    min-height: 0;
+    width: 100%;
     position: relative;
     clip-path: inset(0 round 16px);
+    order: -1;
   }
 }
 
@@ -200,20 +210,20 @@
     overflow-y: auto;
   }
   .contactTitre {
-    font-size: 22px;
+    font-size: 36px;
   }
 
   .contactInput {
     width: 100%;
     height: 42px;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .contactTextarea {
     width: 100%;
     flex: 1;
     min-height: 0;
-    font-size: 12px;
+    font-size: 14px;
   }
 
    .contactImage {
@@ -239,7 +249,7 @@
   .contactInner {
     width: 100%;
     height: auto;
-    flex-direction: column-reverse;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 20px;
@@ -249,7 +259,7 @@
   .contactBloc {
     width: 100%;
     height: auto;
-    padding: 24px;
+    padding: 12px;
     gap: 12px;
     flex-shrink: 0;
     display: flex;
@@ -263,20 +273,22 @@
   .contactInput {
     width: 100%;
     height: 50px;
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .contactTextarea {
     width: 100%;
     flex: 1;
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .contactImage {
     width: 100%;
-    height: 300px;
+    aspect-ratio: 1 / 1;
+    height: auto;
     position: relative;
     clip-path: inset(0 round 16px);
     flex-shrink: 0;
+    order: -1;
   }
 }

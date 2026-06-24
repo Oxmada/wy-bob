@@ -31,7 +31,7 @@ p, span, a, li {
 /* Mobile — scroll activé */
 
 @media (max-width: 767px) {
-  html, body {
+  html {
     height: auto;
     min-height: 100dvh;
     overflow-y: auto;
@@ -39,6 +39,9 @@ p, span, a, li {
   }
 
   body {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     align-items: center;

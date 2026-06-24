@@ -17,7 +17,7 @@ export const translations = {
       legal: 'Mentions légales',
       cgv: 'CGV',
       privacy: 'Politique de confidentialité',
-      madeBy: 'Réalisé par Oxmad-Digital',
+      madeByPrefix: 'Réalisé par ',
     },
     home: {
       description: "Pensé pour les journées lumineuses et les escapades d'été, le WYBOB Soleil apporte une élégance naturelle à toutes vos silhouettes.",
@@ -244,7 +244,7 @@ export const translations = {
       legal: 'Legal notice',
       cgv: 'T&Cs',
       privacy: 'Privacy policy',
-      madeBy: 'Made by Oxmad-Digital',
+      madeByPrefix: 'Made by ',
     },
     home: {
       description: 'Designed for bright days and summer escapes, the WYBOB Soleil brings a natural elegance to every outfit.',
